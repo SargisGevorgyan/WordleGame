@@ -44,6 +44,12 @@ final class GameViewModel: ObservableObject {
     }
     let revealDuration = 1.7
 
+    /// Identifies the current game, so reveal / game-over timers scheduled for
+    /// an earlier game do nothing once a new one has started.
+    private var gameID = UUID()
+    /// The submitted guess whose reveal animation is still running.
+    private var pendingReveal: (row: Int, guess: String, evaluations: [LetterEvaluation])?
+
     /// Callback fired once per finished game (win or lose). Used for ad cadence.
     var onRoundFinished: ((_ didWin: Bool) -> Void)?
 
@@ -206,15 +212,18 @@ final class GameViewModel: ObservableObject {
         isRevealing = true
         Haptics.shared.tap(intensity: 0.7)
 
-        let finishedRow = currentRow
+        pendingReveal = (currentRow, guess, evaluations)
+        let id = gameID
         DispatchQueue.main.asyncAfter(deadline: .now() + revealDuration) { [weak self] in
-            self?.finishReveal(row: finishedRow, guess: guess, evaluations: evaluations)
+            guard let self, self.gameID == id, let pending = self.pendingReveal else { return }
+            self.finishReveal(row: pending.row, guess: pending.guess, evaluations: pending.evaluations)
         }
     }
 
     // MARK: - Reveal / resolution
 
     private func finishReveal(row: Int, guess: String, evaluations: [LetterEvaluation]) {
+        pendingReveal = nil
         mergeKeyboardHints(tokens: language.tokenize(guess), evaluations: evaluations)
         isRevealing = false
 
@@ -241,7 +250,9 @@ final class GameViewModel: ObservableObject {
 
     private func endGame() {
         onRoundFinished?(status == .won)
+        let id = gameID
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
+            guard self?.gameID == id else { return }
             withAnimation(.spring(response: 0.45, dampingFraction: 0.8)) {
                 self?.showGameOver = true
             }
@@ -251,6 +262,8 @@ final class GameViewModel: ObservableObject {
     // MARK: - New game
 
     func newGame() {
+        gameID = UUID()
+        pendingReveal = nil
         withAnimation(.easeInOut(duration: 0.2)) {
             board = Self.makeEmptyBoard()
             currentRow = 0
@@ -265,8 +278,17 @@ final class GameViewModel: ObservableObject {
     }
 
     /// Switch language and immediately start a fresh game in it.
+    /// The game in progress is abandoned, and counts as a loss (so switching
+    /// can't be used to protect a streak).
     func changeLanguage(_ newLanguage: GameLanguage) {
         guard newLanguage != language else { return }
+        // A guess still flipping counts: resolve it first (it may have won).
+        if let pending = pendingReveal {
+            finishReveal(row: pending.row, guess: pending.guess, evaluations: pending.evaluations)
+        }
+        if isInProgress {
+            StatsStore.record(win: false)
+        }
         language = newLanguage
         newGame()
     }
