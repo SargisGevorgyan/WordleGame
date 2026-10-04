@@ -27,4 +27,10 @@
     <string name="switch_and_restart">Switch &amp; restart</string>
     <string name="cancel">Cancel</string>
     <string name="current_game_lost">Your current game will be lost.</string>
+    <string name="daily">Daily</string>
+    <string name="daily_number">Daily #%d</string>
+    <string name="free_play">Free play</string>
+    <string name="share">Share</string>
+    <string name="next_word_in">Next word in</string>
+    <string name="hints_off_daily">Hints are off in the daily game</string>
 </resources>
