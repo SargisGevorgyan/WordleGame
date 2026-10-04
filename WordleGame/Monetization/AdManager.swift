@@ -58,6 +58,7 @@ final class AdManager: ObservableObject {
     /// Completion for the rewarded ad on screen; called once, when it closes.
     private var pendingReward: ((Int) -> Void)?
     private var rewardEarned = false
+    private var isLoadingRewardedAd = false
     #endif
 
     /// Whether "Watch a video" can be offered right now.
@@ -131,11 +132,13 @@ final class AdManager: ObservableObject {
 
     func loadRewardedAd() {
         #if canImport(GoogleMobileAds)
+        isLoadingRewardedAd = true
         GADRewardedAd.load(
             withAdUnitID: Self.rewardedAdUnitID,
             request: GADRequest()
         ) { [weak self] ad, error in
             guard let self else { return }
+            self.isLoadingRewardedAd = false
             if let error {
                 print("[AdManager] Rewarded failed to load: \(error.localizedDescription)")
                 self.isRewardedAdReady = false
@@ -148,14 +151,23 @@ final class AdManager: ObservableObject {
         #endif
     }
 
+    /// Loads a rewarded ad unless one is ready, loading or on screen. Called when
+    /// the hint store opens, so a failed load (offline, no fill) is retried.
+    func loadRewardedAdIfNeeded() {
+        #if canImport(GoogleMobileAds)
+        guard rewardedAd == nil, !isLoadingRewardedAd, pendingReward == nil else { return }
+        loadRewardedAd()
+        #endif
+    }
+
     /// Presents a rewarded ad. `onReward` is called exactly once, when the ad
     /// closes, with the hint count to grant (0 if the ad could not be shown or
     /// was closed before the reward was earned).
     func showRewardedAd(onReward: @escaping (Int) -> Void) {
         #if canImport(GoogleMobileAds)
-        guard pendingReward == nil else { return }   // one already on screen
+        guard pendingReward == nil else { onReward(0); return }   // one already on screen
         guard let rewardedAd, let root = Self.rootViewController else {
-            loadRewardedAd()
+            loadRewardedAdIfNeeded()
             onReward(0)
             return
         }
@@ -198,12 +210,18 @@ final class AdManager: ObservableObject {
 
     // MARK: - Helpers
 
+    /// The topmost presented controller of the key window, so ads can show on
+    /// top of an open sheet (e.g. the hint store).
     static var rootViewController: UIViewController? {
-        UIApplication.shared.connectedScenes
+        var top = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap { $0.windows }
             .first { $0.isKeyWindow }?
             .rootViewController
+        while let presented = top?.presentedViewController, !presented.isBeingDismissed {
+            top = presented
+        }
+        return top
     }
 }
 

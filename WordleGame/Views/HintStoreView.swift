@@ -77,6 +77,7 @@ struct HintStoreView: View {
             .frame(maxWidth: 420)
         }
         .preferredColorScheme(.dark)
+        .task { ads.loadRewardedAdIfNeeded() }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.hidden)
     }

@@ -37,7 +37,9 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var language: GameLanguage
     private(set) var targetWord: String {
         didSet {
+            #if DEBUG
             print("3: targetWord: \(targetWord)")
+            #endif
         }
     }
     let revealDuration = 1.7
@@ -60,7 +62,9 @@ final class GameViewModel: ObservableObject {
         self.targetWord = language.randomWord()
         #endif
         self.board = Self.makeEmptyBoard()
+        #if DEBUG
         print("1: targetWorld: \(targetWord)")
+        #endif
     }
 
     /// Test seam: start with a known target.
@@ -68,7 +72,9 @@ final class GameViewModel: ObservableObject {
         self.language = language
         self.targetWord = targetWord.uppercased()
         self.board = Self.makeEmptyBoard()
+        #if DEBUG
         print("2: targetWorld: \(targetWord)")
+        #endif
     }
 
     private static func makeEmptyBoard() -> [[Tile]] {

@@ -88,11 +88,17 @@ final class GameCenterManager: ObservableObject {
 
     // MARK: - Helpers
 
+    /// The topmost presented controller of the key window, so the sign-in
+    /// sheet can show even when another sheet (e.g. Settings) is open.
     static var rootViewController: UIViewController? {
-        UIApplication.shared.connectedScenes
+        var top = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap { $0.windows }
             .first { $0.isKeyWindow }?
             .rootViewController
+        while let presented = top?.presentedViewController, !presented.isBeingDismissed {
+            top = presented
+        }
+        return top
     }
 }
