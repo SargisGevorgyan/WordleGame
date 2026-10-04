@@ -88,7 +88,7 @@ private fun TileView(tile: Tile, flipDelayMillis: Int, modifier: Modifier = Modi
     }
 
     val coloured = showColour.value > 0.5f
-    val fill = if (coloured) Palette.fill(tile.evaluation) else Palette.tileEmpty
+    val fill = if (coloured) Palette.fill(tile.evaluation, LocalHighContrast.current) else Palette.tileEmpty
     val border = when {
         coloured -> Color.Transparent
         tile.evaluation == LetterEvaluation.TBD -> Palette.borderActive

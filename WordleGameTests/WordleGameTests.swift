@@ -211,6 +211,16 @@ final class WordleGameTests: XCTestCase {
         XCTAssertEqual(WordBank.parse("# comment\n\n plant \r\nՔԱՂԱՔ\n"), ["PLANT", "ՔԱՂԱՔ"])
     }
 
+    func testEveryPlayableWordHasAMeaning() {
+        XCTAssertEqual(WordMeanings.parse("# c\n\nplant | a living thing\nNOBAR\nԳԱՐՈՒՆ|spring\n"),
+                       ["PLANT": "a living thing", "ԳԱՐՈՒՆ": "spring"])
+        for language in GameLanguage.allCases {
+            for word in language.words {
+                XCTAssertNotNil(language.meaning(of: word), "\(word) has no meaning")
+            }
+        }
+    }
+
     func testEnglishPlayableWordsAreFiveLetterUppercase() {
         let playable = GameLanguage.englishPlayableWords
         XCTAssertGreaterThanOrEqual(playable.count, 100)

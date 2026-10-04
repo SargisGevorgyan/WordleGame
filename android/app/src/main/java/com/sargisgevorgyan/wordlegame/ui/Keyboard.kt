@@ -39,6 +39,7 @@ fun Keyboard(
     hints: Map<String, LetterEvaluation>,
     onKey: (String) -> Unit,
     modifier: Modifier = Modifier,
+    hapticsEnabled: Boolean = true,
 ) {
     val compact = language.keyboardIsCompact
     val keyHeight = if (compact) 46.dp else 54.dp
@@ -72,7 +73,7 @@ fun Keyboard(
                         compact = compact,
                         modifier = Modifier.weight(weightOf(token)),
                         onClick = {
-                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             onKey(token)
                         },
                     )
@@ -102,7 +103,7 @@ private fun Key(
     val background = when (token) {
         GameLanguage.KEY_ENTER -> base.background(Palette.enterGradient)
         GameLanguage.KEY_DELETE -> base.background(Palette.glassStroke)
-        else -> base.background(if (hint != null) Palette.fill(hint) else Palette.keyIdle)
+        else -> base.background(if (hint != null) Palette.fill(hint, LocalHighContrast.current) else Palette.keyIdle)
     }
     val enterLabel = stringResource(R.string.enter)
     Box(background.clickable(onClick = onClick), contentAlignment = Alignment.Center) {

@@ -11,6 +11,7 @@ import SwiftUI
 struct GameOverView: View {
     let didWin: Bool
     let targetWord: String
+    let meaning: String?
     let onPlayAgain: () -> Void
 
     @State private var appear = false
@@ -35,6 +36,17 @@ struct GameOverView: View {
                     .tracking(6)
                     .foregroundStyle(.white)
                     .neonGlow(.warmYellow, radius: 8, strength: 0.6)
+                if let meaning {
+                    Text(verbatim: meaning)
+                        .font(.callout)
+                        .italic()
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.white.opacity(0.8))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, 4)
+                        .accessibilityLabel(Text("Meaning") + Text(verbatim: ": \(meaning)"))
+                        .accessibilityIdentifier("word-meaning")
+                }
             }
 
             StatsView()

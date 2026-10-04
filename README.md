@@ -55,6 +55,11 @@ edit these files only: iOS bundles them as resources (`project.yml` /
 `WordleGame.xcodeproj`), Android packages them as assets
 (`android/app/build.gradle.kts`).
 
+The meaning shown after each game comes from `meanings_en.txt` and
+`meanings_hy.txt` in the same folder, one `WORD|meaning` entry per line
+(Armenian words carry an English gloss). When you add a word, add its meaning
+too: a unit test on each platform fails if a playable word has none.
+
 ---
 
 ## Android

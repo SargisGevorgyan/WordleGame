@@ -15,6 +15,8 @@ struct SettingsView: View {
 
     @AppStorage("isAdFree") private var isAdFree = false
     @AppStorage("soundEnabled") private var soundEnabled = true
+    @AppStorage(Haptics.enabledKey) private var hapticsEnabled = true
+    @AppStorage(LetterEvaluation.highContrastKey) private var highContrast = false
     @AppStorage(GameLanguage.storageKey) private var languageRaw = GameLanguage.systemDefault.rawValue
 
     @State private var pendingLanguage: GameLanguage?
@@ -101,6 +103,15 @@ struct SettingsView: View {
                         .onChange(of: soundEnabled) { _, enabled in
                             SoundManager.shared.isEnabled = enabled
                         }
+                    Toggle("Haptics", isOn: $hapticsEnabled)
+                }
+
+                Section {
+                    Toggle("High contrast colors", isOn: $highContrast)
+                } header: {
+                    Text("Accessibility")
+                } footer: {
+                    Text("Color-blind friendly: orange = right spot, blue = wrong spot.")
                 }
 
                 Section {

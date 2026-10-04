@@ -26,4 +26,8 @@
     <string name="switch_and_restart">Փոխել և վերսկսել</string>
     <string name="cancel">Չեղարկել</string>
     <string name="current_game_lost">Ընթացիկ խաղը կկորչի։</string>
+    <string name="accessibility">Մատչելիություն</string>
+    <string name="haptics">Թրթռում</string>
+    <string name="high_contrast_colors">Բարձր կոնտրաստի գույներ</string>
+    <string name="high_contrast_footer">Գունակույրների համար. նարնջագույն՝ ճիշտ տեղում, կապույտ՝ սխալ տեղում։</string>
 </resources>

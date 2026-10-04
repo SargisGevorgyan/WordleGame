@@ -21,6 +21,7 @@ struct TileView: View {
     @State private var flip: Double = 0          // 0 → 180
     @State private var faceRevealed = false
     @State private var pop = false
+    @AppStorage(LetterEvaluation.highContrastKey) private var highContrast = false
 
     private var isRevealed: Bool {
         switch tile.evaluation {
@@ -29,7 +30,7 @@ struct TileView: View {
         }
     }
 
-    private var statusColor: Color { tile.evaluation.fillColor }
+    private var statusColor: Color { tile.evaluation.fillColor(highContrast: highContrast) }
 
     var body: some View {
         ZStack {

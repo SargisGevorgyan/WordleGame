@@ -15,13 +15,16 @@ enum LetterEvaluation: String, Equatable {
     case present    // right letter, wrong position  -> yellow
     case absent     // letter not in the word        -> gray
 
+    /// `@AppStorage` key for the colour-blind (orange / blue) palette.
+    static let highContrastKey = "highContrastColors"
+
     /// Fill colour for a grid tile / keyboard key in this state.
-    var fillColor: Color {
+    func fillColor(highContrast: Bool) -> Color {
         switch self {
         case .empty:   return Color.wordleTileEmpty
         case .tbd:     return Color.wordleTileEmpty
-        case .correct: return Color.wordleGreen
-        case .present: return Color.wordleYellow
+        case .correct: return highContrast ? Color.contrastOrange : Color.wordleGreen
+        case .present: return highContrast ? Color.contrastBlue : Color.wordleYellow
         case .absent:  return Color.wordleGray
         }
     }

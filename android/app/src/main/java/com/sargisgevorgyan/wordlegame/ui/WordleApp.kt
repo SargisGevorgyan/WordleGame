@@ -1,5 +1,7 @@
 package com.sargisgevorgyan.wordlegame.ui
 
+import android.os.Build
+import android.view.HapticFeedbackConstants
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.LinearEasing
@@ -34,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +57,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -74,87 +78,106 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
         var showIntro by rememberSaveable { mutableStateOf(true) }
         val focus = remember { FocusRequester() }
         LaunchedEffect(Unit) { focus.requestFocus() }
+        val view = LocalView.current
+        LaunchedEffect(vm) {
+            vm.feedback.collect { view.performHapticFeedback(hapticConstant(it)) }
+        }
 
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(Palette.backdrop)
-                // Physical keyboard: letters, Enter = submit, Backspace = delete.
-                .onKeyEvent { event ->
-                    if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                    when (event.key) {
-                        Key.Enter, Key.NumPadEnter -> { vm.submit(); true }
-                        Key.Backspace, Key.Delete -> { vm.delete(); true }
-                        else -> {
-                            val code = event.utf16CodePoint
-                            if (code > 0 && Character.isLetter(code)) {
-                                vm.onTypedChar(code.toChar()); true
-                            } else false
+        CompositionLocalProvider(LocalHighContrast provides vm.highContrast) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Palette.backdrop)
+                    // Physical keyboard: letters, Enter = submit, Backspace = delete.
+                    .onKeyEvent { event ->
+                        if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
+                        when (event.key) {
+                            Key.Enter, Key.NumPadEnter -> { vm.submit(); true }
+                            Key.Backspace, Key.Delete -> { vm.delete(); true }
+                            else -> {
+                                val code = event.utf16CodePoint
+                                if (code > 0 && Character.isLetter(code)) {
+                                    vm.onTypedChar(code.toChar()); true
+                                } else false
+                            }
                         }
                     }
-                }
-                .focusRequester(focus)
-                .focusable(),
-        ) {
-            AuroraBackground()
-            Column(
-                Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .focusRequester(focus)
+                    .focusable(),
             ) {
-                Hud(
-                    hints = vm.hintsRemaining,
-                    onHint = vm::useHint,
-                    onSettings = { showSettings = true },
-                )
-                Text(
-                    vm.state.language.sampleTitle,
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 4.sp,
-                        shadow = Shadow(Palette.auroraPurple, Offset.Zero, blurRadius = 24f),
-                    ),
-                    modifier = Modifier.padding(vertical = 8.dp),
-                )
-                Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Board(vm.state, vm.revealingRow, vm.shakeToken)
-                    ToastBanner(vm.toast, Modifier.align(Alignment.TopCenter))
+                AuroraBackground()
+                Column(
+                    Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Hud(
+                        hints = vm.hintsRemaining,
+                        onHint = vm::useHint,
+                        onSettings = { showSettings = true },
+                    )
+                    Text(
+                        vm.state.language.sampleTitle,
+                        style = TextStyle(
+                            color = Color.White,
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 4.sp,
+                            shadow = Shadow(Palette.auroraPurple, Offset.Zero, blurRadius = 24f),
+                        ),
+                        modifier = Modifier.padding(vertical = 8.dp),
+                    )
+                    Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Board(vm.state, vm.revealingRow, vm.shakeToken)
+                        ToastBanner(vm.toast, Modifier.align(Alignment.TopCenter))
+                    }
+                    Spacer(Modifier.height(10.dp))
+                    Keyboard(
+                        language = vm.state.language,
+                        hints = vm.state.keyboardHints,
+                        onKey = vm::onKey,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        hapticsEnabled = vm.hapticsEnabled,
+                    )
                 }
-                Spacer(Modifier.height(10.dp))
-                Keyboard(
-                    language = vm.state.language,
-                    hints = vm.state.keyboardHints,
-                    onKey = vm::onKey,
-                    modifier = Modifier.padding(bottom = 8.dp),
+                AnimatedVisibility(showIntro, enter = EnterTransition.None, exit = fadeOut(tween(350))) {
+                    SplashIntro(vm.state.language.sampleTitle, onFinished = { showIntro = false })
+                }
+            }
+
+            if (vm.showGameOver) {
+                GameOverDialog(
+                    won = vm.state.status == GameStatus.WON,
+                    word = vm.state.targetWord,
+                    meaning = vm.meaning,
+                    stats = vm.stats,
+                    onPlayAgain = vm::newGame,
+                    // Back / tap outside also moves on; the finished game has no other way out.
+                    onDismiss = vm::newGame,
                 )
             }
-            AnimatedVisibility(showIntro, enter = EnterTransition.None, exit = fadeOut(tween(350))) {
-                SplashIntro(vm.state.language.sampleTitle, onFinished = { showIntro = false })
+            if (showSettings) {
+                SettingsDialog(
+                    current = vm.state.language,
+                    isInProgress = vm.state.isInProgress,
+                    stats = vm.stats,
+                    onLanguage = vm::changeLanguage,
+                    onResetStats = vm::resetStats,
+                    hapticsEnabled = vm.hapticsEnabled,
+                    onHaptics = vm::updateHaptics,
+                    highContrast = vm.highContrast,
+                    onHighContrast = vm::updateHighContrast,
+                    onDismiss = { showSettings = false },
+                )
             }
-        }
-
-        if (vm.showGameOver) {
-            GameOverDialog(
-                won = vm.state.status == GameStatus.WON,
-                word = vm.state.targetWord,
-                stats = vm.stats,
-                onPlayAgain = vm::newGame,
-                // Back / tap outside also moves on; the finished game has no other way out.
-                onDismiss = vm::newGame,
-            )
-        }
-        if (showSettings) {
-            SettingsDialog(
-                current = vm.state.language,
-                isInProgress = vm.state.isInProgress,
-                stats = vm.stats,
-                onLanguage = vm::changeLanguage,
-                onResetStats = vm::resetStats,
-                onDismiss = { showSettings = false },
-            )
         }
     }
+}
+
+/** REJECT / CONFIRM need API 30; older devices fall back to a long-press buzz. */
+private fun hapticConstant(feedback: GameViewModel.Feedback): Int = when {
+    Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> HapticFeedbackConstants.LONG_PRESS
+    feedback == GameViewModel.Feedback.WIN -> HapticFeedbackConstants.CONFIRM
+    else -> HapticFeedbackConstants.REJECT
 }
 
 @Composable

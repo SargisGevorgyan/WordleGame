@@ -22,6 +22,7 @@
 "You cracked it" = "You cracked it";
 "The word was" = "The word was";
 "Play Again" = "Play Again";
+"Meaning" = "Meaning";
 
 /* Stats */
 "Win rate" = "Win rate";
@@ -39,6 +40,10 @@
 "Restore Purchases" = "Restore Purchases";
 "Sound & Haptics" = "Sound & Haptics";
 "Sound effects" = "Sound effects";
+"Haptics" = "Haptics";
+"Accessibility" = "Accessibility";
+"High contrast colors" = "High contrast colors";
+"Color-blind friendly: orange = right spot, blue = wrong spot." = "Color-blind friendly: orange = right spot, blue = wrong spot.";
 "How to play: guess the 5-letter word in 6 tries. Green = right spot, Yellow = wrong spot, Gray = not in the word." = "How to play: guess the 5-letter word in 6 tries. Green = right spot, Yellow = wrong spot, Gray = not in the word.";
 "Start a new game in %@?" = "Start a new game in %@?";
 "Switch & restart" = "Switch & restart";

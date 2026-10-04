@@ -273,6 +273,7 @@ struct RootView: View {
                 GameOverView(
                     didWin: game.status == .won,
                     targetWord: game.targetWord,
+                    meaning: game.language.meaning(of: game.targetWord),
                     onPlayAgain: {
                         game.newGame()
                         keyboardFocused = true
