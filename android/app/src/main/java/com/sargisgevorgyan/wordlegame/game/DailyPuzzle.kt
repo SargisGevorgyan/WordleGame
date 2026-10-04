@@ -38,6 +38,13 @@ object DailyPuzzle {
         return words[order(words.size)[Math.floorMod(day, words.size)]]
     }
 
+    /**
+     * The Armenian word of the day for learners: the same fixed order as the
+     * daily puzzle, half the list away, so it never gives away today's (or a
+     * nearby day's) daily answer.
+     */
+    fun learnerWord(bank: WordBank, day: Int): String = word(bank, day + bank.playableWords.size / 2)
+
     /** Fixed shuffle of `0 until count`. */
     fun order(count: Int): IntArray {
         val indices = IntArray(count) { it }

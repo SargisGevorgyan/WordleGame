@@ -21,8 +21,8 @@ enum class GameLanguage(
     /** Path of this language's word list inside the app's assets (from `shared/words`). */
     val wordFileName: String get() = "words_$code.txt"
 
-    /** English meanings for this language's words (`shared/words/glosses_<code>.tsv`); may not exist. */
-    val glossFileName: String get() = "glosses_$code.tsv"
+    /** Meanings shown after a game (`WORD|meaning`), next to the word list. */
+    val meaningsFileName: String get() = "meanings_$code.txt"
 
     /**
      * Maps a typed character into the language's alphabet (uppercase), or `null`

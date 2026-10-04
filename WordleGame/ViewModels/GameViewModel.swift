@@ -537,16 +537,13 @@ final class GameViewModel: ObservableObject {
         endGame()
     }
 
-    // MARK: - Meanings
+    // MARK: - Armenian word of the day
 
-    /// English meaning of the current word, when the shared glossary has one.
-    var targetMeaning: String? {
-        language == .armenian ? Glossary.armenian.meaning(targetWord) : nil
-    }
-
-    /// Today's Armenian word and its English meaning, for learners.
+    /// Today's Armenian word for learners and its English meaning
+    /// (see `DailyPuzzle.learnerWord`).
     var armenianWordOfTheDay: (word: String, gloss: String)? {
-        Glossary.armenian.wordOfTheDay(playable: GameLanguage.armenianPlayableSet)
+        let word = DailyPuzzle.learnerWord(day: DailyPuzzle.dayNumber())
+        return WordMeanings.armenian[word].map { (word: word, gloss: $0) }
     }
 
     // MARK: - Physical keyboard

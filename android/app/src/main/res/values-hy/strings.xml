@@ -35,7 +35,6 @@
     <string name="timed_mode_desc">3 րոպե յուրաքանչյուր ազատ խաղի համար։ Ժամացույցը սկսվում է առաջին տառից։</string>
     <string name="modes_next_game">Խաղի ընթացքում արված փոփոխությունները կգործեն հաջորդ խաղից։</string>
     <string name="times_up">ԺԱՄԱՆԱԿԸ ՍՊԱՌՎԵՑ</string>
-    <string name="meaning">Թարգմանություն</string>
     <string name="word_of_the_day">Օրվա հայերեն բառը</string>
 
     <string name="daily">Օրվա բառ</string>
@@ -44,4 +43,9 @@
     <string name="share">Կիսվել</string>
     <string name="next_word_in">Հաջորդ բառը՝</string>
     <string name="hints_off_daily">Օրվա խաղում հուշումներ չկան</string>
+
+    <string name="accessibility">Մատչելիություն</string>
+    <string name="haptics">Թրթռում</string>
+    <string name="high_contrast_colors">Բարձր կոնտրաստի գույներ</string>
+    <string name="high_contrast_footer">Գունակույրների համար. նարնջագույն՝ ճիշտ տեղում, կապույտ՝ սխալ տեղում։</string>
 </resources>

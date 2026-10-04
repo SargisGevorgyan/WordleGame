@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -28,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -65,6 +68,7 @@ fun GameOverDialog(
     won: Boolean,
     timedOut: Boolean,
     word: String,
+    meaning: String?,
     wordOfTheDay: Pair<String, String>?,
     stats: Stats,
     puzzleNumber: Int?,
@@ -95,6 +99,15 @@ fun GameOverDialog(
                 color = Palette.secondaryText,
             )
             Text(word, color = Color.White, fontSize = 34.sp, fontWeight = FontWeight.Black, letterSpacing = 6.sp)
+            if (meaning != null) {
+                Text(
+                    meaning,
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontSize = 15.sp,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Center,
+                )
+            }
             StatsRow(stats)
             // Learners: one Armenian word a day, skipped when it's the word just played.
             wordOfTheDay?.takeIf { it.first != word }?.let { (hyWord, meaning) -> WordOfTheDayCard(hyWord, meaning) }
@@ -193,6 +206,10 @@ fun SettingsDialog(
     onHardMode: (Boolean) -> Unit,
     onTimedMode: (Boolean) -> Unit,
     onResetStats: () -> Unit,
+    hapticsEnabled: Boolean,
+    onHaptics: (Boolean) -> Unit,
+    highContrast: Boolean,
+    onHighContrast: (Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var pending by remember { mutableStateOf<GameLanguage?>(null) }
@@ -238,6 +255,11 @@ fun SettingsDialog(
                     Text(stringResource(R.string.reset_statistics), color = Palette.auroraMagenta)
                 }
 
+                SectionTitle(stringResource(R.string.accessibility))
+                SettingSwitch(stringResource(R.string.haptics), hapticsEnabled, onHaptics)
+                SettingSwitch(stringResource(R.string.high_contrast_colors), highContrast, onHighContrast)
+                Text(stringResource(R.string.high_contrast_footer), color = Palette.secondaryText, fontSize = 12.sp)
+
                 Text(stringResource(R.string.how_to_play), color = Palette.secondaryText, fontSize = 13.sp)
 
                 TextButton(onClick = onDismiss) {
@@ -274,6 +296,24 @@ private fun ModeSwitch(title: String, description: String, checked: Boolean, onC
         Switch(
             checked = checked,
             onCheckedChange = onChange,
+            colors = SwitchDefaults.colors(checkedTrackColor = Palette.neonGreen, checkedThumbColor = Palette.indigoDeep),
+        )
+    }
+}
+
+@Composable
+private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onChange),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(label, color = Color.White)
+        Switch(
+            checked = checked,
+            onCheckedChange = null,
             colors = SwitchDefaults.colors(checkedTrackColor = Palette.neonGreen, checkedThumbColor = Palette.indigoDeep),
         )
     }

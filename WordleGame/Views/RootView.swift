@@ -362,6 +362,7 @@ struct RootView: View {
                     didWin: game.status == .won,
                     timedOut: game.timedOut,
                     targetWord: game.targetWord,
+                    meaning: game.language.meaning(of: game.targetWord),
                     wordOfTheDay: game.armenianWordOfTheDay,
                     puzzleNumber: game.puzzleNumber,
                     shareText: game.shareText,

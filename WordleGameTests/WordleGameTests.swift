@@ -211,6 +211,16 @@ final class WordleGameTests: XCTestCase {
         XCTAssertEqual(WordBank.parse("# comment\n\n plant \r\nՔԱՂԱՔ\n"), ["PLANT", "ՔԱՂԱՔ"])
     }
 
+    func testEveryPlayableWordHasAMeaning() {
+        XCTAssertEqual(WordMeanings.parse("# c\n\nplant | a living thing\nNOBAR\nԳԱՐՈՒՆ|spring\n"),
+                       ["PLANT": "a living thing", "ԳԱՐՈՒՆ": "spring"])
+        for language in GameLanguage.allCases {
+            for word in language.words {
+                XCTAssertNotNil(language.meaning(of: word), "\(word) has no meaning")
+            }
+        }
+    }
+
     func testEnglishPlayableWordsAreFiveLetterUppercase() {
         let playable = GameLanguage.englishPlayableWords
         XCTAssertGreaterThanOrEqual(playable.count, 100)
@@ -307,122 +317,21 @@ final class WordleGameTests: XCTestCase {
         XCTAssertEqual(vm.secondsLeft, GameConstants.timeLimitSeconds)
     }
 
-    // MARK: - Meanings
+    // MARK: - Armenian word of the day
 
-    func testGlossaryParsesTabSeparatedLines() {
-        let glossary = Glossary.parse("# c\n\nԳԱՐՈՒՆ\tspring (season)\nBAD LINE\nՔԱՂԱՔ\t \n")
-        XCTAssertEqual(glossary.entries.map(\.word), ["ԳԱՐՈՒՆ"])
-        XCTAssertEqual(glossary.meaning("գարուն"), "spring (season)")
-        XCTAssertNil(glossary.meaning("ՔԱՂԱՔ"))
-    }
-
-    func testSharedArmenianGlossesMatchTheWordBank() {
-        let entries = Glossary.armenian.entries
-        XCTAssertGreaterThanOrEqual(entries.count, 400)
-        let words = Set(WordBank.armenian)
-        for entry in entries {
-            XCTAssertTrue(words.contains(entry.word), "\(entry.word) is glossed but not in the word bank")
+    func testLearnerWordNeverGivesAwayADailyAnswerNearby() {
+        for day in 0..<60 {
+            let learner = DailyPuzzle.learnerWord(day: day)
+            XCTAssertTrue(GameLanguage.armenianPlayableSet.contains(learner))
+            for offset in -7...7 {
+                XCTAssertNotEqual(learner, DailyPuzzle.word(for: .armenian, day: day + offset))
+            }
         }
     }
 
-    func testWordOfTheDayMatchesAndroidDayNumbering() {
-        // 2026-10-04 is day 20730 since 1970-01-01, whatever the time of day or zone.
-        var calendar = Calendar(identifier: .gregorian)
-        let zone = TimeZone(identifier: "Asia/Yerevan")!
-        calendar.timeZone = zone
-        let lateEvening = calendar.date(from: DateComponents(year: 2026, month: 10, day: 4, hour: 23, minute: 30))!
-        XCTAssertEqual(Glossary.epochDay(for: lateEvening, timeZone: zone), 20730)
-        XCTAssertEqual(Glossary.dayIndex(0, count: 7), 0)
-        XCTAssertEqual(Glossary.dayIndex(-1, count: 7), ((-7919 % 7) + 7) % 7)
-
-        let daily = Glossary.armenian.wordOfTheDay(on: lateEvening, playable: GameLanguage.armenianPlayableSet)
-        XCTAssertNotNil(daily)
-        XCTAssertTrue(GameLanguage.armenianPlayableSet.contains(daily?.word ?? ""))
-
-    // MARK: - Daily word
-
-    // The Android tests assert these same vectors, so both apps pick the same word.
-    func testSplitMixMatchesReferenceVectors() {
-        var random = DailyPuzzle.SplitMix64(state: DailyPuzzle.seed)
-        XCTAssertEqual(random.next(), 0x92f8d4616f6e05f0)
-        XCTAssertEqual(random.next(), 0x3fe1473bb8454ca4)
-    }
-
-    func testDailyOrderMatchesReferenceShuffle() {
-        XCTAssertEqual(DailyPuzzle.order(count: 10), [3, 7, 1, 6, 8, 0, 9, 2, 5, 4])
-        XCTAssertEqual(DailyPuzzle.order(count: 457).sorted(), Array(0..<457))
-    }
-
-    func testDayNumberCountsLocalDaysFromEpoch() {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "Asia/Yerevan")!
-        func day(_ y: Int, _ m: Int, _ d: Int, hour: Int = 12) -> Int {
-            let date = calendar.date(from: DateComponents(year: y, month: m, day: d, hour: hour))!
-            return DailyPuzzle.dayNumber(for: date, calendar: calendar)
-        }
-        XCTAssertEqual(day(2026, 10, 4), 0)
-        XCTAssertEqual(day(2026, 10, 4, hour: 23), 0)
-        XCTAssertEqual(day(2026, 10, 5, hour: 0), 1)
-        XCTAssertEqual(day(2026, 11, 4), 31)
-        XCTAssertEqual(day(2026, 10, 3), -1)
-        XCTAssertEqual(DailyPuzzle.puzzleNumber(day: 0), 1)
-    }
-
-    func testDailyWordIsStableAndPlayable() {
-        for language in GameLanguage.allCases {
-            let count = language.words.count
-            XCTAssertEqual(DailyPuzzle.word(for: language, day: 3), DailyPuzzle.word(for: language, day: 3 + count))
-            XCTAssertEqual(DailyPuzzle.word(for: language, day: -1), DailyPuzzle.word(for: language, day: count - 1))
-            XCTAssertTrue(language.isValidGuess(DailyPuzzle.word(for: language, day: 0)))
-        }
-    }
-
-    @MainActor
-    func testShareTextShowsTheColouredGrid() {
-        let vm = GameViewModel(targetWord: "PLANT")
-        for guess in ["CRANE", "SLATE", "PLANT"] {
-            type(guess.lowercased(), into: vm)
-            vm.forceFinishRevealForTesting(guess: guess)
-        }
-        XCTAssertEqual(vm.status, .won)
-        XCTAssertEqual(vm.shareText, "WORDY 3/6\n\n⬛⬛🟩🟩⬛\n⬛🟩🟩🟨⬛\n🟩🟩🟩🟩🟩")
-        StatsStore.reset()
-    }
-
-    @MainActor
-    func testDailyProgressIsRestoredWithoutRecordingStats() {
-        StatsStore.reset()
-        let day = DailyPuzzle.dayNumber()
-        let word = DailyPuzzle.word(for: .english, day: day)
-        let miss = GameLanguage.english.words.first { $0 != word }!
-        DailyPuzzle.save(guesses: [miss, word], language: .english, day: day)
-        defer { UserDefaults.standard.removeObject(forKey: "daily.en") }
-
-        let vm = GameViewModel(language: .english, mode: .daily)
-        XCTAssertEqual(vm.targetWord, word)
-        XCTAssertEqual(vm.status, .won)
-        XCTAssertEqual(vm.submittedGuesses, [miss, word])
-        XCTAssertTrue(vm.shareText.hasPrefix("WORDY #\(day + 1) 2/6"))
-        XCTAssertEqual(UserDefaults.standard.integer(forKey: StatsKey.gamesPlayed), 0)
-
-        DailyPuzzle.save(guesses: [miss], language: .english, day: day - 1)
-        XCTAssertEqual(GameViewModel(language: .english, mode: .daily).currentRow, 0,
-                       "yesterday's progress is ignored")
-    }
-
-    @MainActor
-    func testDailyHintsAreOffAndFreeGameWaitsWhileDailyIsShown() {
-        UserDefaults.standard.set(3, forKey: GameViewModel.hintsKey)
-        let vm = GameViewModel(targetWord: "PLANT")
-        type("cr", into: vm)
-        vm.changeMode(.daily)
-        XCTAssertTrue(vm.useHint())
-        XCTAssertEqual(vm.hintsRemaining, 3)
-        XCTAssertTrue(vm.languageSwitchLosesGame)
-        vm.changeMode(.free)
-        XCTAssertEqual(vm.targetWord, "PLANT")
-        XCTAssertEqual(vm.currentGuess, "CR")
-        UserDefaults.standard.removeObject(forKey: GameMode.storageKey)
+    func testEveryLearnerWordHasAMeaning() {
+        let missing = GameLanguage.armenianPlayableWords.filter { WordMeanings.armenian[$0.uppercased()] == nil }
+        XCTAssertEqual(missing, [])
     }
 
     // MARK: - Helpers

@@ -47,7 +47,6 @@ Both apps read the same word lists — the single source of truth is
 |------|----------|
 | `shared/words/words_en.txt` | English |
 | `shared/words/words_hy.txt` | Armenian (Հայերեն) |
-| `shared/words/glosses_hy.tsv` | English meanings of the Armenian words (`WORD<TAB>gloss`) |
 
 One UPPERCASE word per line; blank lines and `#` comments are ignored. Entries
 that aren't exactly 5 board letters (Armenian ու counts as one) are skipped at
@@ -55,6 +54,11 @@ load time, so a typo can't become an unwinnable target. To add or remove words,
 edit these files only: iOS bundles them as resources (`project.yml` /
 `WordleGame.xcodeproj`), Android packages them as assets
 (`android/app/build.gradle.kts`).
+
+The meaning shown after each game comes from `meanings_en.txt` and
+`meanings_hy.txt` in the same folder, one `WORD|meaning` entry per line
+(Armenian words carry an English gloss). When you add a word, add its meaning
+too: a unit test on each platform fails if a playable word has none.
 
 ---
 
@@ -167,17 +171,20 @@ auto‑types the correct letter for the next slot), a **Remove Ads** button
 * **Hard mode**: revealed hints must be used in later guesses. A green letter
   stays in its spot, and a yellow letter must appear somewhere
   (`HardMode.violation`).
-* **Timed mode**: 3 minutes per game; the clock starts with the first letter
-  and running out is a loss ("TIME'S UP").
+* **Timed mode**: 3 minutes per free-play game; the clock starts with the
+  first letter, pauses while the daily game is on screen, and running out is a
+  loss ("TIME'S UP").
+* Hard mode also applies to the daily game.
 * Changing a mode mid-game applies from the next game; before the first
   letter it applies straight away.
 
-### Meanings and the Armenian word of the day
+### Armenian word of the day
 
-After a game, the word's English meaning is shown when
-`shared/words/glosses_hy.tsv` has one, plus an **Armenian word of the day** for
-learners: a glossed, playable Armenian word picked from the local date, the
-same on iOS and Android.
+Every game-over card also shows an **Armenian word of the day** for learners,
+with its English meaning from `shared/words/meanings_hy.txt`. It follows the
+daily puzzle's fixed word order, half the list away from today's daily answer
+so it never spoils it (`DailyPuzzle.learnerWord`), and is the same on iOS and
+Android.
 
 ### Language (English / Հայերեն)
 

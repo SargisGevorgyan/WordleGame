@@ -67,6 +67,13 @@ enum DailyPuzzle {
         return words[order(count: words.count)[index]].uppercased()
     }
 
+    /// The Armenian word of the day for learners: the same fixed order as the
+    /// daily puzzle, half the list away, so it never gives away today's (or a
+    /// nearby day's) daily answer. Mirrors Android's `DailyPuzzle.learnerWord`.
+    static func learnerWord(day: Int) -> String {
+        word(for: .armenian, day: day + GameLanguage.armenian.words.count / 2)
+    }
+
     /// Fixed shuffle of `0..<count`.
     static func order(count: Int) -> [Int] {
         var indices = Array(0..<count)

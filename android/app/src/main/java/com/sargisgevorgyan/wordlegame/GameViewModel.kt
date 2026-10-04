@@ -22,8 +22,11 @@ import com.sargisgevorgyan.wordlegame.game.ShareCard
 import com.sargisgevorgyan.wordlegame.game.Stats
 import com.sargisgevorgyan.wordlegame.game.Submission
 import com.sargisgevorgyan.wordlegame.game.WordBank
+import com.sargisgevorgyan.wordlegame.game.WordMeanings
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 /** A toast: a string resource plus its format arguments. */
@@ -34,6 +37,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private val prefs = application.getSharedPreferences("wordle", Context.MODE_PRIVATE)
     private val banks = mutableMapOf<GameLanguage, WordBank>()
+    private val meaningCache = mutableMapOf<GameLanguage, Map<String, String>>()
 
     var mode by mutableStateOf(GameMode.fromCode(prefs.getString(KEY_MODE, null)) ?: GameMode.DAILY)
         private set
@@ -68,6 +72,27 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         private set
     var hintsRemaining by mutableIntStateOf(prefs.getInt(KEY_HINTS, 3))
         private set
+    var hapticsEnabled by mutableStateOf(prefs.getBoolean(KEY_HAPTICS, true))
+        private set
+    var highContrast by mutableStateOf(prefs.getBoolean(KEY_HIGH_CONTRAST, false))
+        private set
+
+    /** Vibration cues for an invalid guess and the end of a game (key taps are handled by the keyboard). */
+    enum class Feedback { INVALID, WIN, LOSS }
+
+    private val _feedback = MutableSharedFlow<Feedback>(extraBufferCapacity = 4)
+    val feedback: SharedFlow<Feedback> = _feedback
+
+    /** Today's Armenian word for learners and its English meaning (see [DailyPuzzle.learnerWord]). */
+    val armenianWordOfTheDay: Pair<String, String>?
+        get() {
+            val word = DailyPuzzle.learnerWord(bank(GameLanguage.ARMENIAN), DailyPuzzle.dayNumber())
+            return meanings(GameLanguage.ARMENIAN)[word]?.let { word to it }
+        }
+
+    /** Short meaning of the current target word (English gloss for Armenian), if known. */
+    val meaning: String?
+        get() = meanings(state.language)[state.targetWord.uppercase()]
 
     /** The free-play game set aside while the daily game is on screen. */
     private var freeGame: GameState? = null
@@ -127,6 +152,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             delay(REVEAL_MILLIS)
             completeReveal(result.resolved)
             if (state.status != GameStatus.PLAYING) {
+                haptic(if (state.status == GameStatus.WON) Feedback.WIN else Feedback.LOSS)
                 delay(450)
                 showGameOver = true
             }
@@ -176,7 +202,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         isRevealing = false
         revealingRow = -1
         state = GameRules.timeUp(state, pending)
-        recordResult(won = state.status == GameStatus.WON)
+        if (mode == GameMode.DAILY) saveDaily(state)
+        val won = state.status == GameStatus.WON
+        recordResult(won)
+        haptic(if (won) Feedback.WIN else Feedback.LOSS)
         revealJob = viewModelScope.launch {
             delay(450)
             showGameOver = true
@@ -271,6 +300,16 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         stats = Stats().also(::saveStats)
     }
 
+    fun updateHaptics(enabled: Boolean) {
+        hapticsEnabled = enabled
+        prefs.edit { putBoolean(KEY_HAPTICS, enabled) }
+    }
+
+    fun updateHighContrast(enabled: Boolean) {
+        highContrast = enabled
+        prefs.edit { putBoolean(KEY_HIGH_CONTRAST, enabled) }
+    }
+
     // Helpers
 
     private inline fun update(transform: (GameState) -> GameState) {
@@ -283,7 +322,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun invalid(message: UiMessage) {
         shakeToken++
+        haptic(Feedback.INVALID)
         flashToast(message)
+    }
+
+    private fun haptic(feedback: Feedback) {
+        if (hapticsEnabled) _feedback.tryEmit(feedback)
     }
 
     private fun hardModeMessage(violation: HardModeViolation) = when (violation) {
@@ -329,6 +373,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         WordBank(language, WordBank.parse(text))
     }
 
+    /** Loads `assets/words/meanings_<code>.txt`; a missing file just means no meanings. */
+    private fun meanings(language: GameLanguage): Map<String, String> = meaningCache.getOrPut(language) {
+        runCatching {
+            getApplication<Application>().assets
+                .open("words/${language.meaningsFileName}").bufferedReader().use { WordMeanings.parse(it.readText()) }
+        }.getOrDefault(emptyMap())
+    }
+
     private fun storedLanguage() =
         GameLanguage.fromCode(prefs.getString(KEY_LANGUAGE, null)) ?: GameLanguage.systemDefault()
 
@@ -361,6 +413,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         private const val KEY_HARD_MODE = "hardMode"
         private const val KEY_TIMED_MODE = "timedMode"
         private const val KEY_HINTS = "hintsRemaining"
+        private const val KEY_HAPTICS = "hapticsEnabled"
+        private const val KEY_HIGH_CONTRAST = "highContrastColors"
         private const val KEY_PLAYED = "gamesPlayed"
         private const val KEY_WON = "gamesWon"
         private const val KEY_STREAK = "currentStreak"

@@ -83,7 +83,10 @@ private struct LetterKey: View {
     let height: CGFloat
     let action: () -> Void
 
+    @AppStorage(LetterEvaluation.highContrastKey) private var highContrast = false
+
     private var isHinted: Bool { evaluation != nil }
+    private var hintColor: Color { evaluation?.fillColor(highContrast: highContrast) ?? .clear }
 
     var body: some View {
         Button(action: action) {
@@ -98,7 +101,7 @@ private struct LetterKey: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
                             .fill(isHinted
-                                  ? AnyShapeStyle(evaluation!.fillColor.gradient)
+                                  ? AnyShapeStyle(hintColor.gradient)
                                   : AnyShapeStyle(.ultraThinMaterial))
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
                             .fill(Color.white.opacity(isHinted ? 0.12 : 0.06))
@@ -106,7 +109,7 @@ private struct LetterKey: View {
                             .strokeBorder(Palette.glassStrokeGradient, lineWidth: 1)
                     }
                 }
-                .shadow(color: isHinted ? evaluation!.fillColor.opacity(0.55) : .clear, radius: 8)
+                .shadow(color: isHinted ? hintColor.opacity(0.55) : .clear, radius: 8)
                 .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(KeyPressStyle())

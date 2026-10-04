@@ -10,7 +10,9 @@
 		A1D0C0DE5EED000000000001 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = A1D0C0DE5EED000000000004 /* GoogleMobileAds */; };
 		5A1D0E0057A2ED00000000B2 /* words_en.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A1D0E0057A2ED00000000A2 /* words_en.txt */; };
 		5A1D0E0057A2ED00000000B3 /* words_hy.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A1D0E0057A2ED00000000A3 /* words_hy.txt */; };
-		5A1D0E0057A2ED00000000B4 /* glosses_hy.tsv in Resources */ = {isa = PBXBuildFile; fileRef = 5A1D0E0057A2ED00000000A4 /* glosses_hy.tsv */; };
+		5A1D0E0057A2ED00000000B4 /* meanings_en.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A1D0E0057A2ED00000000A4 /* meanings_en.txt */; };
+		5A1D0E0057A2ED00000000B5 /* meanings_hy.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A1D0E0057A2ED00000000A5 /* meanings_hy.txt */; };
+		5A1D0E0057A2ED00000000B6 /* WordMeanings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1D0E0057A2ED00000000A6 /* WordMeanings.swift */; };
 		15169250BE24FBF6E071D140 /* BannerAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD86F17F7C0A623CA493B9A3 /* BannerAdView.swift */; };
 		1551D007FC8E85875FE6C696 /* GameCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775390B933333FD36F2F533F /* GameCenterManager.swift */; };
 		16DF153449CB022F662507C6 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28D12A9BF6E52CF24464F8C /* StoreManager.swift */; };
@@ -59,7 +61,9 @@
 /* Begin PBXFileReference section */
 		5A1D0E0057A2ED00000000A2 /* words_en.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = words_en.txt; sourceTree = "<group>"; };
 		5A1D0E0057A2ED00000000A3 /* words_hy.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = words_hy.txt; sourceTree = "<group>"; };
-		5A1D0E0057A2ED00000000A4 /* glosses_hy.tsv */ = {isa = PBXFileReference; lastKnownFileType = text; path = glosses_hy.tsv; sourceTree = "<group>"; };
+		5A1D0E0057A2ED00000000A4 /* meanings_en.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = meanings_en.txt; sourceTree = "<group>"; };
+		5A1D0E0057A2ED00000000A5 /* meanings_hy.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = meanings_hy.txt; sourceTree = "<group>"; };
+		5A1D0E0057A2ED00000000A6 /* WordMeanings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordMeanings.swift; sourceTree = "<group>"; };
 		0B1B59C46CE6FCC78136DD9B /* hy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hy; path = hy.lproj/Localizable.strings; sourceTree = "<group>"; };
 		16F8E152B87F12AFE74A4CF3 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		20E3A5289F0187AC51914607 /* WordleGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordleGameApp.swift; sourceTree = "<group>"; };
@@ -118,7 +122,8 @@
 			children = (
 				5A1D0E0057A2ED00000000A2 /* words_en.txt */,
 				5A1D0E0057A2ED00000000A3 /* words_hy.txt */,
-				5A1D0E0057A2ED00000000A4 /* glosses_hy.tsv */,
+				5A1D0E0057A2ED00000000A4 /* meanings_en.txt */,
+				5A1D0E0057A2ED00000000A5 /* meanings_hy.txt */,
 			);
 			name = SharedWords;
 			path = shared/words;
@@ -215,6 +220,7 @@
 				E8ECEE3F5A45011204B76BED /* GameModels.swift */,
 				6ABFF73F7BAA5C14FA24DD55 /* StatsStore.swift */,
 				E496287F67034578BCDE3A13 /* WordBank.swift */,
+				5A1D0E0057A2ED00000000A6 /* WordMeanings.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -358,7 +364,8 @@
 				EA673C963F2261C81A5606C2 /* Products.storekit in Resources */,
 				5A1D0E0057A2ED00000000B2 /* words_en.txt in Resources */,
 				5A1D0E0057A2ED00000000B3 /* words_hy.txt in Resources */,
-				5A1D0E0057A2ED00000000B4 /* glosses_hy.tsv in Resources */,
+				5A1D0E0057A2ED00000000B4 /* meanings_en.txt in Resources */,
+				5A1D0E0057A2ED00000000B5 /* meanings_hy.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,6 +411,7 @@
 				6633B9B0B4D4E2F929B305F5 /* TileView.swift in Sources */,
 				B80A8CE45A40AE8926082190 /* TrackingAuthorization.swift in Sources */,
 				8EE0C351C593F4C099C8A803 /* WordBank.swift in Sources */,
+				5A1D0E0057A2ED00000000B6 /* WordMeanings.swift in Sources */,
 				F32E86E7F292B3E0448249ED /* WordleGameApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

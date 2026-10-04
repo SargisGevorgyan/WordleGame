@@ -71,32 +71,24 @@ class GameModesTest {
         assertTrue(state.hardMode && state.timed && !state.timedOut)
     }
 
-    // Glossary
+    // Armenian word of the day
 
     private val sharedDir = File(System.getProperty("sharedWordsDir") ?: "../../shared/words")
-
-    @Test fun glossaryParsesTabSeparatedLines() {
-        val glossary = Glossary.parse("# c\n\nԳԱՐՈՒՆ\tspring (season)\nBAD LINE\nՔԱՂԱՔ\t \n")
-        assertEquals(listOf("ԳԱՐՈՒՆ" to "spring (season)"), glossary.entries)
-        assertEquals("spring (season)", glossary.meaning("գարուն"))
-        assertNull(glossary.meaning("ՔԱՂԱՔ"))
+    private val armenian by lazy {
+        WordBank(GameLanguage.ARMENIAN, WordBank.parse(File(sharedDir, GameLanguage.ARMENIAN.wordFileName).readText()))
     }
 
-    @Test fun wordOfTheDayIsStableAndPlayable() {
-        val bank = WordBank(GameLanguage.ARMENIAN, listOf("ԳԱՐՈՒՆ", "ՔԱՂԱՔ", "ԱՇՈՒՆ"))
-        val glossary = Glossary.parse("ԱՇՈՒՆ\tautumn\nԳԱՐՈՒՆ\tspring\nՔԱՂԱՔ\tcity\n")
-        val day = glossary.wordOfTheDay(20_000, bank)!!
-        assertEquals(day, glossary.wordOfTheDay(20_000, bank))
-        assertTrue(day.first != "ԱՇՈՒՆ")                       // 4 board letters: not playable
-        assertEquals(0, Glossary.dayIndex(0, 7))
-        assertEquals(Math.floorMod(-7919L, 7L).toInt(), Glossary.dayIndex(-1, 7))
+    @Test fun learnerWordNeverGivesAwayADailyAnswerNearby() {
+        for (day in 0 until 60) {
+            val learner = DailyPuzzle.learnerWord(armenian, day)
+            assertTrue(learner in armenian.playableWords)
+            for (offset in -7..7) assertTrue(learner != DailyPuzzle.word(armenian, day + offset))
+        }
     }
 
-    @Test fun sharedArmenianGlossesMatchTheWordBank() {
-        val words = WordBank.parse(File(sharedDir, GameLanguage.ARMENIAN.wordFileName).readText()).toSet()
-        val glossary = Glossary.parse(File(sharedDir, GameLanguage.ARMENIAN.glossFileName).readText())
-        assertTrue(glossary.entries.size >= 400)
-        glossary.entries.forEach { (word, _) -> assertTrue("$word is glossed but not in the word bank", word in words) }
-        assertEquals(glossary.entries.size, glossary.entries.map { it.first }.toSet().size)
+    @Test fun everyLearnerWordHasAMeaning() {
+        val meanings = WordMeanings.parse(File(sharedDir, GameLanguage.ARMENIAN.meaningsFileName).readText())
+        val missing = armenian.playableWords.filter { it !in meanings }
+        assertTrue("No meaning for $missing", missing.isEmpty())
     }
 }

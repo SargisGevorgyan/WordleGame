@@ -36,7 +36,6 @@
     <string name="timed_mode_desc">3 minutes per free-play game. The clock starts with your first letter.</string>
     <string name="modes_next_game">Changes made during a game apply from the next one.</string>
     <string name="times_up">TIME\'S UP</string>
-    <string name="meaning">Meaning</string>
     <string name="word_of_the_day">Armenian word of the day</string>
 
     <string name="daily">Daily</string>
@@ -45,4 +44,9 @@
     <string name="share">Share</string>
     <string name="next_word_in">Next word in</string>
     <string name="hints_off_daily">Hints are off in the daily game</string>
+
+    <string name="accessibility">Accessibility</string>
+    <string name="haptics">Haptics</string>
+    <string name="high_contrast_colors">High contrast colors</string>
+    <string name="high_contrast_footer">Color-blind friendly: orange = right spot, blue = wrong spot.</string>
 </resources>
