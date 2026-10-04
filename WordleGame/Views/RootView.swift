@@ -118,6 +118,14 @@ struct RootView: View {
     private var hudBar: some View {
         HStack(spacing: 8) {
             hintPill
+            if game.isTimed { timerPill }
+            if game.isHardMode {
+                Image(systemName: "flame.fill")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(Color.auroraMagenta)
+                    .accessibilityIdentifier("hard-mode-badge")
+                    .accessibilityLabel(Text("Hard mode"))
+            }
             Spacer(minLength: 4)
             removeAdsControl
             iconButton("trophy.fill") {
@@ -173,6 +181,26 @@ struct RootView: View {
         .disabled(game.status != .playing)
         .accessibilityIdentifier("hint-pill")
         .accessibilityLabel("Hints: \(game.hintsRemaining)")
+    }
+
+    private var timerPill: some View {
+        let seconds = game.secondsLeft
+        let urgent = seconds <= 30
+        return HStack(spacing: 4) {
+            Image(systemName: "timer")
+                .font(.system(size: 12, weight: .bold))
+            Text(verbatim: String(format: "%d:%02d", seconds / 60, seconds % 60))
+                .font(.system(size: 14, weight: .black, design: .rounded))
+                .monospacedDigit()
+                .contentTransition(.numericText())
+        }
+        .foregroundStyle(urgent ? Color.warmYellow : .white)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(.ultraThinMaterial, in: Capsule())
+        .overlay(Capsule().strokeBorder(Palette.glassStrokeGradient, lineWidth: 1))
+        .accessibilityIdentifier("timer-pill")
+        .accessibilityLabel(Text("Time left: \(seconds) seconds"))
     }
 
     @ViewBuilder
@@ -272,7 +300,10 @@ struct RootView: View {
                     .onTapGesture {}
                 GameOverView(
                     didWin: game.status == .won,
+                    timedOut: game.timedOut,
                     targetWord: game.targetWord,
+                    meaning: game.targetMeaning,
+                    wordOfTheDay: game.armenianWordOfTheDay,
                     onPlayAgain: {
                         game.newGame()
                         keyboardFocused = true

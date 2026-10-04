@@ -32,6 +32,21 @@ final class GameViewModel: ObservableObject {
     /// Drives the end-of-game overlay.
     @Published var showGameOver = false
 
+    // MARK: - Modes
+
+    static let hardModeKey = "hardMode"
+    static let timedModeKey = "timedMode"
+
+    /// Hard mode for the current game (the setting is read when a game starts).
+    @Published private(set) var isHardMode = UserDefaults.standard.bool(forKey: GameViewModel.hardModeKey)
+    /// Timed mode for the current game.
+    @Published private(set) var isTimed = UserDefaults.standard.bool(forKey: GameViewModel.timedModeKey)
+    /// Timed mode: seconds left. The clock starts with the first letter.
+    @Published private(set) var secondsLeft = GameConstants.timeLimitSeconds
+    /// True when a timed game was lost because the clock ran out.
+    @Published private(set) var timedOut = false
+    private var clockTask: Task<Void, Never>?
+
     // MARK: - Config
 
     @Published private(set) var language: GameLanguage
@@ -144,6 +159,7 @@ final class GameViewModel: ObservableObject {
         currentColumn += 1
         Haptics.shared.tap()
         SoundManager.shared.play(.key)
+        startClockIfNeeded()
     }
 
     /// Reveal the correct letter for the next empty slot in the current row.
@@ -203,6 +219,18 @@ final class GameViewModel: ObservableObject {
             return
         }
 
+        if isHardMode,
+           let violation = HardMode.violation(board: board, row: currentRow, guess: guessTokens) {
+            switch violation {
+            case .missingCorrect(let position, let token):
+                flashToast("Position \(position + 1) must be \(token)")
+            case .missingPresent(let token):
+                flashToast("Guess must contain \(token)")
+            }
+            shake()
+            return
+        }
+
         let evaluations = Self.evaluate(guessTokens: guessTokens,
                                        targetTokens: language.tokenize(targetWord))
         for (index, evaluation) in evaluations.enumerated() where index < board[currentRow].count {
@@ -249,6 +277,7 @@ final class GameViewModel: ObservableObject {
     }
 
     private func endGame() {
+        stopClock()
         onRoundFinished?(status == .won)
         let id = gameID
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
@@ -264,6 +293,11 @@ final class GameViewModel: ObservableObject {
     func newGame() {
         gameID = UUID()
         pendingReveal = nil
+        stopClock()
+        secondsLeft = GameConstants.timeLimitSeconds
+        timedOut = false
+        isHardMode = UserDefaults.standard.bool(forKey: Self.hardModeKey)
+        isTimed = UserDefaults.standard.bool(forKey: Self.timedModeKey)
         withAnimation(.easeInOut(duration: 0.2)) {
             board = Self.makeEmptyBoard()
             currentRow = 0
@@ -291,6 +325,68 @@ final class GameViewModel: ObservableObject {
         }
         language = newLanguage
         newGame()
+    }
+
+    // MARK: - Modes
+
+    /// Call after the Hard / Timed settings change: they apply now if the game
+    /// hasn't started yet, otherwise from the next game.
+    func applyModeSettings() {
+        guard status == .playing, !isInProgress else { return }
+        isHardMode = UserDefaults.standard.bool(forKey: Self.hardModeKey)
+        isTimed = UserDefaults.standard.bool(forKey: Self.timedModeKey)
+        secondsLeft = GameConstants.timeLimitSeconds
+    }
+
+    private func startClockIfNeeded() {
+        guard isTimed, clockTask == nil, status == .playing else { return }
+        let deadline = Date.now.addingTimeInterval(TimeInterval(GameConstants.timeLimitSeconds))
+        clockTask = Task { [weak self] in
+            while !Task.isCancelled {
+                let left = deadline.timeIntervalSinceNow
+                guard let self else { return }
+                self.secondsLeft = max(0, Int(left.rounded(.up)))
+                if left <= 0 { break }
+                try? await Task.sleep(nanoseconds: UInt64(min(left, 0.25) * 1_000_000_000))
+            }
+            guard let self, !Task.isCancelled else { return }
+            self.clockTask = nil
+            self.timeUp()
+        }
+    }
+
+    private func stopClock() {
+        clockTask?.cancel()
+        clockTask = nil
+    }
+
+    /// The clock ran out. A guess still flipping decides it if it ended the game;
+    /// otherwise the game is lost.
+    private func timeUp() {
+        guard status == .playing else { return }
+        if let pending = pendingReveal {
+            finishReveal(row: pending.row, guess: pending.guess, evaluations: pending.evaluations)
+        }
+        guard status == .playing else { return }
+        isRevealing = false
+        status = .lost
+        timedOut = true
+        StatsStore.record(win: false)
+        Haptics.shared.notify(.error)
+        SoundManager.shared.play(.lose)
+        endGame()
+    }
+
+    // MARK: - Meanings
+
+    /// English meaning of the current word, when the shared glossary has one.
+    var targetMeaning: String? {
+        language == .armenian ? Glossary.armenian.meaning(targetWord) : nil
+    }
+
+    /// Today's Armenian word and its English meaning, for learners.
+    var armenianWordOfTheDay: (word: String, gloss: String)? {
+        Glossary.armenian.wordOfTheDay(playable: GameLanguage.armenianPlayableSet)
     }
 
     // MARK: - Physical keyboard
@@ -380,6 +476,13 @@ extension GameViewModel {
         }
         finishReveal(row: currentRow, guess: guess, evaluations: evaluations)
     }
+
+    func setModesForTesting(hard: Bool, timed: Bool) {
+        isHardMode = hard
+        isTimed = timed
+    }
+
+    func timeUpForTesting() { timeUp() }
 
     func mergeHintsForTesting(guess: String, evaluations: [LetterEvaluation]) {
         mergeKeyboardHints(tokens: language.tokenize(guess), evaluations: evaluations)

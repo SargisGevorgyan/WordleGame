@@ -10,7 +10,10 @@ import SwiftUI
 
 struct GameOverView: View {
     let didWin: Bool
+    var timedOut = false
     let targetWord: String
+    var meaning: String? = nil
+    var wordOfTheDay: (word: String, gloss: String)? = nil
     let onPlayAgain: () -> Void
 
     @State private var appear = false
@@ -20,7 +23,7 @@ struct GameOverView: View {
 
     var body: some View {
         VStack(spacing: 22) {
-            Text(didWin ? headline.won : headline.lost)
+            Text(didWin ? headline.won : (timedOut ? "TIME'S UP" : headline.lost))
                 .font(.system(size: 30, weight: .black, design: .rounded))
                 .tracking(2)
                 .foregroundStyle(.white)
@@ -35,9 +38,40 @@ struct GameOverView: View {
                     .tracking(6)
                     .foregroundStyle(.white)
                     .neonGlow(.warmYellow, radius: 8, strength: 0.6)
+                if let meaning {
+                    Text("Meaning: \(meaning)")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.warmYellow)
+                        .multilineTextAlignment(.center)
+                        .accessibilityIdentifier("word-meaning")
+                }
             }
 
             StatsView()
+
+            // Learners: one Armenian word a day, skipped when it's the word just played.
+            if let daily = wordOfTheDay, daily.word != targetWord.uppercased() {
+                VStack(spacing: 4) {
+                    Text("Armenian word of the day")
+                        .font(.caption2.weight(.semibold))
+                        .textCase(.uppercase)
+                        .foregroundStyle(.white.opacity(0.55))
+                    Text(verbatim: daily.word)
+                        .font(.system(size: 20, weight: .black, design: .rounded))
+                        .tracking(3)
+                        .foregroundStyle(Color.neonGreen)
+                    Text(verbatim: daily.gloss)
+                        .font(.footnote)
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Color.white.opacity(0.12)))
+                .accessibilityIdentifier("word-of-the-day")
+            }
 
             Button(action: onPlayAgain) {
                 Text("Play Again")

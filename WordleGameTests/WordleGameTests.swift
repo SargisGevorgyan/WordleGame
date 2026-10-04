@@ -252,6 +252,94 @@ final class WordleGameTests: XCTestCase {
         }
     }
 
+    // MARK: - Hard mode
+
+    func testHardModeRequiresGreensInPlace() {
+        // PLANT vs CRANE: A and N green.
+        let row = zip(["P", "L", "A", "N", "T"], GameViewModel.evaluate(guess: "PLANT", target: "CRANE"))
+            .map { Tile(letter: $0, evaluation: $1) }
+        var board = Array(repeating: row, count: 1)
+        board.append(row)
+        XCTAssertEqual(HardMode.violation(board: board, row: 1, guess: ["S", "L", "A", "T", "E"]),
+                       .missingCorrect(position: 3, token: "N"))
+        XCTAssertNil(HardMode.violation(board: board, row: 1, guess: ["C", "R", "A", "N", "E"]))
+    }
+
+    func testHardModeRequiresYellowsSomewhere() {
+        // EERIE: two yellow Es → later guesses need at least two Es.
+        let row = ["E", "E", "R", "I", "E"].enumerated()
+            .map { Tile(letter: $1, evaluation: $0 < 2 ? .present : .absent) }
+        XCTAssertEqual(HardMode.violation(board: [row], row: 1, guess: ["C", "R", "A", "N", "E"]),
+                       .missingPresent(token: "E"))
+        XCTAssertNil(HardMode.violation(board: [row], row: 1, guess: ["E", "X", "E", "R", "T"]))
+    }
+
+    @MainActor
+    func testHardModeRejectsGuessThatIgnoresHints() {
+        let vm = GameViewModel(targetWord: "CRANE")
+        vm.setModesForTesting(hard: true, timed: false)
+        type("plant", into: vm)
+        vm.submit()
+        vm.forceFinishRevealForTesting(guess: vm.currentGuess)
+        XCTAssertEqual(vm.currentRow, 1)
+
+        type("slate", into: vm)
+        let tokenBefore = vm.shakeToken
+        vm.submit()
+        XCTAssertGreaterThan(vm.shakeToken, tokenBefore)
+        XCTAssertFalse(vm.isRevealing)
+        XCTAssertEqual(vm.currentRow, 1)
+    }
+
+    // MARK: - Timed mode
+
+    @MainActor
+    func testTimeUpLosesTheGame() {
+        let vm = GameViewModel(targetWord: "CRANE")
+        vm.setModesForTesting(hard: false, timed: true)
+        type("pl", into: vm)
+        vm.timeUpForTesting()
+        XCTAssertEqual(vm.status, .lost)
+        XCTAssertTrue(vm.timedOut)
+
+        vm.newGame()
+        XCTAssertFalse(vm.timedOut)
+        XCTAssertEqual(vm.secondsLeft, GameConstants.timeLimitSeconds)
+    }
+
+    // MARK: - Meanings
+
+    func testGlossaryParsesTabSeparatedLines() {
+        let glossary = Glossary.parse("# c\n\nԳԱՐՈՒՆ\tspring (season)\nBAD LINE\nՔԱՂԱՔ\t \n")
+        XCTAssertEqual(glossary.entries.map(\.word), ["ԳԱՐՈՒՆ"])
+        XCTAssertEqual(glossary.meaning("գարուն"), "spring (season)")
+        XCTAssertNil(glossary.meaning("ՔԱՂԱՔ"))
+    }
+
+    func testSharedArmenianGlossesMatchTheWordBank() {
+        let entries = Glossary.armenian.entries
+        XCTAssertGreaterThanOrEqual(entries.count, 400)
+        let words = Set(WordBank.armenian)
+        for entry in entries {
+            XCTAssertTrue(words.contains(entry.word), "\(entry.word) is glossed but not in the word bank")
+        }
+    }
+
+    func testWordOfTheDayMatchesAndroidDayNumbering() {
+        // 2026-10-04 is day 20730 since 1970-01-01, whatever the time of day or zone.
+        var calendar = Calendar(identifier: .gregorian)
+        let zone = TimeZone(identifier: "Asia/Yerevan")!
+        calendar.timeZone = zone
+        let lateEvening = calendar.date(from: DateComponents(year: 2026, month: 10, day: 4, hour: 23, minute: 30))!
+        XCTAssertEqual(Glossary.epochDay(for: lateEvening, timeZone: zone), 20730)
+        XCTAssertEqual(Glossary.dayIndex(0, count: 7), 0)
+        XCTAssertEqual(Glossary.dayIndex(-1, count: 7), ((-7919 % 7) + 7) % 7)
+
+        let daily = Glossary.armenian.wordOfTheDay(on: lateEvening, playable: GameLanguage.armenianPlayableSet)
+        XCTAssertNotNil(daily)
+        XCTAssertTrue(GameLanguage.armenianPlayableSet.contains(daily?.word ?? ""))
+    }
+
     // MARK: - Helpers
 
     @MainActor

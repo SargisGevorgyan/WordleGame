@@ -47,6 +47,7 @@ Both apps read the same word lists — the single source of truth is
 |------|----------|
 | `shared/words/words_en.txt` | English |
 | `shared/words/words_hy.txt` | Armenian (Հայերեն) |
+| `shared/words/glosses_hy.tsv` | English meanings of the Armenian words (`WORD<TAB>gloss`) |
 
 One UPPERCASE word per line; blank lines and `#` comments are ignored. Entries
 that aren't exactly 5 board letters (Armenian ու counts as one) are skipped at
@@ -160,6 +161,23 @@ auto‑types the correct letter for the next slot), a **Remove Ads** button
   to `GameViewModel.handleKeyPress` (letters, Return = submit, Backspace = delete).
 * Stats via `@AppStorage`: `gamesPlayed`, `gamesWon`, `currentStreak`, `maxStreak`
   → shown as Played / Win % / Streak / Max.
+
+### Game modes (Settings → Game Modes, both apps)
+
+* **Hard mode**: revealed hints must be used in later guesses. A green letter
+  stays in its spot, and a yellow letter must appear somewhere
+  (`HardMode.violation`).
+* **Timed mode**: 3 minutes per game; the clock starts with the first letter
+  and running out is a loss ("TIME'S UP").
+* Changing a mode mid-game applies from the next game; before the first
+  letter it applies straight away.
+
+### Meanings and the Armenian word of the day
+
+After a game, the word's English meaning is shown when
+`shared/words/glosses_hy.tsv` has one, plus an **Armenian word of the day** for
+learners: a glossed, playable Armenian word picked from the local date, the
+same on iOS and Android.
 
 ### Language (English / Հայերեն)
 
