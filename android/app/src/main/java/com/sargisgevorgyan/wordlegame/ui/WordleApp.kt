@@ -3,6 +3,7 @@ package com.sargisgevorgyan.wordlegame.ui
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.LinearEasing
@@ -31,6 +32,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -65,10 +67,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sargisgevorgyan.wordlegame.GameViewModel
 import com.sargisgevorgyan.wordlegame.R
 import com.sargisgevorgyan.wordlegame.WordleApplication
+import com.sargisgevorgyan.wordlegame.game.GameMode
 import com.sargisgevorgyan.wordlegame.game.GameStatus
 import com.sargisgevorgyan.wordlegame.monetization.BannerAd
 import com.sargisgevorgyan.wordlegame.monetization.Links
@@ -99,12 +103,18 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
         val proMonthlyPrice = remember(products) { billing.proPrice(Products.ProPlan.MONTHLY) }
         val playAgain = {
             ads.maybeShowInterstitial(activity, entitlements.isAdFree)
-            vm.newGame()
+            if (vm.mode == GameMode.DAILY) vm.changeMode(GameMode.FREE) else vm.newGame()
         }
         // Intro after the system splash; saveable so rotation doesn't replay it.
         var showIntro by rememberSaveable { mutableStateOf(true) }
         val focus = remember { FocusRequester() }
         LaunchedEffect(Unit) { focus.requestFocus() }
+        // A new day may have started while the app was in the background.
+        LifecycleResumeEffect(Unit) {
+            vm.refreshDaily()
+            onPauseOrDispose {}
+        }
+        val share = { shareResult(context, vm.shareText) }
 
         Box(
             Modifier
@@ -137,11 +147,13 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                     isPro = entitlements.isPro,
                     onHint = {
                         when {
-                            vm.canUseHint -> vm.useHint()
+                            // Daily mode: useHint explains that hints are off.
+                            vm.mode == GameMode.DAILY || vm.canUseHint -> vm.useHint()
                             vm.state.status == GameStatus.PLAYING -> showHintStore = true
                         }
                     },
                     onPro = { showPro = true },
+                    onShare = share.takeIf { vm.state.status != GameStatus.PLAYING },
                     onSettings = { showSettings = true },
                 )
                 Text(
@@ -153,7 +165,13 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                         letterSpacing = 4.sp,
                         shadow = Shadow(Palette.auroraPurple, Offset.Zero, blurRadius = 24f),
                     ),
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                )
+                ModePicker(
+                    mode = vm.mode,
+                    puzzleNumber = vm.puzzleNumber,
+                    enabled = !vm.isRevealing,
+                    onMode = vm::changeMode,
                 )
                 Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Board(vm.state, vm.revealingRow, vm.shakeToken)
@@ -180,15 +198,18 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                 won = vm.state.status == GameStatus.WON,
                 word = vm.state.targetWord,
                 stats = vm.stats,
+                puzzleNumber = vm.puzzleNumber,
+                onShare = share,
                 onPlayAgain = playAgain,
-                // Back / tap outside also moves on; the finished game has no other way out.
-                onDismiss = playAgain,
+                onNewDay = vm::refreshDaily,
+                // Back / tap outside also moves on: a new free game, or back to the finished daily board.
+                onDismiss = vm::newGame,
             )
         }
         if (showSettings) {
             SettingsDialog(
                 current = vm.state.language,
-                isInProgress = vm.state.isInProgress,
+                isInProgress = vm.languageSwitchLosesGame,
                 stats = vm.stats,
                 onLanguage = vm::changeLanguage,
                 onResetStats = vm::resetStats,
@@ -247,8 +268,50 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
     }
 }
 
+/** Opens the system share sheet with the emoji result grid. */
+private fun shareResult(context: Context, text: String) {
+    val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
+    context.startActivity(Intent.createChooser(send, null))
+}
+
 @Composable
-private fun Hud(hints: String, isPro: Boolean, onHint: () -> Unit, onPro: () -> Unit, onSettings: () -> Unit) {
+private fun ModePicker(mode: GameMode, puzzleNumber: Int?, enabled: Boolean, onMode: (GameMode) -> Unit) {
+    Row(
+        Modifier
+            .padding(bottom = 6.dp)
+            .background(Palette.glassFill, RoundedCornerShape(50))
+            .padding(4.dp),
+    ) {
+        GameMode.entries.forEach { option ->
+            val selected = option == mode
+            val label = when (option) {
+                GameMode.DAILY -> puzzleNumber?.let { stringResource(R.string.daily_number, it) }
+                    ?: stringResource(R.string.daily)
+                GameMode.FREE -> stringResource(R.string.free_play)
+            }
+            Text(
+                label,
+                color = if (selected) Palette.indigoDeep else Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .background(if (selected) Palette.neonGreen else Color.Transparent, RoundedCornerShape(50))
+                    .clickable(enabled = enabled && !selected) { onMode(option) }
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun Hud(
+    hints: String,
+    isPro: Boolean,
+    onHint: () -> Unit,
+    onPro: () -> Unit,
+    onShare: (() -> Unit)?,
+    onSettings: () -> Unit,
+) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -267,23 +330,27 @@ private fun Hud(hints: String, isPro: Boolean, onHint: () -> Unit, onPro: () -> 
                 .clickable(onClick = onHint)
                 .padding(horizontal = 14.dp, vertical = 8.dp),
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                if (isPro) stringResource(R.string.pro) else "👑 " + stringResource(R.string.go_pro),
-                color = Color.White,
-                fontWeight = FontWeight.Black,
-                fontSize = 13.sp,
-                modifier = Modifier
-                    .background(
-                        if (isPro) Brush.linearGradient(listOf(Palette.warmYellow, Palette.auroraMagenta)) else Palette.enterGradient,
-                        CircleShape,
-                    )
-                    .clickable(onClick = onPro)
-                    .padding(horizontal = 14.dp, vertical = 8.dp),
-            )
-            IconButton(onClick = onSettings) {
-                Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings), tint = Color.White)
+        Spacer(Modifier.weight(1f))
+        Text(
+            if (isPro) stringResource(R.string.pro) else "👑 " + stringResource(R.string.go_pro),
+            color = Color.White,
+            fontWeight = FontWeight.Black,
+            fontSize = 13.sp,
+            modifier = Modifier
+                .background(
+                    if (isPro) Brush.linearGradient(listOf(Palette.warmYellow, Palette.auroraMagenta)) else Palette.enterGradient,
+                    CircleShape,
+                )
+                .clickable(onClick = onPro)
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+        )
+        if (onShare != null) {
+            IconButton(onClick = onShare) {
+                Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.share), tint = Color.White)
             }
+        }
+        IconButton(onClick = onSettings) {
+            Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings), tint = Color.White)
         }
     }
 }

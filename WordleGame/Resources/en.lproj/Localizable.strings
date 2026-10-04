@@ -93,3 +93,10 @@
 "No ads too · from %@ / month" = "No ads too · from %@ / month";
 "Go Pro: no ads + unlimited hints" = "Go Pro: no ads + unlimited hints";
 "from %@" = "from %@";
+/* Daily word & sharing */
+"Daily" = "Daily";
+"Daily #%lld" = "Daily #%lld";
+"Free play" = "Free play";
+"Share" = "Share";
+"Next word in" = "Next word in";
+"Hints are off in the daily game" = "Hints are off in the daily game";

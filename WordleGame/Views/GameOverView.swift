@@ -11,6 +11,10 @@ import SwiftUI
 struct GameOverView: View {
     let didWin: Bool
     let targetWord: String
+    /// Set for the daily game: shows the countdown to the next word, and the
+    /// main button switches to free play.
+    var puzzleNumber: Int? = nil
+    var shareText: String = ""
     let onPlayAgain: () -> Void
 
     @State private var appear = false
@@ -20,6 +24,12 @@ struct GameOverView: View {
 
     var body: some View {
         VStack(spacing: 22) {
+            if let puzzleNumber {
+                Text("Daily #\(puzzleNumber)")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.6))
+            }
+
             Text(didWin ? headline.won : headline.lost)
                 .font(.system(size: 30, weight: .black, design: .rounded))
                 .tracking(2)
@@ -39,8 +49,31 @@ struct GameOverView: View {
 
             StatsView()
 
+            if puzzleNumber != nil {
+                VStack(spacing: 2) {
+                    Text("Next word in")
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.6))
+                    Text(timerInterval: Date.now...DailyPuzzle.nextWordDate(), countsDown: true)
+                        .font(.system(size: 22, weight: .bold, design: .rounded).monospacedDigit())
+                        .foregroundStyle(.white)
+                }
+            }
+
+            ShareLink(item: shareText) {
+                Label("Share", systemImage: "square.and.arrow.up")
+                    .font(.headline.weight(.bold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 13)
+                    .foregroundStyle(Color.neonGreen)
+                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Color.neonGreen, lineWidth: 1.5))
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("share-result")
+
             Button(action: onPlayAgain) {
-                Text("Play Again")
+                Text(puzzleNumber == nil ? LocalizedStringKey("Play Again") : "Free play")
                     .font(.headline.weight(.bold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 15)

@@ -36,6 +36,8 @@ struct WordleGameApp: App {
                                       forKey: GameLanguage.storageKey)
             UserDefaults.standard.set(Int(env["UITEST_HINTS"] ?? "3") ?? 3,
                                       forKey: GameViewModel.hintsKey)
+            UserDefaults.standard.set(env["UITEST_MODE"] ?? GameMode.free.rawValue,
+                                      forKey: GameMode.storageKey)
             return
         }
         #endif

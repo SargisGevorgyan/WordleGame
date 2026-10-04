@@ -93,3 +93,10 @@
 "No ads too · from %@ / month" = "Նաև առանց գովազդի · %@-ից / ամիս";
 "Go Pro: no ads + unlimited hints" = "Դառնալ Pro՝ առանց գովազդի + անսահմանափակ հուշումներ";
 "from %@" = "%@-ից";
+/* Daily word & sharing */
+"Daily" = "Օրվա բառ";
+"Daily #%lld" = "Օրվա բառ #%lld";
+"Free play" = "Ազատ խաղ";
+"Share" = "Կիսվել";
+"Next word in" = "Հաջորդ բառը՝";
+"Hints are off in the daily game" = "Օրվա խաղում հուշումներ չկան";
