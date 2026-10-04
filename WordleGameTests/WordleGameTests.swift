@@ -151,6 +151,22 @@ final class WordleGameTests: XCTestCase {
     }
 
     @MainActor
+    func testSwitchingLanguageMidGameCountsAsLossAndDropsPendingReveal() {
+        StatsStore.reset()
+        let vm = GameViewModel(targetWord: "PLANT")
+        type("crane", into: vm)
+        vm.submit()                          // reveal still pending
+        vm.changeLanguage(.armenian)
+        XCTAssertEqual(UserDefaults.standard.integer(forKey: StatsKey.gamesPlayed), 1)
+        XCTAssertEqual(UserDefaults.standard.integer(forKey: StatsKey.gamesWon), 0)
+        XCTAssertEqual(vm.language, .armenian)
+        XCTAssertEqual(vm.currentRow, 0)
+        XCTAssertEqual(vm.status, .playing)
+        XCTAssertFalse(vm.isRevealing)
+        StatsStore.reset()
+    }
+
+    @MainActor
     func testUseHintReturnsFalseWhenEmptyAndAddHintsStacks() {
         UserDefaults.standard.set(0, forKey: GameViewModel.hintsKey)
         let vm = GameViewModel(targetWord: "PLANT")
@@ -187,6 +203,13 @@ final class WordleGameTests: XCTestCase {
     }
 
     // MARK: - Word banks
+
+    func testSharedWordFilesAreBundledAndParsed() {
+        // Loaded from shared/words/*.txt (the bank shared with Android).
+        XCTAssertFalse(WordBank.english.isEmpty)
+        XCTAssertFalse(WordBank.armenian.isEmpty)
+        XCTAssertEqual(WordBank.parse("# comment\n\n plant \r\nՔԱՂԱՔ\n"), ["PLANT", "ՔԱՂԱՔ"])
+    }
 
     func testEnglishPlayableWordsAreFiveLetterUppercase() {
         let playable = GameLanguage.englishPlayableWords

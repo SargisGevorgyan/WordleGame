@@ -44,6 +44,10 @@ targets:
     platform: iOS
     sources:
       - path: WordleGame
+      # Shared word bank (also read by the Android app in android/).
+      - path: shared/words
+        group: SharedWords
+        buildPhase: resources
     entitlements:
       path: WordleGame/WordleGame.entitlements
       properties:

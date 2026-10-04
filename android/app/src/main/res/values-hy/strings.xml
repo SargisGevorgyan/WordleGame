@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Կարգավորումներ</string>
+    <string name="enter">Մուտք</string>
+    <string name="delete">Ջնջել</string>
+    <string name="hints_count">Հուշումներ՝ %d</string>
+    <string name="not_enough_letters">Բավարար տառեր չկան</string>
+    <string name="not_in_word_list">Բառը ցանկում չէ</string>
+    <string name="hint_revealed">Հուշումը բացվեց</string>
+    <string name="no_hints_left">Հուշումներ չմնացին</string>
+    <string name="brilliant">ՀԻԱՆԱԼԻ</string>
+    <string name="so_close">ՇԱՏ ՄՈՏ</string>
+    <string name="you_cracked_it">Դու գտար</string>
+    <string name="the_word_was">Բառը սա էր</string>
+    <string name="play_again">Խաղալ նորից</string>
+    <string name="win_rate" formatted="false">Հաղթանակ %</string>
+    <string name="streak">Շարք</string>
+    <string name="best">Լավագույն</string>
+    <string name="played">Խաղեր</string>
+    <string name="done">Պատրաստ է</string>
+    <string name="word_language">Բառերի լեզուն</string>
+    <string name="statistics">Վիճակագրություն</string>
+    <string name="reset_statistics">Զրոյացնել վիճակագրությունը</string>
+    <string name="how_to_play">Ինչպես խաղալ. գուշակեք 5-տառանոց բառը 6 փորձով։ Կանաչ՝ ճիշտ տեղում, Դեղին՝ սխալ տեղում, Մոխրագույն՝ բառում չկա։</string>
+    <string name="start_new_game_in">Սկսե՞լ նոր խաղ %s լեզվով։</string>
+    <string name="switch_and_restart">Փոխել և վերսկսել</string>
+    <string name="cancel">Չեղարկել</string>
+    <string name="current_game_lost">Ընթացիկ խաղը կկորչի։</string>
+</resources>
