@@ -1,0 +1,73 @@
+/* WordleGame — Հայերեն */
+
+/* HUD */
+"Remove Ads" = "Հեռացնել գովազդը";
+"PRO" = "PRO";
+"Settings" = "Կարգավորումներ";
+"Enter" = "Մուտք";
+"Delete" = "Ջնջել";
+"Hints: %lld" = "Հուշումներ՝ %lld";
+
+/* Toasts */
+"Not enough letters" = "Բավարար տառեր չկան";
+"Not in word list" = "Բառը ցանկում չէ";
+"Hint revealed" = "Հուշումը բացվեց";
+"No hints left" = "Հուշումներ չմնացին";
+"+1 hint" = "+1 հուշում";
+"+%lld hints" = "+%lld հուշում";
+
+/* Game over */
+"BRILLIANT" = "ՀԻԱՆԱԼԻ";
+"SO CLOSE" = "ՇԱՏ ՄՈՏ";
+"You cracked it" = "Դու գտար";
+"The word was" = "Բառը սա էր";
+"Play Again" = "Խաղալ նորից";
+
+/* Stats */
+"Win rate" = "Հաղթանակ %";
+"Streak" = "Շարք";
+"Best" = "Լավագույն";
+"Played" = "Խաղեր";
+
+/* Settings */
+"Done" = "Պատրաստ է";
+"Word Language" = "Բառերի լեզուն";
+"Auto-selected from your device (%@) on first launch. Switching starts a new game." = "Ընտրվել է ձեր սարքից (%@) առաջին գործարկման ժամանակ։ Փոխելը սկսում է նոր խաղ։";
+"Statistics" = "Վիճակագրություն";
+"Reset Statistics" = "Զրոյացնել վիճակագրությունը";
+"Ads removed. Thank you!" = "Գովազդը հեռացված է։ Շնորհակալություն։";
+"Restore Purchases" = "Վերականգնել գնումները";
+"Sound & Haptics" = "Ձայն և թրթռում";
+"Sound effects" = "Ձայնային էֆեկտներ";
+"How to play: guess the 5-letter word in 6 tries. Green = right spot, Yellow = wrong spot, Gray = not in the word." = "Ինչպես խաղալ. գուշակեք 5-տառանոց բառը 6 փորձով։ Կանաչ՝ ճիշտ տեղում, Դեղին՝ սխալ տեղում, Մոխրագույն՝ բառում չկա։";
+"Start a new game in %@?" = "Սկսե՞լ նոր խաղ %@ լեզվով։";
+"Switch & restart" = "Փոխել և վերսկսել";
+"Cancel" = "Չեղարկել";
+"Your current game will be lost." = "Ընթացիկ խաղը կկորչի։";
+
+/* Hint store */
+"Out of Hints" = "Հուշումները սպառվեցին";
+"You have %lld left" = "Մնացել է %lld";
+"Watch a video" = "Դիտել տեսանյութ";
+"+%lld hint · free" = "+%lld հուշում · անվճար";
+"%lld Hints" = "%lld հուշում";
+"Add a StoreKit configuration (Products.storekit) to enable purchases." = "Ավելացրեք StoreKit կազմաձևումը (Products.storekit)՝ գնումները միացնելու համար։";
+"Maybe later" = "Միգուցե ավելի ուշ";
+
+/* Game Center */
+"Leaderboard" = "Առաջատարների ցուցակ";
+"Game Center" = "Game Center";
+"Leaderboards" = "Առաջատարների ցուցակներ";
+"Sign in to Game Center" = "Մուտք գործել Game Center";
+"Game Center isn't set up for this build yet." = "Game Center-ը դեռ կարգավորված չէ այս տարբերակի համար։";
+
+/* StoreKit errors */
+"Couldn't load products." = "Չհաջողվեց բեռնել ապրանքները։";
+"Product unavailable." = "Ապրանքն անհասանելի է։";
+"Purchase pending approval." = "Գնումը սպասում է հաստատման։";
+"No previous purchases found." = "Նախկին գնումներ չեն գտնվել։";
+"Restore failed." = "Վերականգնումը ձախողվեց։";
+
+/* Language names */
+"English" = "Անգլերեն";
+"Armenian" = "Հայերեն";

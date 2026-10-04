@@ -1,0 +1,87 @@
+name: WordleGame
+options:
+  bundleIdPrefix: com.sargisgevorgyan
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  xcodeVersion: "16.0"
+  developmentLanguage: en
+
+# Localizations bundled with the app (English + Armenian). XcodeGen also derives
+# these from the *.lproj folders under WordleGame/Resources/.
+knownRegions:
+  - en
+  - hy
+  - Base
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    GENERATE_INFOPLIST_FILE: NO
+
+# ---------------------------------------------------------------------------
+# Google Mobile Ads (AdMob)
+#
+# All ad code is wrapped in `#if canImport(GoogleMobileAds)`, so the project
+# compiles and runs offline out of the box. To enable real ads, uncomment the
+# `packages` + `dependencies` blocks below (or add the package from Xcode:
+# File > Add Package Dependencies… > https://github.com/googleads/googleads-mobile-ios-sdk)
+# and re-run `xcodegen generate`.
+# ---------------------------------------------------------------------------
+# packages:
+#   GoogleMobileAds:
+#     url: https://github.com/googleads/googleads-mobile-ios-sdk
+#     minVersion: "11.0.0"
+
+targets:
+  WordleGame:
+    type: application
+    platform: iOS
+    sources:
+      - path: WordleGame
+    entitlements:
+      path: WordleGame/WordleGame.entitlements
+      properties:
+        com.apple.developer.game-center: true
+    settings:
+      base:
+        INFOPLIST_FILE: WordleGame/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.sargisgevorgyan.wordlegame
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_EMIT_LOC_STRINGS: YES
+    # dependencies:
+    #   - package: GoogleMobileAds
+    #     product: GoogleMobileAds
+
+  WordleGameTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: WordleGameTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sargisgevorgyan.wordlegame.tests
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: WordleGame
+
+schemes:
+  WordleGame:
+    build:
+      targets:
+        WordleGame: all
+        WordleGameTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - WordleGameTests

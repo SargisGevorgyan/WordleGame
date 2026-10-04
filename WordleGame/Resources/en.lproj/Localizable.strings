@@ -1,0 +1,73 @@
+/* WordleGame — English (base) */
+
+/* HUD */
+"Remove Ads" = "Remove Ads";
+"PRO" = "PRO";
+"Settings" = "Settings";
+"Enter" = "Enter";
+"Delete" = "Delete";
+"Hints: %lld" = "Hints: %lld";
+
+/* Toasts */
+"Not enough letters" = "Not enough letters";
+"Not in word list" = "Not in word list";
+"Hint revealed" = "Hint revealed";
+"No hints left" = "No hints left";
+"+1 hint" = "+1 hint";
+"+%lld hints" = "+%lld hints";
+
+/* Game over */
+"BRILLIANT" = "BRILLIANT";
+"SO CLOSE" = "SO CLOSE";
+"You cracked it" = "You cracked it";
+"The word was" = "The word was";
+"Play Again" = "Play Again";
+
+/* Stats */
+"Win rate" = "Win rate";
+"Streak" = "Streak";
+"Best" = "Best";
+"Played" = "Played";
+
+/* Settings */
+"Done" = "Done";
+"Word Language" = "Word Language";
+"Auto-selected from your device (%@) on first launch. Switching starts a new game." = "Auto-selected from your device (%@) on first launch. Switching starts a new game.";
+"Statistics" = "Statistics";
+"Reset Statistics" = "Reset Statistics";
+"Ads removed. Thank you!" = "Ads removed. Thank you!";
+"Restore Purchases" = "Restore Purchases";
+"Sound & Haptics" = "Sound & Haptics";
+"Sound effects" = "Sound effects";
+"How to play: guess the 5-letter word in 6 tries. Green = right spot, Yellow = wrong spot, Gray = not in the word." = "How to play: guess the 5-letter word in 6 tries. Green = right spot, Yellow = wrong spot, Gray = not in the word.";
+"Start a new game in %@?" = "Start a new game in %@?";
+"Switch & restart" = "Switch & restart";
+"Cancel" = "Cancel";
+"Your current game will be lost." = "Your current game will be lost.";
+
+/* Hint store */
+"Out of Hints" = "Out of Hints";
+"You have %lld left" = "You have %lld left";
+"Watch a video" = "Watch a video";
+"+%lld hint · free" = "+%lld hint · free";
+"%lld Hints" = "%lld Hints";
+"Add a StoreKit configuration (Products.storekit) to enable purchases." = "Add a StoreKit configuration (Products.storekit) to enable purchases.";
+"Maybe later" = "Maybe later";
+
+/* Game Center */
+"Leaderboard" = "Leaderboard";
+"Game Center" = "Game Center";
+"Leaderboards" = "Leaderboards";
+"Sign in to Game Center" = "Sign in to Game Center";
+"Game Center isn't set up for this build yet." = "Game Center isn't set up for this build yet.";
+
+/* StoreKit errors */
+"Couldn't load products." = "Couldn't load products.";
+"Product unavailable." = "Product unavailable.";
+"Purchase pending approval." = "Purchase pending approval.";
+"No previous purchases found." = "No previous purchases found.";
+"Restore failed." = "Restore failed.";
+
+/* Language names */
+"English" = "English";
+"Armenian" = "Armenian";
