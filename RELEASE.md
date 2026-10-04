@@ -166,6 +166,18 @@ Products in code (`StoreManager.swift`):
 | `com.sargisgevorgyan.wordlegame.removeads`      | Non-Consumable| Remove all ads     |
 | `com.sargisgevorgyan.wordlegame.hints.five`    | Consumable    | +5 hints           |
 | `com.sargisgevorgyan.wordlegame.hints.twenty`  | Consumable    | +20 hints          |
+| `com.sargisgevorgyan.wordlegame.pro.monthly`   | Auto-Renewable (group "Wordy Pro") | No ads + unlimited hints, $1.99 / month |
+| `com.sargisgevorgyan.wordlegame.pro.yearly`    | Auto-Renewable (group "Wordy Pro") | No ads + unlimited hints, $9.99 / year  |
+
+- [ ] 🔧 **Wordy Pro:** in **Monetization ▸ Subscriptions**, create the subscription
+      group **Wordy Pro** with the two products above (yearly ranked above
+      monthly), prices, en + hy names/descriptions and a review screenshot of
+      the paywall (`ProView`). Fill in the **Paid Apps Agreement** and banking/tax
+      first or subscriptions won't load.
+- [ ] 🔧 **Privacy policy URL:** `StoreManager.privacyPolicyURL` points at
+      `PRIVACY.md` in this repo. Review that draft, host it (or keep the GitHub
+      link if the repo is public) and enter the same URL in App Store Connect.
+      The paywall's Terms link is Apple's standard EULA (`termsOfUseURL`).
 
 - [ ] The IDs are already namespaced under the bundle id. In **App Store Connect ▸
       your app ▸ Monetization ▸ In-App Purchases**, create all three with the
@@ -181,8 +193,10 @@ Products in code (`StoreManager.swift`):
       Sandbox Testers) on a real device before release.
 
 Notes:
-- Consumables (`hints.*`) are **not restorable** — that's expected. Only
-  `Remove Ads` is restored by the "Restore Purchases" button.
+- Consumables (`hints.*`) are **not restorable** — that's expected. `Remove Ads`
+  and an active Pro subscription are restored by the "Restore Purchases" button.
+- Pro expiry and renewals are picked up whenever the app becomes active
+  (`StoreManager.refreshEntitlements()`).
 - Server-side receipt validation is **not** implemented (StoreKit 2 on-device
   verification only). Fine for a game of this size; add a backend check if you
   later care about fraud.
@@ -313,5 +327,66 @@ Notes:
 | `AdManager.swift` | Release `bannerAdUnitID` / `interstitialAdUnitID` / `rewardedAdUnitID` |
 | new file | `WordleGame/PrivacyInfo.xcprivacy` |
 | Apple Developer portal | App ID `com.sargisgevorgyan.wordlegame` with In-App Purchase + Game Center |
-| App Store Connect | 3 IAPs + 2 Game Center leaderboards with matching IDs, en+hy metadata, privacy label, privacy-policy URL, support URL, screenshots |
+| `StoreManager.swift` / `Links.kt` | Privacy policy URL (draft in `PRIVACY.md`) |
+| App Store Connect | 3 IAPs + "Wordy Pro" subscription group (2 plans) + 2 Game Center leaderboards with matching IDs, en+hy metadata, privacy label, privacy-policy URL, support URL, screenshots |
 | AdMob | app + 3 ad units + `app-ads.txt` |
+
+---
+
+## Android (Google Play)
+
+The Android app (`android/`) now has the same monetization as iOS: AdMob banner,
+interstitial every 3rd round (shown on "Play again"), rewarded video for +1 hint,
+Remove Ads, hint packs and Wordy Pro, behind Google's UMP consent form.
+
+### Play Console products (🔧 IDs must match `monetization/Products.kt`)
+
+| Product ID | Type | Purpose |
+|------------|------|---------|
+| `com.sargisgevorgyan.wordlegame.removeads` | In-app (one-time) | Remove all ads, $1.99 |
+| `com.sargisgevorgyan.wordlegame.hints.five` | In-app (consumable) | +5 hints, $0.99 |
+| `com.sargisgevorgyan.wordlegame.hints.twenty` | In-app (consumable) | +20 hints, $2.99 |
+| `com.sargisgevorgyan.wordlegame.pro` | Subscription, base plans `monthly` ($1.99, auto-renewing 1 month) and `yearly` ($9.99, auto-renewing 1 year) | No ads + unlimited hints |
+
+- [ ] Create a Google Play developer account and a merchant (payments) profile.
+- [ ] Upload a signed build to an internal testing track first: Play Console
+      only lets you create products after an APK/AAB with the BILLING
+      permission (added by the Billing Library) is uploaded.
+- [ ] Create the products above with the exact IDs and activate the
+      subscription base plans.
+- [ ] Add license testers (Setup ▸ License testing) to buy without being charged.
+
+### AdMob (Android uses its own IDs; iOS ones can't be reused)
+
+- [ ] Create an **Android** app in AdMob plus Banner, Interstitial and Rewarded units.
+- [ ] Put the real IDs in `~/.gradle/gradle.properties` (or pass `-P…`) for release
+      builds; debug builds always use Google's test IDs:
+
+```properties
+wordle.admob.appId=ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX
+wordle.admob.bannerId=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
+wordle.admob.interstitialId=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
+wordle.admob.rewardedId=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
+```
+
+  Without them a release build falls back to the test IDs (test ads, no revenue).
+- [ ] In AdMob ▸ Privacy & messaging, create and publish a **GDPR** consent
+      message for the Android app (UMP shows it to EEA / UK / Swiss users).
+- [ ] Publish `app-ads.txt` on the developer website listed in Play Console.
+
+### Play Console app content
+
+- [ ] **Ads:** declare that the app contains ads.
+- [ ] **Advertising ID:** declare use for advertising (the `AD_ID` permission is
+      merged in by `play-services-ads`).
+- [ ] **Data safety:** device or other IDs (advertising), app interactions,
+      purchase history; shared with Google for ads.
+- [ ] **Privacy policy URL:** same as iOS (`Links.PRIVACY_POLICY`, draft in `PRIVACY.md`).
+- [ ] Target audience: not primarily children (ads are personalized when consented).
+
+Notes:
+- Purchases are re-read on every resume: that restores Remove Ads / Pro on a new
+  device, completes pending (cash) purchases and notices a cancelled Pro.
+- Hint packs are granted once per purchase token, then consumed. Remove Ads and
+  Pro are acknowledged (Play refunds purchases left unacknowledged for 3 days).
+- No server-side verification (same as iOS).

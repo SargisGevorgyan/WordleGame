@@ -33,11 +33,12 @@ import androidx.compose.ui.window.Dialog
 import com.sargisgevorgyan.wordlegame.R
 import com.sargisgevorgyan.wordlegame.game.GameLanguage
 import com.sargisgevorgyan.wordlegame.game.Stats
+import com.sargisgevorgyan.wordlegame.monetization.Entitlements
 
 private val panelShape = RoundedCornerShape(28.dp)
 
 @Composable
-private fun GlassPanel(content: @Composable () -> Unit) {
+internal fun GlassPanel(content: @Composable () -> Unit) {
     Column(
         Modifier
             .widthIn(max = 420.dp)
@@ -105,6 +106,12 @@ fun SettingsDialog(
     stats: Stats,
     onLanguage: (GameLanguage) -> Unit,
     onResetStats: () -> Unit,
+    entitlements: Entitlements,
+    proMonthlyPrice: String?,
+    privacyOptionsRequired: Boolean,
+    onGoPro: () -> Unit,
+    onRestore: () -> Unit,
+    onPrivacyOptions: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var pending by remember { mutableStateOf<GameLanguage?>(null) }
@@ -143,6 +150,34 @@ fun SettingsDialog(
                 StatsRow(stats)
                 TextButton(onClick = onResetStats) {
                     Text(stringResource(R.string.reset_statistics), color = Palette.auroraMagenta)
+                }
+
+                SectionTitle(stringResource(R.string.wordy_pro))
+                when {
+                    entitlements.isPro ->
+                        Text(stringResource(R.string.youre_pro), color = Palette.neonGreen, fontWeight = FontWeight.Bold)
+                    else -> {
+                        if (entitlements.ownsRemoveAds) {
+                            Text(stringResource(R.string.ads_removed), color = Palette.neonGreen, fontWeight = FontWeight.Bold)
+                        }
+                        TextButton(onClick = onGoPro) {
+                            Text(
+                                proMonthlyPrice?.let { stringResource(R.string.go_pro_from, it) } ?: stringResource(R.string.go_pro),
+                                color = Palette.warmYellow,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(onClick = onRestore) {
+                        Text(stringResource(R.string.restore_purchases), color = Color.White)
+                    }
+                    if (privacyOptionsRequired) {
+                        TextButton(onClick = onPrivacyOptions) {
+                            Text(stringResource(R.string.privacy_choices), color = Color.White)
+                        }
+                    }
                 }
 
                 Text(stringResource(R.string.how_to_play), color = Palette.secondaryText, fontSize = 13.sp)

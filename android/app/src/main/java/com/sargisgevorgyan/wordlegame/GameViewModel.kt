@@ -17,6 +17,7 @@ import com.sargisgevorgyan.wordlegame.game.GameStatus
 import com.sargisgevorgyan.wordlegame.game.Stats
 import com.sargisgevorgyan.wordlegame.game.Submission
 import com.sargisgevorgyan.wordlegame.game.WordBank
+import com.sargisgevorgyan.wordlegame.monetization.Economy
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,6 +26,8 @@ import kotlinx.coroutines.launch
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private val prefs = application.getSharedPreferences("wordle", Context.MODE_PRIVATE)
+    private val wallet = (application as WordleApplication).hints
+    private val billing = (application as WordleApplication).billing
     private val banks = mutableMapOf<GameLanguage, WordBank>()
 
     var state by mutableStateOf(startGame(storedLanguage()))
@@ -42,13 +45,26 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     var showGameOver by mutableStateOf(false)
     var stats by mutableStateOf(loadStats())
         private set
-    var hintsRemaining by mutableIntStateOf(prefs.getInt(KEY_HINTS, 3))
+    var hintsRemaining by mutableIntStateOf(wallet.hints.value)
         private set
+    /** Wordy Pro: hints are free and never run out. */
+    var hasUnlimitedHints by mutableStateOf(billing.entitlements.value.isPro)
+        private set
+    /** Whether tapping the hint pill reveals a letter (otherwise it opens the hint store). */
+    val canUseHint get() = hasUnlimitedHints || hintsRemaining > 0
 
     private var toastJob: Job? = null
     private var revealJob: Job? = null
     /** State to apply when the running reveal finishes. */
     private var pendingResolved: GameState? = null
+
+    init {
+        // Hints also arrive from Play Billing (packs) and rewarded ads, outside this screen.
+        viewModelScope.launch { wallet.hints.collect { hintsRemaining = it } }
+        viewModelScope.launch { billing.entitlements.collect { hasUnlimitedHints = it.isPro } }
+        viewModelScope.launch { billing.hintGrants.collect { flashToast(R.string.hints_added) } }
+        viewModelScope.launch { billing.messages.collect { flashToast(it) } }
+    }
 
     // Input
 
@@ -64,9 +80,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun useHint() {
         if (isRevealing || state.status != GameStatus.PLAYING) return
-        if (hintsRemaining <= 0) return flashToast(R.string.no_hints_left)
+        if (!canUseHint) return flashToast(R.string.no_hints_left)
         val token = GameRules.hintToken(state) ?: return
-        setHints(hintsRemaining - 1)
+        if (!hasUnlimitedHints) setHints(hintsRemaining - 1)
         state = GameRules.insertToken(state, token)
         flashToast(R.string.hint_revealed)
     }
@@ -93,6 +109,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             revealingRow = -1
             if (state.status != GameStatus.PLAYING) {
                 recordResult(won = state.status == GameStatus.WON)
+                getApplication<WordleApplication>().ads.roundFinished()
                 delay(450)
                 showGameOver = true
             }
@@ -101,7 +118,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun recordResult(won: Boolean) {
         stats = stats.record(won).also(::saveStats)
-        if (won && hintsRemaining < FREE_HINT_CEILING) setHints(hintsRemaining + 1)
+        if (won && hintsRemaining < Economy.FREE_HINT_CEILING) setHints(hintsRemaining + 1)
     }
 
     /** Stops any running reveal / game-over timer so it can't touch the next game. */
@@ -146,7 +163,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         flashToast(message)
     }
 
-    private fun flashToast(@StringRes message: Int) {
+    /** Hints earned from a rewarded ad. */
+    fun addHints(count: Int) {
+        if (count <= 0) return
+        wallet.add(count)
+        flashToast(R.string.hints_added)
+    }
+
+    fun flashToast(@StringRes message: Int) {
         toastJob?.cancel()
         toast = message
         toastJob = viewModelScope.launch {
@@ -169,8 +193,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         GameLanguage.fromCode(prefs.getString(KEY_LANGUAGE, null)) ?: GameLanguage.systemDefault()
 
     private fun setHints(value: Int) {
-        hintsRemaining = value.coerceIn(0, MAX_HINTS)
-        prefs.edit { putInt(KEY_HINTS, hintsRemaining) }
+        wallet.set(value)
+        hintsRemaining = wallet.hints.value
     }
 
     private fun loadStats() = Stats(
@@ -190,10 +214,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         const val REVEAL_MILLIS = 1700L
         const val FLIP_STAGGER_MILLIS = 300
-        private const val MAX_HINTS = 99
-        private const val FREE_HINT_CEILING = 5
         private const val KEY_LANGUAGE = "gameLanguage"
-        private const val KEY_HINTS = "hintsRemaining"
         private const val KEY_PLAYED = "gamesPlayed"
         private const val KEY_WON = "gamesWon"
         private const val KEY_STREAK = "currentStreak"

@@ -57,7 +57,59 @@
     "_storefront" : "USA",
     "_storeKitErrors" : []
   },
-  "subscriptionGroups" : [],
+  "subscriptionGroups" : [
+    {
+      "id" : "D1E2F3A4",
+      "localizations" : [],
+      "name" : "Wordy Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "E1F2A3B4",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "No ads and unlimited hints.",
+              "displayName" : "Wordy Pro (Yearly)",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.sargisgevorgyan.wordlegame.pro.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Wordy Pro (Yearly)",
+          "subscriptionGroupID" : "D1E2F3A4",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "F1A2B3C5",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "No ads and unlimited hints.",
+              "displayName" : "Wordy Pro (Monthly)",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.sargisgevorgyan.wordlegame.pro.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Wordy Pro (Monthly)",
+          "subscriptionGroupID" : "D1E2F3A4",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        }
+      ]
+    }
+  ],
   "version" : {
     "major" : 3,
     "minor" : 0

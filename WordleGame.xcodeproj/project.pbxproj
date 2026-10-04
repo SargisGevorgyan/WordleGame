@@ -38,6 +38,7 @@
 		CE23E113401E8C5EB65AEBD8 /* GlassStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8791923558DED3FD9D1CC3 /* GlassStyles.swift */; };
 		D7237934D81E868F32D536AF /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79F1BB6093A98E8360281B5 /* StatsView.swift */; };
 		E204CD66AD70E7D8DA902B0A /* HintStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76101FAAD86036CF679F4A5D /* HintStoreView.swift */; };
+		6C7E16A4F9B67464A68738D5 /* ProView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50CA83BE685AF8394612B9F /* ProView.swift */; };
 		EA673C963F2261C81A5606C2 /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 9B476C7CC408A05631534370 /* Products.storekit */; };
 		EFF8D60204086D0689ED4437 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41C5DA0E0DC3EFF141D924FA /* SettingsView.swift */; };
 		F32E86E7F292B3E0448249ED /* WordleGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E3A5289F0187AC51914607 /* WordleGameApp.swift */; };
@@ -75,6 +76,7 @@
 		65674E00B1DECEE405AB115E /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		6ABFF73F7BAA5C14FA24DD55 /* StatsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsStore.swift; sourceTree = "<group>"; };
 		76101FAAD86036CF679F4A5D /* HintStoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HintStoreView.swift; sourceTree = "<group>"; };
+		F50CA83BE685AF8394612B9F /* ProView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProView.swift; sourceTree = "<group>"; };
 		775390B933333FD36F2F533F /* GameCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterManager.swift; sourceTree = "<group>"; };
 		8DD0863E15EA55AA028139A1 /* WordleGame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WordleGame.entitlements; sourceTree = "<group>"; };
 		988F1655666BC72EA20FA55D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 				16F8E152B87F12AFE74A4CF3 /* BoardView.swift */,
 				305E9E0F7C79B039329504B5 /* GameOverView.swift */,
 				76101FAAD86036CF679F4A5D /* HintStoreView.swift */,
+				F50CA83BE685AF8394612B9F /* ProView.swift */,
 				4FFB63B121E6098E8D6FD287 /* KeyboardView.swift */,
 				237B2ED37A3F9DBE219309BB /* RootView.swift */,
 				41C5DA0E0DC3EFF141D924FA /* SettingsView.swift */,
@@ -384,6 +387,7 @@
 				CE23E113401E8C5EB65AEBD8 /* GlassStyles.swift in Sources */,
 				70B19942759442C45458F2A4 /* Haptics.swift in Sources */,
 				E204CD66AD70E7D8DA902B0A /* HintStoreView.swift in Sources */,
+				6C7E16A4F9B67464A68738D5 /* ProView.swift in Sources */,
 				9B8870CEC1ABE630BAE8E2E7 /* KeyboardView.swift in Sources */,
 				53C14711047BFC78166380DC /* RootView.swift in Sources */,
 				EFF8D60204086D0689ED4437 /* SettingsView.swift in Sources */,

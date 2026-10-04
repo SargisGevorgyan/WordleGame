@@ -1,5 +1,8 @@
 package com.sargisgevorgyan.wordlegame.ui
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.LinearEasing
@@ -34,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +58,8 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -62,7 +68,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sargisgevorgyan.wordlegame.GameViewModel
 import com.sargisgevorgyan.wordlegame.R
+import com.sargisgevorgyan.wordlegame.WordleApplication
 import com.sargisgevorgyan.wordlegame.game.GameStatus
+import com.sargisgevorgyan.wordlegame.monetization.BannerAd
+import com.sargisgevorgyan.wordlegame.monetization.Links
+import com.sargisgevorgyan.wordlegame.monetization.Products
+import com.sargisgevorgyan.wordlegame.monetization.yearlySavingsPercent
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -70,6 +81,26 @@ import kotlin.math.sin
 fun WordleApp(vm: GameViewModel = viewModel()) {
     MaterialTheme(colorScheme = darkColorScheme(primary = Palette.neonGreen, background = Palette.indigoDeep)) {
         var showSettings by rememberSaveable { mutableStateOf(false) }
+        var showHintStore by rememberSaveable { mutableStateOf(false) }
+        var showPro by rememberSaveable { mutableStateOf(false) }
+        val context = LocalContext.current
+        val activity = remember(context) { context.findActivity() }
+        val uriHandler = LocalUriHandler.current
+        val app = context.applicationContext as WordleApplication
+        val billing = app.billing
+        val ads = app.ads
+        val entitlements by billing.entitlements.collectAsState()
+        val products by billing.products.collectAsState()
+        val purchasing by billing.purchasing.collectAsState()
+        val canRequestAds by ads.canRequestAds.collectAsState()
+        val rewardedReady by ads.rewardedReady.collectAsState()
+        val privacyOptionsRequired by ads.privacyOptionsRequired.collectAsState()
+        // Re-read prices whenever product details arrive.
+        val proMonthlyPrice = remember(products) { billing.proPrice(Products.ProPlan.MONTHLY) }
+        val playAgain = {
+            ads.maybeShowInterstitial(activity, entitlements.isAdFree)
+            vm.newGame()
+        }
         // Intro after the system splash; saveable so rotation doesn't replay it.
         var showIntro by rememberSaveable { mutableStateOf(true) }
         val focus = remember { FocusRequester() }
@@ -102,8 +133,15 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Hud(
-                    hints = vm.hintsRemaining,
-                    onHint = vm::useHint,
+                    hints = if (vm.hasUnlimitedHints) "∞" else vm.hintsRemaining.toString(),
+                    isPro = entitlements.isPro,
+                    onHint = {
+                        when {
+                            vm.canUseHint -> vm.useHint()
+                            vm.state.status == GameStatus.PLAYING -> showHintStore = true
+                        }
+                    },
+                    onPro = { showPro = true },
                     onSettings = { showSettings = true },
                 )
                 Text(
@@ -128,6 +166,9 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                     onKey = vm::onKey,
                     modifier = Modifier.padding(bottom = 8.dp),
                 )
+                if (canRequestAds && !entitlements.isAdFree) {
+                    BannerAd(Modifier.padding(bottom = 4.dp))
+                }
             }
             AnimatedVisibility(showIntro, enter = EnterTransition.None, exit = fadeOut(tween(350))) {
                 SplashIntro(vm.state.language.sampleTitle, onFinished = { showIntro = false })
@@ -139,9 +180,9 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                 won = vm.state.status == GameStatus.WON,
                 word = vm.state.targetWord,
                 stats = vm.stats,
-                onPlayAgain = vm::newGame,
+                onPlayAgain = playAgain,
                 // Back / tap outside also moves on; the finished game has no other way out.
-                onDismiss = vm::newGame,
+                onDismiss = playAgain,
             )
         }
         if (showSettings) {
@@ -151,14 +192,63 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                 stats = vm.stats,
                 onLanguage = vm::changeLanguage,
                 onResetStats = vm::resetStats,
+                entitlements = entitlements,
+                proMonthlyPrice = proMonthlyPrice,
+                privacyOptionsRequired = privacyOptionsRequired,
+                onGoPro = { showSettings = false; showPro = true },
+                onRestore = billing::restorePurchases,
+                onPrivacyOptions = { ads.showPrivacyOptions(activity) },
                 onDismiss = { showSettings = false },
+            )
+        }
+        if (showHintStore) {
+            LaunchedEffect(Unit) { ads.loadRewardedIfNeeded() }
+            // Close once hints arrive (a pack or Pro); the game toasts "+hints".
+            LaunchedEffect(vm.canUseHint) { if (vm.canUseHint) showHintStore = false }
+            HintStoreDialog(
+                hints = vm.hintsRemaining,
+                rewardedReady = rewardedReady,
+                packs = remember(products) {
+                    Products.hintPacks.map { (id, count) -> HintPackOffer(id, count, billing.price(id)) }
+                },
+                proMonthlyPrice = proMonthlyPrice,
+                onWatchAd = { done ->
+                    ads.showRewarded(activity) { granted ->
+                        done()
+                        vm.addHints(granted)
+                    }
+                },
+                onBuy = { billing.buy(activity, it) },
+                onGoPro = { showHintStore = false; showPro = true },
+                onDismiss = { showHintStore = false },
+            )
+        }
+        if (showPro) {
+            LaunchedEffect(entitlements.isPro) { if (entitlements.isPro) showPro = false }
+            ProDialog(
+                entitlements = entitlements,
+                monthlyPrice = proMonthlyPrice,
+                yearlyPrice = remember(products) { billing.proPrice(Products.ProPlan.YEARLY) },
+                yearlySavings = remember(products) {
+                    val monthly = billing.proPriceMicros(Products.ProPlan.MONTHLY)
+                    val yearly = billing.proPriceMicros(Products.ProPlan.YEARLY)
+                    if (monthly != null && yearly != null) yearlySavingsPercent(monthly, yearly) else null
+                },
+                removeAdsPrice = remember(products) { billing.price(Products.REMOVE_ADS) },
+                purchasing = purchasing,
+                onSubscribe = { billing.buyPro(activity, it) },
+                onRemoveAds = { billing.buy(activity, Products.REMOVE_ADS) },
+                onRestore = billing::restorePurchases,
+                onManage = { uriHandler.openUri(Links.manageSubscription(context.packageName)) },
+                onPrivacyPolicy = { uriHandler.openUri(Links.PRIVACY_POLICY) },
+                onDismiss = { showPro = false },
             )
         }
     }
 }
 
 @Composable
-private fun Hud(hints: Int, onHint: () -> Unit, onSettings: () -> Unit) {
+private fun Hud(hints: String, isPro: Boolean, onHint: () -> Unit, onPro: () -> Unit, onSettings: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -177,10 +267,32 @@ private fun Hud(hints: Int, onHint: () -> Unit, onSettings: () -> Unit) {
                 .clickable(onClick = onHint)
                 .padding(horizontal = 14.dp, vertical = 8.dp),
         )
-        IconButton(onClick = onSettings) {
-            Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings), tint = Color.White)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                if (isPro) stringResource(R.string.pro) else "👑 " + stringResource(R.string.go_pro),
+                color = Color.White,
+                fontWeight = FontWeight.Black,
+                fontSize = 13.sp,
+                modifier = Modifier
+                    .background(
+                        if (isPro) Brush.linearGradient(listOf(Palette.warmYellow, Palette.auroraMagenta)) else Palette.enterGradient,
+                        CircleShape,
+                    )
+                    .clickable(onClick = onPro)
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+            )
+            IconButton(onClick = onSettings) {
+                Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings), tint = Color.White)
+            }
         }
     }
+}
+
+/** The activity hosting this composition (billing and full-screen ads need one). */
+private tailrec fun Context.findActivity(): Activity = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> error("No activity in context")
 }
 
 @Composable

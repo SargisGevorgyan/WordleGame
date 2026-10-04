@@ -17,6 +17,7 @@ struct HintStoreView: View {
 
     @State private var busyProductID: String?
     @State private var watchingAd = false
+    @State private var showPro = false
 
     var body: some View {
         ZStack {
@@ -39,6 +40,8 @@ struct HintStoreView: View {
                     .foregroundStyle(.white.opacity(0.6))
 
                 rewardedAdRow
+
+                proRow
 
                 if store.hintProducts.isEmpty {
                     ForEach(StoreManager.HintPack.allCases) { pack in
@@ -78,6 +81,10 @@ struct HintStoreView: View {
         }
         .preferredColorScheme(.dark)
         .task { ads.loadRewardedAdIfNeeded() }
+        .sheet(isPresented: $showPro) { ProView() }
+        .onChange(of: store.isPro) { _, isPro in
+            if isPro { dismiss() }
+        }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.hidden)
     }
@@ -118,6 +125,31 @@ struct HintStoreView: View {
         .opacity(ads.canShowRewardedAd || watchingAd ? 1 : 0.5)
         .accessibilityIdentifier("watch-ad-button")
         .accessibilityLabel("Watch a video")
+    }
+
+    // MARK: - Pro row
+
+    private var proRow: some View {
+        Button { showPro = true } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "crown.fill").font(.title3).foregroundStyle(Color.warmYellow)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Unlimited hints with Pro").font(.system(size: 16, weight: .bold, design: .rounded))
+                    Text("No ads too · from \(store.proDisplayPrice(.monthly)) / month")
+                        .font(.caption).foregroundStyle(.white.opacity(0.7))
+                }
+                Spacer()
+                Image(systemName: "chevron.right").foregroundStyle(.white.opacity(0.6))
+            }
+            .foregroundStyle(.white)
+            .padding(14)
+            .frame(maxWidth: .infinity)
+            .background(Palette.proGradient.opacity(0.85),
+                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .shadow(color: .auroraMagenta.opacity(0.4), radius: 12)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("hint-store-pro-button")
     }
 
     // MARK: - Pack row

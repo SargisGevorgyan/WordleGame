@@ -58,7 +58,10 @@ struct WordleGameApp: App {
                     .environmentObject(gameCenter)
                     .tint(Color.wordleAccent)
                     .onChange(of: scenePhase) { _, phase in
-                        if phase == .active { TrackingAuthorization.requestIfNeeded() }
+                        guard phase == .active else { return }
+                        TrackingAuthorization.requestIfNeeded()
+                        // Picks up Pro renewals / expiry while the app was away.
+                        Task { await store.refreshEntitlements() }
                     }
 
                 if showSplash {
