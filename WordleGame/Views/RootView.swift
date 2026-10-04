@@ -22,6 +22,7 @@ struct RootView: View {
     @State private var showHintStore = false
     @State private var showLeaderboard = false
     @FocusState private var keyboardFocused: Bool
+    @Environment(\.scenePhase) private var scenePhase
 
     private var title: String {
         switch game.language {
@@ -42,6 +43,9 @@ struct RootView: View {
                 titleView
                     .padding(.top, 12)
                     .padding(.bottom, 4)
+
+                modePicker
+                    .padding(.top, 4)
 
                 Spacer(minLength: 4)
 
@@ -106,6 +110,10 @@ struct RootView: View {
         .onChange(of: showLeaderboard) { _, showing in
             if !showing { keyboardFocused = true }
         }
+        .onChange(of: scenePhase) { _, phase in
+            // A new day may have started while the app was in the background.
+            if phase == .active { game.refreshDailyIfNeeded() }
+        }
         .onChange(of: languageRaw) { _, raw in
             guard let language = GameLanguage(rawValue: raw) else { return }
             game.changeLanguage(language)
@@ -120,6 +128,12 @@ struct RootView: View {
             hintPill
             Spacer(minLength: 4)
             removeAdsControl
+            if game.status != .playing {
+                ShareLink(item: game.shareText) { iconLabel("square.and.arrow.up") }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("share-button")
+                    .accessibilityLabel(Text("Share"))
+            }
             iconButton("trophy.fill") {
                 if gameCenter.isAuthenticated { showLeaderboard = true }
                 else { gameCenter.authenticate() }
@@ -213,15 +227,56 @@ struct RootView: View {
     }
 
     private func iconButton(_ systemName: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(.white.opacity(0.85))
-                .frame(width: 34, height: 34)
-                .background(.ultraThinMaterial, in: Circle())
-                .overlay(Circle().strokeBorder(Palette.glassStrokeGradient, lineWidth: 1))
+        Button(action: action) { iconLabel(systemName) }
+            .buttonStyle(.plain)
+    }
+
+    private func iconLabel(_ systemName: String) -> some View {
+        Image(systemName: systemName)
+            .font(.system(size: 15, weight: .bold))
+            .foregroundStyle(.white.opacity(0.85))
+            .frame(width: 34, height: 34)
+            .background(.ultraThinMaterial, in: Circle())
+            .overlay(Circle().strokeBorder(Palette.glassStrokeGradient, lineWidth: 1))
+    }
+
+    // MARK: - Mode
+
+    private var modePicker: some View {
+        HStack(spacing: 2) {
+            ForEach(GameMode.allCases) { mode in
+                let selected = mode == game.mode
+                Button {
+                    game.changeMode(mode)
+                    keyboardFocused = true
+                } label: {
+                    modeLabel(mode)
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .foregroundStyle(selected ? Color.black.opacity(0.85) : .white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 6)
+                        .background {
+                            if selected { Capsule().fill(Color.neonGreen) }
+                        }
+                }
+                .buttonStyle(.plain)
+                .disabled(selected || game.isRevealing)
+                .accessibilityIdentifier("mode-\(mode.rawValue)")
+            }
         }
-        .buttonStyle(.plain)
+        .padding(3)
+        .background(.ultraThinMaterial, in: Capsule())
+        .overlay(Capsule().strokeBorder(Palette.glassStrokeGradient, lineWidth: 1))
+        .animation(.easeInOut(duration: 0.2), value: game.mode)
+    }
+
+    private func modeLabel(_ mode: GameMode) -> Text {
+        switch mode {
+        case .daily:
+            return game.puzzleNumber.map { Text("Daily #\($0)") } ?? Text("Daily")
+        case .free:
+            return Text("Free play")
+        }
     }
 
     // MARK: - Title
@@ -269,12 +324,19 @@ struct RootView: View {
                     .overlay(Color.indigoDeep.opacity(0.45))
                     .ignoresSafeArea()
                     .transition(.opacity)
-                    .onTapGesture {}
+                    .onTapGesture {
+                        // The finished daily board stays visible behind the overlay.
+                        if game.mode == .daily {
+                            withAnimation { game.showGameOver = false }
+                        }
+                    }
                 GameOverView(
                     didWin: game.status == .won,
                     targetWord: game.targetWord,
+                    puzzleNumber: game.puzzleNumber,
+                    shareText: game.shareText,
                     onPlayAgain: {
-                        game.newGame()
+                        if game.mode == .daily { game.changeMode(.free) } else { game.newGame() }
                         keyboardFocused = true
                     }
                 )
