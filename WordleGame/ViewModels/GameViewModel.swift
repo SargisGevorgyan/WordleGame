@@ -35,6 +35,9 @@ final class GameViewModel: ObservableObject {
     // MARK: - Config
 
     @Published private(set) var language: GameLanguage
+    @Published private(set) var mode: GameMode
+    /// Day of the daily game on the board (see `DailyPuzzle.dayNumber`).
+    @Published private(set) var dailyDay = DailyPuzzle.dayNumber()
     private(set) var targetWord: String {
         didSet {
             #if DEBUG
@@ -47,6 +50,8 @@ final class GameViewModel: ObservableObject {
     /// Identifies the current game, so reveal / game-over timers scheduled for
     /// an earlier game do nothing once a new one has started.
     private var gameID = UUID()
+    /// The free-play game set aside while the daily game is on screen.
+    private var freeGame: Snapshot?
     /// The submitted guess whose reveal animation is still running.
     private var pendingReveal: (row: Int, guess: String, evaluations: [LetterEvaluation])?
 
@@ -59,8 +64,9 @@ final class GameViewModel: ObservableObject {
 
     // MARK: - Init
 
-    init(language: GameLanguage = .current) {
+    init(language: GameLanguage = .current, mode: GameMode = .current) {
         self.language = language
+        self.mode = mode
         #if DEBUG
         let forced = ProcessInfo.processInfo.environment["UITEST_TARGET"]
         self.targetWord = (forced?.isEmpty == false ? forced! : language.randomWord()).uppercased()
@@ -68,14 +74,16 @@ final class GameViewModel: ObservableObject {
         self.targetWord = language.randomWord()
         #endif
         self.board = Self.makeEmptyBoard()
+        if mode == .daily { loadDaily() }
         #if DEBUG
         print("1: targetWorld: \(targetWord)")
         #endif
     }
 
-    /// Test seam: start with a known target.
+    /// Test seam: start a free game with a known target.
     init(targetWord: String, language: GameLanguage = .english) {
         self.language = language
+        self.mode = .free
         self.targetWord = targetWord.uppercased()
         self.board = Self.makeEmptyBoard()
         #if DEBUG
@@ -104,6 +112,29 @@ final class GameViewModel: ObservableObject {
     /// True once the player has made progress that a language switch would discard.
     var isInProgress: Bool {
         status == .playing && (currentRow > 0 || !currentTokens.isEmpty)
+    }
+
+    /// Whether switching language now would forfeit a free-play game (the daily one is saved).
+    var languageSwitchLosesGame: Bool {
+        mode == .free ? isInProgress : (freeGame?.isInProgress ?? false)
+    }
+
+    var puzzleNumber: Int? { mode == .daily ? DailyPuzzle.puzzleNumber(day: dailyDay) : nil }
+
+    /// The guesses scored so far, top to bottom.
+    var submittedGuesses: [String] { submittedRows.map { $0.compactMap(\.letter).joined() } }
+
+    private var submittedRows: [[Tile]] {
+        board.filter { row in
+            guard let first = row.first?.evaluation else { return false }
+            return first != .empty && first != .tbd
+        }
+    }
+
+    /// The emoji result grid to share.
+    var shareText: String {
+        ShareCard.text(title: language.sampleTitle, puzzleNumber: puzzleNumber,
+                       rows: submittedRows.map { $0.map(\.evaluation) }, didWin: status == .won)
     }
 
     // MARK: - Input
@@ -152,6 +183,10 @@ final class GameViewModel: ObservableObject {
     @discardableResult
     func useHint() -> Bool {
         guard status == .playing, !isRevealing else { return true }
+        guard mode == .free else {
+            flashToast("Hints are off in the daily game")
+            return true
+        }
         guard hintsRemaining > 0 else { return false }
         guard currentColumn < GameConstants.wordLength else { return true }
         let targetTokens = language.tokenize(targetWord)
@@ -226,6 +261,9 @@ final class GameViewModel: ObservableObject {
         pendingReveal = nil
         mergeKeyboardHints(tokens: language.tokenize(guess), evaluations: evaluations)
         isRevealing = false
+        if mode == .daily {
+            DailyPuzzle.save(guesses: submittedGuesses, language: language, day: dailyDay)
+        }
 
         if guess == targetWord {
             status = .won
@@ -261,7 +299,16 @@ final class GameViewModel: ObservableObject {
 
     // MARK: - New game
 
+    /// "Play again": a new free game. In daily mode the finished board stays.
     func newGame() {
+        guard mode == .free else {
+            showGameOver = false
+            return
+        }
+        startFreeGame()
+    }
+
+    private func startFreeGame() {
         gameID = UUID()
         pendingReveal = nil
         withAnimation(.easeInOut(duration: 0.2)) {
@@ -278,19 +325,116 @@ final class GameViewModel: ObservableObject {
     }
 
     /// Switch language and immediately start a fresh game in it.
-    /// The game in progress is abandoned, and counts as a loss (so switching
-    /// can't be used to protect a streak).
+    /// A free game in progress is abandoned, and counts as a loss (so switching
+    /// can't be used to protect a streak). Daily progress is saved per language.
     func changeLanguage(_ newLanguage: GameLanguage) {
         guard newLanguage != language else { return }
         // A guess still flipping counts: resolve it first (it may have won).
         if let pending = pendingReveal {
             finishReveal(row: pending.row, guess: pending.guess, evaluations: pending.evaluations)
         }
-        if isInProgress {
+        if languageSwitchLosesGame {
             StatsStore.record(win: false)
         }
+        freeGame = nil
         language = newLanguage
-        newGame()
+        if mode == .daily { loadDaily() } else { startFreeGame() }
+    }
+
+    /// Switch between the daily word and free play; the free game waits while the daily is shown.
+    func changeMode(_ newMode: GameMode) {
+        guard newMode != mode, !isRevealing else { return }
+        mode = newMode
+        UserDefaults.standard.set(newMode.rawValue, forKey: GameMode.storageKey)
+        if newMode == .daily {
+            freeGame = snapshot()
+            loadDaily()
+        } else if let saved = freeGame, saved.status == .playing {
+            freeGame = nil
+            restore(saved)
+        } else {
+            freeGame = nil
+            startFreeGame()
+        }
+    }
+
+    /// Loads the new day's word when the date has changed (app back in the foreground).
+    func refreshDailyIfNeeded() {
+        guard mode == .daily, !isRevealing, DailyPuzzle.dayNumber() != dailyDay else { return }
+        loadDaily()
+    }
+
+    /// Shows today's daily game in the current language, replaying saved guesses
+    /// without animation, stats or sounds.
+    private func loadDaily() {
+        gameID = UUID()
+        pendingReveal = nil
+        dailyDay = DailyPuzzle.dayNumber()
+        board = Self.makeEmptyBoard()
+        currentRow = 0
+        currentColumn = 0
+        status = .playing
+        keyboardHints = [:]
+        isRevealing = false
+        toast = nil
+        showGameOver = false
+        targetWord = DailyPuzzle.word(for: language, day: dailyDay)
+
+        let targetTokens = language.tokenize(targetWord)
+        for guess in DailyPuzzle.savedGuesses(language: language, day: dailyDay) where status == .playing {
+            let tokens = language.tokenize(guess)
+            // Stop at a word that is no longer playable (the word list changed).
+            guard tokens.count == GameConstants.wordLength, language.isValidGuess(guess) else { break }
+            let evaluations = Self.evaluate(guessTokens: tokens, targetTokens: targetTokens)
+            for (index, token) in tokens.enumerated() {
+                board[currentRow][index].letter = token
+                board[currentRow][index].evaluation = evaluations[index]
+            }
+            for (index, token) in tokens.enumerated() where evaluations[index].rank > (keyboardHints[token]?.rank ?? 0) {
+                keyboardHints[token] = evaluations[index]
+            }
+            if guess.uppercased() == targetWord {
+                status = .won
+            } else if currentRow == GameConstants.maxGuesses - 1 {
+                status = .lost
+            } else {
+                currentRow += 1
+            }
+        }
+    }
+
+    // MARK: - Free game snapshot
+
+    private struct Snapshot {
+        let board: [[Tile]]
+        let currentRow: Int
+        let currentColumn: Int
+        let status: GameStatus
+        let keyboardHints: [String: LetterEvaluation]
+        let targetWord: String
+
+        var isInProgress: Bool {
+            status == .playing && (currentRow > 0 || currentColumn > 0)
+        }
+    }
+
+    private func snapshot() -> Snapshot {
+        Snapshot(board: board, currentRow: currentRow, currentColumn: currentColumn,
+                 status: status, keyboardHints: keyboardHints, targetWord: targetWord)
+    }
+
+    private func restore(_ saved: Snapshot) {
+        gameID = UUID()
+        pendingReveal = nil
+        board = saved.board
+        currentRow = saved.currentRow
+        currentColumn = saved.currentColumn
+        status = saved.status
+        keyboardHints = saved.keyboardHints
+        targetWord = saved.targetWord
+        isRevealing = false
+        toast = nil
+        showGameOver = false
     }
 
     // MARK: - Physical keyboard
