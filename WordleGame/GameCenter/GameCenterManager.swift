@@ -2,12 +2,14 @@
 //  GameCenterManager.swift
 //  WordleGame
 //
-//  Game Center: authentication + leaderboard score submission.
+//  Game Center: authentication, leaderboard scores and achievements.
 //
 //  Setup for release (see RELEASE.md):
 //   • Enable the Game Center capability (already in WordleGame.entitlements).
 //   • In App Store Connect create two leaderboards with the IDs below
 //     (Integer, "High to Low"), and localize their names.
+//   • Create the achievements listed in `Achievement` with the same IDs.
+//     Android's Play Games achievements mirror this list.
 //
 
 import GameKit
@@ -22,6 +24,27 @@ final class GameCenterManager: ObservableObject {
     static let winsLeaderboardID   = "com.sargisgevorgyan.wordlegame.wins"
     static let streakLeaderboardID = "com.sargisgevorgyan.wordlegame.beststreak"
 
+    /// Milestones unlocked from the persisted stats. Same set on Android.
+    enum Achievement: String, CaseIterable {
+        case firstWin  = "com.sargisgevorgyan.wordlegame.first_win"
+        case wins10    = "com.sargisgevorgyan.wordlegame.wins_10"
+        case wins100   = "com.sargisgevorgyan.wordlegame.wins_100"
+        case streak3   = "com.sargisgevorgyan.wordlegame.streak_3"
+        case streak7   = "com.sargisgevorgyan.wordlegame.streak_7"
+        case streak30  = "com.sargisgevorgyan.wordlegame.streak_30"
+
+        func isEarned(wins: Int, bestStreak: Int) -> Bool {
+            switch self {
+            case .firstWin: wins >= 1
+            case .wins10:   wins >= 10
+            case .wins100:  wins >= 100
+            case .streak3:  bestStreak >= 3
+            case .streak7:  bestStreak >= 7
+            case .streak30: bestStreak >= 30
+            }
+        }
+    }
+
     enum Status: Equatable {
         case unknown        // not attempted yet
         case authenticated
@@ -31,6 +54,8 @@ final class GameCenterManager: ObservableObject {
 
     @Published private(set) var status: Status = .unknown
     var isAuthenticated: Bool { status == .authenticated }
+
+    private var reportedAchievements = Set<Achievement>()
 
     private init() {}
 
@@ -73,6 +98,27 @@ final class GameCenterManager: ObservableObject {
 
         submit(wins, to: Self.winsLeaderboardID)
         submit(bestStreak, to: Self.streakLeaderboardID)
+        reportAchievements(wins: wins, bestStreak: bestStreak)
+    }
+
+    /// Reports every earned achievement not already reported this session;
+    /// Game Center ignores repeats of ones completed earlier.
+    private func reportAchievements(wins: Int, bestStreak: Int) {
+        let earned = Achievement.allCases
+            .filter { $0.isEarned(wins: wins, bestStreak: bestStreak) && !reportedAchievements.contains($0) }
+        guard !earned.isEmpty else { return }
+        reportedAchievements.formUnion(earned)
+        let achievements = earned.map { achievement in
+            let item = GKAchievement(identifier: achievement.rawValue)
+            item.percentComplete = 100
+            item.showsCompletionBanner = true
+            return item
+        }
+        GKAchievement.report(achievements) { error in
+            if let error {
+                print("[GameCenter] Achievement report failed: \(error.localizedDescription)")
+            }
+        }
     }
 
     private func submit(_ score: Int, to leaderboardID: String) {

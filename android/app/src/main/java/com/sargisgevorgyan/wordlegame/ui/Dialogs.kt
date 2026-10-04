@@ -33,6 +33,7 @@ import androidx.compose.ui.window.Dialog
 import com.sargisgevorgyan.wordlegame.R
 import com.sargisgevorgyan.wordlegame.game.GameLanguage
 import com.sargisgevorgyan.wordlegame.game.Stats
+import com.sargisgevorgyan.wordlegame.games.PlayGamesService
 
 private val panelShape = RoundedCornerShape(28.dp)
 
@@ -105,6 +106,10 @@ fun SettingsDialog(
     stats: Stats,
     onLanguage: (GameLanguage) -> Unit,
     onResetStats: () -> Unit,
+    playGamesStatus: PlayGamesService.Status,
+    onPlayGamesSignIn: () -> Unit,
+    onLeaderboards: () -> Unit,
+    onAchievements: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var pending by remember { mutableStateOf<GameLanguage?>(null) }
@@ -143,6 +148,29 @@ fun SettingsDialog(
                 StatsRow(stats)
                 TextButton(onClick = onResetStats) {
                     Text(stringResource(R.string.reset_statistics), color = Palette.auroraMagenta)
+                }
+
+                SectionTitle(stringResource(R.string.play_games))
+                when (playGamesStatus) {
+                    PlayGamesService.Status.SIGNED_IN -> {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                            TextButton(onClick = onLeaderboards) {
+                                Text("🏆 " + stringResource(R.string.leaderboards), color = Palette.neonGreen)
+                            }
+                            TextButton(onClick = onAchievements) {
+                                Text("⭐ " + stringResource(R.string.achievements), color = Palette.neonGreen)
+                            }
+                        }
+                        Text(stringResource(R.string.stats_sync_note), color = Palette.secondaryText, fontSize = 13.sp)
+                    }
+                    PlayGamesService.Status.UNAVAILABLE ->
+                        Text(stringResource(R.string.play_games_unavailable), color = Palette.secondaryText, fontSize = 13.sp)
+                    PlayGamesService.Status.UNKNOWN, PlayGamesService.Status.SIGNED_OUT -> {
+                        TextButton(onClick = onPlayGamesSignIn) {
+                            Text(stringResource(R.string.sign_in_play_games), color = Palette.neonGreen)
+                        }
+                        Text(stringResource(R.string.stats_sync_note), color = Palette.secondaryText, fontSize = 13.sp)
+                    }
                 }
 
                 Text(stringResource(R.string.how_to_play), color = Palette.secondaryText, fontSize = 13.sp)

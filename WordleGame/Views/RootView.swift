@@ -90,6 +90,7 @@ struct RootView: View {
         .task {
             SoundManager.shared.isEnabled = soundEnabled
             keyboardFocused = true
+            CloudStatsSync.shared.start()
             gameCenter.authenticate()
             game.onRoundFinished = { _ in
                 ads.registerRoundCompleted(isAdFree: store.isAdFree)
