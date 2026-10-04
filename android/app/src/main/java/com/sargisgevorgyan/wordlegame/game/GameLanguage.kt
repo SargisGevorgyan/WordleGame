@@ -21,6 +21,9 @@ enum class GameLanguage(
     /** Path of this language's word list inside the app's assets (from `shared/words`). */
     val wordFileName: String get() = "words_$code.txt"
 
+    /** English meanings for this language's words (`shared/words/glosses_<code>.tsv`); may not exist. */
+    val glossFileName: String get() = "glosses_$code.tsv"
+
     /**
      * Maps a typed character into the language's alphabet (uppercase), or `null`
      * when it isn't a letter of that alphabet. Ligatures whose uppercase expands

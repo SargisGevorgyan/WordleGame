@@ -14,6 +14,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,11 +53,26 @@ private fun GlassPanel(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun GameOverDialog(won: Boolean, word: String, stats: Stats, onPlayAgain: () -> Unit, onDismiss: () -> Unit) {
+fun GameOverDialog(
+    won: Boolean,
+    timedOut: Boolean,
+    word: String,
+    meaning: String?,
+    wordOfTheDay: Pair<String, String>?,
+    stats: Stats,
+    onPlayAgain: () -> Unit,
+    onDismiss: () -> Unit,
+) {
     Dialog(onDismissRequest = onDismiss) {
         GlassPanel {
             Text(
-                stringResource(if (won) R.string.brilliant else R.string.so_close),
+                stringResource(
+                    when {
+                        won -> R.string.brilliant
+                        timedOut -> R.string.times_up
+                        else -> R.string.so_close
+                    },
+                ),
                 color = if (won) Palette.neonGreen else Palette.warmYellow,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Black,
@@ -65,7 +82,17 @@ fun GameOverDialog(won: Boolean, word: String, stats: Stats, onPlayAgain: () -> 
                 color = Palette.secondaryText,
             )
             Text(word, color = Color.White, fontSize = 34.sp, fontWeight = FontWeight.Black, letterSpacing = 6.sp)
+            if (meaning != null) {
+                Text(
+                    "${stringResource(R.string.meaning)}: $meaning",
+                    color = Palette.warmYellow,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                )
+            }
             StatsRow(stats)
+            // Learners: one Armenian word a day, skipped when it's the word just played.
+            wordOfTheDay?.takeIf { it.first != word }?.let { (hyWord, gloss) -> WordOfTheDayCard(hyWord, gloss) }
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -77,6 +104,23 @@ fun GameOverDialog(won: Boolean, word: String, stats: Stats, onPlayAgain: () -> 
                 Text(stringResource(R.string.play_again), color = Palette.indigoDeep, fontWeight = FontWeight.Black, fontSize = 18.sp)
             }
         }
+    }
+}
+
+@Composable
+private fun WordOfTheDayCard(word: String, gloss: String) {
+    val shape = RoundedCornerShape(16.dp)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(Palette.glassFill, shape)
+            .border(1.dp, Palette.borderIdle, shape)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(stringResource(R.string.word_of_the_day).uppercase(), color = Palette.secondaryText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+        Text(word, color = Palette.neonGreen, fontSize = 22.sp, fontWeight = FontWeight.Black, letterSpacing = 3.sp)
+        Text(gloss, color = Color.White, fontSize = 14.sp, textAlign = TextAlign.Center)
     }
 }
 
@@ -103,7 +147,11 @@ fun SettingsDialog(
     current: GameLanguage,
     isInProgress: Boolean,
     stats: Stats,
+    hardMode: Boolean,
+    timedMode: Boolean,
     onLanguage: (GameLanguage) -> Unit,
+    onHardMode: (Boolean) -> Unit,
+    onTimedMode: (Boolean) -> Unit,
     onResetStats: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -139,6 +187,13 @@ fun SettingsDialog(
                     }
                 }
 
+                SectionTitle(stringResource(R.string.game_modes))
+                ModeSwitch(stringResource(R.string.hard_mode), stringResource(R.string.hard_mode_desc), hardMode, onHardMode)
+                ModeSwitch(stringResource(R.string.timed_mode), stringResource(R.string.timed_mode_desc), timedMode, onTimedMode)
+                if (isInProgress) {
+                    Text(stringResource(R.string.modes_next_game), color = Palette.secondaryText, fontSize = 12.sp, modifier = Modifier.fillMaxWidth())
+                }
+
                 SectionTitle(stringResource(R.string.statistics))
                 StatsRow(stats)
                 TextButton(onClick = onResetStats) {
@@ -167,6 +222,21 @@ fun SettingsDialog(
             dismissButton = {
                 TextButton(onClick = { pending = null }) { Text(stringResource(R.string.cancel)) }
             },
+        )
+    }
+}
+
+@Composable
+private fun ModeSwitch(title: String, description: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(title, color = Color.White, fontWeight = FontWeight.SemiBold)
+            Text(description, color = Palette.secondaryText, fontSize = 12.sp)
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onChange,
+            colors = SwitchDefaults.colors(checkedTrackColor = Palette.neonGreen, checkedThumbColor = Palette.indigoDeep),
         )
     }
 }

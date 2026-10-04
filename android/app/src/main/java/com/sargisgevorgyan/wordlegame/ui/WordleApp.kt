@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sargisgevorgyan.wordlegame.GameViewModel
 import com.sargisgevorgyan.wordlegame.R
+import com.sargisgevorgyan.wordlegame.UiMessage
 import com.sargisgevorgyan.wordlegame.game.GameStatus
 import kotlin.math.cos
 import kotlin.math.sin
@@ -103,6 +104,8 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
             ) {
                 Hud(
                     hints = vm.hintsRemaining,
+                    secondsLeft = vm.secondsLeft.takeIf { vm.state.timed },
+                    hardMode = vm.state.hardMode,
                     onHint = vm::useHint,
                     onSettings = { showSettings = true },
                 )
@@ -137,7 +140,10 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
         if (vm.showGameOver) {
             GameOverDialog(
                 won = vm.state.status == GameStatus.WON,
+                timedOut = vm.state.timedOut,
                 word = vm.state.targetWord,
+                meaning = vm.targetMeaning,
+                wordOfTheDay = vm.armenianWordOfTheDay,
                 stats = vm.stats,
                 onPlayAgain = vm::newGame,
                 // Back / tap outside also moves on; the finished game has no other way out.
@@ -149,7 +155,11 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                 current = vm.state.language,
                 isInProgress = vm.state.isInProgress,
                 stats = vm.stats,
+                hardMode = vm.hardMode,
+                timedMode = vm.timedMode,
                 onLanguage = vm::changeLanguage,
+                onHardMode = vm::changeHardMode,
+                onTimedMode = vm::changeTimedMode,
                 onResetStats = vm::resetStats,
                 onDismiss = { showSettings = false },
             )
@@ -158,7 +168,7 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
 }
 
 @Composable
-private fun Hud(hints: Int, onHint: () -> Unit, onSettings: () -> Unit) {
+private fun Hud(hints: Int, secondsLeft: Int?, hardMode: Boolean, onHint: () -> Unit, onSettings: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -177,6 +187,26 @@ private fun Hud(hints: Int, onHint: () -> Unit, onSettings: () -> Unit) {
                 .clickable(onClick = onHint)
                 .padding(horizontal = 14.dp, vertical = 8.dp),
         )
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (hardMode) {
+                Text(
+                    stringResource(R.string.hard_mode),
+                    color = Palette.auroraMagenta,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            if (secondsLeft != null) {
+                Text(
+                    "⏱ %d:%02d".format(secondsLeft / 60, secondsLeft % 60),
+                    color = if (secondsLeft <= 30) Palette.warmYellow else Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .background(Palette.keyIdle, CircleShape)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                )
+            }
+        }
         IconButton(onClick = onSettings) {
             Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings), tint = Color.White)
         }
@@ -184,12 +214,12 @@ private fun Hud(hints: Int, onHint: () -> Unit, onSettings: () -> Unit) {
 }
 
 @Composable
-private fun ToastBanner(message: Int?, modifier: Modifier = Modifier) {
+private fun ToastBanner(message: UiMessage?, modifier: Modifier = Modifier) {
     var last by remember { mutableStateOf(message) }
     if (message != null) last = message
     AnimatedVisibility(message != null, modifier = modifier, enter = fadeIn(), exit = fadeOut()) {
         Text(
-            last?.let { stringResource(it) }.orEmpty(),
+            last?.let { stringResource(it.res, *it.args.toTypedArray()) }.orEmpty(),
             color = Color.White,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier

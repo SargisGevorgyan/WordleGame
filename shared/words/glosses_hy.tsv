@@ -1,0 +1,460 @@
+# English glosses for the Armenian word bank (words_hy.txt), shared by the iOS and Android apps.
+# Shown after a game and as the "Armenian word of the day" for learners.
+# Format: WORD<TAB>gloss, one entry per line. Lines starting with # and blank lines are ignored.
+# Words without an entry simply show no meaning. Keep entries short (one or two senses).
+ԱԳՌԱՎ	crow
+ԱԶՆԻՎ	noble, honest
+ԱԼԲՈՄ	album
+ԱԼՅՈՒՐ	flour
+ԱԿԱՆՋ	ear
+ԱԿՆՈՑ	eyeglasses
+ԱԿՈՒՄԲ	club (society)
+ԱՂԱՆԴ	sect, denomination
+ԱՂՄՈՒԿ	noise
+ԱՂՈԹՔ	prayer
+ԱՂՋԻԿ	girl
+ԱՂՎԵՍ	fox
+ԱՂՏՈՏ	dirty
+ԱՂՔԱՏ	poor
+ԱՄԲԱՐ	storehouse, granary
+ԱՄԲՈԽ	crowd
+ԱՄՐՈՑ	fortress
+ԱՄՓՈՓ	brief, concise
+ԱՅՍՕՐ	today
+ԱՆԳԻՆ	priceless
+ԱՆԳԻՐ	illiterate
+ԱՆԴԱՄ	member
+ԱՆԹԻՎ	countless
+ԱՆԿԱԽ	independent
+ԱՆՁՈՒԿ	narrow
+ԱՆՄԱՀ	immortal
+ԱՆՏԱՌ	forest
+ԱՆՏԵՐ	ownerless, abandoned
+ԱՆՑՈՒՄ	passage, transition
+ԱՊԱԳԱ	future
+ԱՊԱԿԻ	glass
+ԱՊՐԵԼ	to live
+ԱՊՐԻԼ	April
+ԱՌԱՆՑ	without
+ԱՌՅՈՒԾ	lion
+ԱՌՈՂՋ	healthy
+ԱՌՋԵՎ	in front, ahead
+ԱՌՎԱԿ	stream, brook
+ԱՍՊԵՏ	knight, horseman
+ԱՍՏԻՃ	degree, rank
+ԱՎԱՆԴ	deposit, legacy
+ԱՎԱՐՏ	end, completion
+ԱՎԵԼԻ	more
+ԱՐԱՐՉ	creator
+ԱՐԱՐՔ	deed, act
+ԱՐԴԱՐ	just, fair
+ԱՐԴԵՆ	already
+ԱՐԴՈՒԿ	iron (for clothes)
+ԱՐԺԱՆ	worthy
+ԱՐԺԵՔ	value
+ԱՐԽԻՎ	archive
+ԱՐԾԱԹ	silver
+ԱՐԾԻՎ	eagle
+ԱՐԿԱԾ	adventure
+ԱՐՁԱԿ	prose; loose
+ԱՐՁԱՆ	statue
+ԱՐՄԱՎ	palm tree
+ԱՐՄԱՏ	root
+ԱՐՅՈՒՆ	blood
+ԱՐՋՈՒԿ	bear cub
+ԱՔԼՈՐ	rooster
+ԲԱԶՈՒԿ	arm, forearm
+ԲԱԺԱԿ	drinking glass, cup
+ԲԱԺԻՆ	share, section
+ԲԱԼԵՏ	ballet
+ԲԱՆԱԿ	army
+ԲԱՆԱՆ	banana
+ԲԱՐԱԿ	thin
+ԲԱՐԴԻ	poplar
+ԲԱՐԵՎ	hello
+ԲԱՐԻՔ	blessing, good thing
+ԲԱՐՁՐ	high, tall
+ԲԱՑԵԼ	to open
+ԲԵԿՈՐ	fragment, shard
+ԲԵՂՈՒՆ	fertile
+ԲԵՐԱՆ	mouth
+ԲԵՐԵԼ	to bring
+ԲԺԻՇԿ	doctor
+ԲՈԼՈՐ	all, everyone
+ԲՈՒԺԵԼ	to heal, treat
+ԲՌՆԵԼ	to grab, catch
+ԲՐԻՆՁ	rice
+ԳԱԳԱԹ	summit, peak
+ԳԱԶԱՆ	wild beast
+ԳԱԶԱՐ	carrot
+ԳԱՎԱԹ	cup, mug
+ԳԱՎԱՌ	province, region
+ԳԱՐՈՒՆ	spring (season)
+ԳԵՏԻՆ	ground, floor
+ԳԻՇԵՐ	night
+ԳԻՏՈՒՆ	learned, knowledgeable
+ԳՄԲԵԹ	dome
+ԳՆԱՑՔ	train
+ԳՆԴԱԿ	ball
+ԳՈՀԱՐ	jewel, gem
+ԳՈՌԱԼ	to roar
+ԳՈՎԵԼ	to praise
+ԳՈՒԹԱՆ	plough
+ԳՈՒԼՊԱ	sock
+ԳՈՒՄԱՐ	sum of money
+ԳՏՆԵԼ	to find
+ԳՐԵԹԵ	almost
+ԳՐԿԵԼ	to hug
+ԳՐՊԱՆ	pocket
+ԴԱԴԱՐ	pause, break
+ԴԱԺԱՆ	cruel
+ԴԱՆԱԿ	knife
+ԴԱՐԱԿ	shelf
+ԴԵՂԻՆ	yellow
+ԴԺՎԱՐ	difficult
+ԴԻՎԱՆ	divan, sofa
+ԴԻՏԵԼ	to observe
+ԴՈՂԱԼ	to tremble
+ԴՈՒԴՈՒԿ	duduk (Armenian woodwind)
+ԴՈՒՍՏՐ	daughter
+ԴՊՐՈՑ	school
+ԴՐԱՄԱ	drama
+ԵՂՅԱՄ	hoarfrost
+ԵՂՆԻԿ	deer
+ԵՂՈՒՆԳ	fingernail
+ԵՐԱՇՏ	drought
+ԵՐԲԵՔ	never
+ԵՐԳԵԼ	to sing
+ԵՐԳԻՉ	singer
+ԵՐԴՈՒՄ	oath
+ԵՐԵԽԱ	child
+ԵՐԵԿՈ	evening
+ԵՐԻՆՋ	heifer
+ԵՐԿԱԹ	iron (metal)
+ԵՐԿԱՐ	long
+ԵՐԿԻՐ	country; earth
+ԶԱՎԱԿ	offspring, child
+ԶԱՏԻԿ	Easter
+ԶԳԱՍՏ	prudent, sensible
+ԶԳԵՍՏ	garment, dress
+ԶԳՈՒՅՇ	careful
+ԶՂՋԱԼ	to regret
+ԶՂՋՈՒՄ	regret, remorse
+ԶՎԱՐՃ	cheerful
+ԷՔՐԱՆ	screen
+ԸՆԿԵՐ	friend
+ԸՆՏԻՐ	choice, select
+ԹԱՆՁՐ	thick
+ԹԵԹԵՎ	light (not heavy)
+ԹԵՔԵԼ	to tilt, bend
+ԹԻԹԵՌ	butterfly
+ԹՈՆԻՐ	tonir (clay oven)
+ԹՌՉԵԼ	to fly
+ԹՌՉՈՒՆ	bird
+ԺՈՂՈՎ	meeting
+ԺՊՏԱԼ	to smile
+ԻՄԱՍՏ	meaning
+ԻՇԽԱՆ	prince
+ԻՋՆԵԼ	to go down, get off
+ԼԱՎԱՇ	lavash (flatbread)
+ԼԻԶԵԼ	to lick
+ԼՅԱՐԴ	liver
+ԼՈԼԻԿ	tomato
+ԼՈՂԱԼ	to swim
+ԼՈՒՍԻՆ	moon
+ԼՑՆԵԼ	to fill
+ԽԱԲԵԼ	to deceive
+ԽԱԾԵԼ	to bite
+ԽԱՂԱԼ	to play
+ԽԱՂԱՂ	peaceful, calm
+ԽԱՂՈՂ	grapes
+ԽԱՆՈՒԹ	shop
+ԽԱՎԱՐ	darkness
+ԽԵԼՈՔ	smart, clever
+ԽԻԶԱԽ	brave
+ԽՆԱՄՔ	care
+ԽՆԴԱԼ	to laugh
+ԽՆԴԻՐ	problem, task
+ԽՆՁՈՐ	apple
+ԽՈՆԱՎ	damp, humid
+ԽՈՍԵԼ	to speak
+ԽՈՐԱՆ	altar
+ԽՈՒՃԱՊ	panic
+ԾԱՂԻԿ	flower
+ԾԱՄԵԼ	to chew
+ԾԱՆՈԹ	acquaintance; familiar
+ԾԱՎԱԼ	volume, extent
+ԾԱՐԱՎ	thirsty
+ԾԵԾԵԼ	to beat, hit
+ԾԻԾԱՂ	laughter
+ԾԻՐԱՆ	apricot
+ԾՆՈՂՔ	parents
+ԾՆՈՒՆԴ	birth
+ԾՆՎԵԼ	to be born
+ԾՈՎԱՓ	seashore
+ԿԱԹԵԼ	to drip
+ԿԱԹԻԼ	drop (of liquid)
+ԿԱԹՍԱ	cauldron, pot
+ԿԱԿԱՉ	poppy
+ԿԱՂՆԻ	oak
+ԿԱՄԱՐ	arch
+ԿԱՅԱՆ	station, stop
+ԿԱՆԱՉ	green
+ԿԱՆՈՆ	rule
+ԿԱՊԱՐ	lead (metal)
+ԿԱՊԵԼ	to tie, connect
+ԿԱՊԻԿ	monkey
+ԿԱՏԱԿ	joke
+ԿԱՏԱՐ	top, crest
+ԿԱՐԱԳ	butter
+ԿԱՐԱՍ	clay wine jar
+ԿԱՐԵԼ	to sew
+ԿԱՐԻՃ	scorpion
+ԿԱՐԻՔ	need
+ԿԱՐՈՂ	able, capable
+ԿԱՐՈՏ	longing, missing someone
+ԿԱՑԻՆ	axe
+ԿԱՔԱՎ	partridge
+ԿԵՂԵՎ	tree bark
+ԿԵՍՕՐ	noon
+ԿԻՍԵԼ	to share, halve
+ԿԼԻՄԱ	climate
+ԿՅԱՆՔ	life
+ԿՇՌԵԼ	to weigh
+ԿՈԽԵԼ	to step on, trample
+ԿՈԿԻԿ	neat, tidy
+ԿՈՃԱԿ	button
+ԿՈՇԻԿ	shoe
+ԿՈՉԵԼ	to call
+ԿՈՒՐԾՔ	chest, breast
+ԿՌՈՒՆԿ	crane (bird)
+ԿՌՎԵԼ	to fight
+ԿՏՐԵԼ	to cut
+ԿՐԹԵԼ	to educate
+ԿՐՈՒՆԿ	heel
+ՀԱԶԱՐ	thousand
+ՀԱԶԻՎ	barely
+ՀԱԼՎԱ	halva
+ՀԱՃԱԽ	often
+ՀԱՄԱՌ	stubborn
+ՀԱՄԱՐ	number; for
+ՀԱՄԵՂ	delicious
+ՀԱՄԵՄ	spice, seasoning
+ՀԱՄՈՎ	tasty
+ՀԱՆԵԼ	to take out
+ՀԱՇԻՎ	bill; count
+ՀԱՉԵԼ	to bark
+ՀԱՍԱԿ	height, stature
+ՀԱՍՑԵ	address
+ՀԱՎԱՏ	faith
+ՀԱՏԱԿ	floor
+ՀԱՏԻԿ	grain, seed
+ՀԱՏՈՒԿ	special
+ՀԱՐԱՎ	south
+ՀԵՐՈՍ	hero
+ՀԻՄԱՐ	foolish
+ՀԻՇԵԼ	to remember
+ՀԻՍՈՒՆ	fifty
+ՀՅՈՒՍՆ	carpenter
+ՀՆԱՐՔ	trick, means
+ՀՆՁԵԼ	to harvest, reap
+ՀՈԳԱԼ	to take care of
+ՀՈՍԵԼ	to flow
+ՀՈՎԻՎ	shepherd
+ՀՈՎԻՏ	valley
+ՀՈՒԼԻՍ	July
+ՀՈՒՆԻՍ	June
+ՀՊԱՐՏ	proud
+ՀՐԱՇՔ	miracle
+ՁԱՆՁՐ	boredom
+ՁԱՎԱՐ	groats, cracked wheat
+ՁԳՏԵԼ	to strive
+ՃԱԿԱՏ	forehead
+ՃԱՂԱՏ	bald
+ՃԱՄՓԱ	road, way
+ՃԱՇԱԿ	taste
+ՃԱՐԱԿ	fodder, pasture
+ՃՇՏԵԼ	to correct, clarify
+ՃՈՊԱՆ	rope
+ՄԱԾՈՒՆ	matsun (yogurt)
+ՄԱՅԻՍ	May
+ՄԱՅՐԻ	cedar
+ՄԱՆԵԼ	to spin (thread)
+ՄԱՆԹԻ	manti (dumplings)
+ՄԱՆՈՒԿ	child
+ՄԱՌԱՆ	cellar, pantry
+ՄԱՍԻՆ	about
+ՄԱՍՈՒՐ	rosehip
+ՄԱՏԱՂ	matagh (offering meal)
+ՄԱՏԻՏ	pencil
+ՄԱՏՈՒՌ	chapel
+ՄԱՐԱԼ	red deer, doe
+ՄԱՔՈՒՐ	clean
+ՄԵԴԱԼ	medal
+ՄԵՆԱԿ	alone
+ՄԵՏԱՂ	metal
+ՄԻԱՅՆ	only
+ՄԻՋԻՆ	middle, average
+ՄԻՋՈՑ	means; event
+ՄԿՐԱՏ	scissors
+ՄՈԴԵԼ	model
+ՄՈԾԱԿ	mosquito
+ՄՈՂԵՍ	lizard
+ՄՈՐԹԻ	skin, hide
+ՄՈՒՐԱԶ	wish, desire
+ՄՏՆԵԼ	to enter
+ՄՐՍԵԼ	to feel cold
+ՄՐՐԻԿ	storm
+ՆԱԽԻՐ	herd
+ՆԱՄԱԿ	letter (mail)
+ՆԱՅԵԼ	to look
+ՆԱՎԱԿ	boat
+ՆԵՏԵԼ	to throw
+ՆԵՐԵԼ	to forgive
+ՆԵՐԿԱ	present, here
+ՆԵՐՈՒՄ	forgiveness
+ՆԻԶԱԿ	spear
+ՆԻՀԱՐ	thin, skinny
+ՆՊԱՍՏ	aid, benefit
+ՆՍՏԵԼ	to sit
+ՇԱԲԱԹ	week; Saturday
+ՇԱՊԻԿ	shirt
+ՇԱՔԱՐ	sugar
+ՇԻՆԵԼ	to build
+ՇՆՈՐՀ	grace, talent
+ՇՆՉԵԼ	to breathe
+ՇՈՂԱԼ	to shine
+ՇՈՅԵԼ	to caress
+ՇՈՒՏՈՎ	soon
+ՇՐՋԱՆ	district; period
+ՇՐՋԵԼ	to wander; turn over
+ՈՄԱՆՔ	some people
+ՈՉԻՆՉ	nothing
+ՈՉԽԱՐ	sheep
+ՈՐՊԵՍ	as, in the role of
+ՈՐՍԱԼ	to hunt
+ՈՐՏԵՂ	where
+ՈՒՐԲԱԹ	Friday
+ՉԱՄԻՉ	raisin
+ՉԱՐԻՔ	evil
+ՉԱՓԵԼ	to measure
+ՊԱԼԱՏ	palace
+ՊԱՀԱԿ	guard
+ՊԱՀԵԼ	to keep
+ՊԱՆԻՐ	cheese
+ՊԱՇԱՐ	supply, stock
+ՊԱՊԻԿ	grandpa
+ՊԱՏԱՌ	bite, piece
+ՊԱՏԵԼ	to wrap
+ՊԱՏԻՎ	honor
+ՊԱՐԱՆ	rope
+ՊԱՐԱՊ	idle, free
+ՊԱՐԵԼ	to dance
+ՊԱՐՈՂ	dancer
+ՊԱՐՈՆ	mister, sir
+ՊԱՐՍՊ	fortress wall
+ՊԱՐՏՔ	debt; duty
+ՊԻՏԱԿ	label
+ՊՂԻՆՁ	copper
+ՊՂՊԵՂ	pepper
+ՊՈԿԵԼ	to tear off
+ՊՏՈՒՅՏ	walk, stroll
+ՋԱՀԵԼ	young
+ՋԱՂԱՑ	mill
+ՋԱՆԱԼ	to try hard
+ՋՆՋԵԼ	to delete, erase
+ՋՈՒԹԱԿ	violin
+ՋՐՀՈՐ	water well
+ՋՐՎԵԺ	waterfall
+ՌԱԴԻՈ	radio
+ՌԵՀԱՆ	basil
+ՌԵՏԻՆ	rubber
+ՍԱԼՈՐ	plum
+ՍԱՀԵԼ	to slide
+ՍԱՎԱՆ	bedsheet
+ՍԱՓՈՐ	jug
+ՍԵՂԱՆ	table
+ՍԻՍԵՌ	chickpea
+ՍԻՐԵԼ	to love
+ՍԻՐՈՒՆ	pretty
+ՍԽՏՈՐ	garlic
+ՍԿԻԶԲ	beginning
+ՍԿՅՈՒՌ	squirrel
+ՍԿՍԵԼ	to begin
+ՍՆՈՒՆԴ	food, nourishment
+ՍՈԽԱԿ	nightingale
+ՍՈՂԱԼ	to crawl
+ՍՈՂՈՒՆ	reptile
+ՍՈՎՈՐ	habit; used to
+ՍՈՒՋՈՒԽ	sujukh (walnut and grape sweet)
+ՍՈՒՍԵՐ	sword
+ՍՈՒՐԱԼ	to rush
+ՍՊԱՍՔ	dishes, tableware
+ՍՊՈՐՏ	sport
+ՍՏՎԵՐ	shadow
+ՍՏՐՈՒԿ	slave
+ՍՐԲԵԼ	to wipe
+ՍՐԲԻՉ	towel
+ՍՐԻՆԳ	shepherd's flute
+ՎԱԳՈՆ	railway car
+ՎԱԶԵԼ	to run
+ՎԱՀԱՆ	shield
+ՎԱՅՐԻ	wild
+ՎԱՌԵԼ	to light, burn
+ՎԱՐԵԼ	to drive; to plough
+ՎԵՃԵԼ	to argue
+ՎԵՐԵՎ	above, up
+ՎԶՆՈՑ	necklace
+ՎԻՃԱԿ	state, condition
+ՎԻՇԱՊ	dragon
+ՎՍՏԱՀ	confident
+ՎՏԱՆԳ	danger
+ՏԱԲԱՏ	trousers
+ՏԱՆԵԼ	to take, carry
+ՏԱՆԻՔ	roof
+ՏԱՏԻԿ	grandma
+ՏԱՐԻՔ	age
+ՏԵՍԱԿ	type, kind
+ՏԵՐԵՎ	leaf
+ՏԻԿԻՆ	madam, Mrs.
+ՏՈԼՄԱ	dolma
+ՏՈԿՈՍ	percent
+ՏՈՆԵԼ	to celebrate
+ՏՐՏՈՒՄ	sad
+ՑԱՄԱՔ	dry land
+ՑԱՆԵԼ	to sow
+ՑԵՐԵԿ	daytime
+ՑՈՐԵՆ	wheat
+ՑՈՒՑԱԿ	list
+ՑՐՎԵԼ	to scatter
+ՓԱԿԵԼ	to close
+ՓԱՐԱԽ	sheepfold, pen
+ՓԱՓՈՒԿ	soft
+ՓԵՏՈՒՐ	feather
+ՓՈԽԵԼ	to change
+ՓՈՂՈՑ	street
+ՓՈՒԹԱԼ	to hurry
+ՓՐԿԵԼ	to rescue
+ՔԱՂԱՔ	city
+ՔԱՂԵԼ	to pick (fruit)
+ՔԱՂՑՐ	sweet
+ՔԱՄԵԼ	to squeeze, strain
+ՔԱՆԱԿ	quantity
+ՔԱՆՈՆ	kanon (zither)
+ՔԱՇԵԼ	to pull
+ՔԱՐԱՓ	rocky bank
+ՔԱՐՈԶ	sermon
+ՔԱՑԱԽ	vinegar
+ՔԵՌԻԿ	aunt (mother's sister)
+ՔԵՐԵԼ	to scratch
+ՔԻՄԻԱ	chemistry
+ՔՆՆԵԼ	to examine
+ՔՆՔՈՒՇ	tender, delicate
+ՔՈՒՌԱԿ	foal
+ՕԳՆԵԼ	to help
+ՕԴԱՉՈՒ	pilot
+ՕԺՏԵԼ	to endow
+ՕՐԵՆՔ	law
+ՕՐՐԱՆ	cradle
+ՖԵՐՄԱ	farm
+ՖԻՆԻԿ	date (fruit)

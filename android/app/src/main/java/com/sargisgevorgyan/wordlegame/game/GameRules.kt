@@ -23,6 +23,12 @@ data class GameState(
     val status: GameStatus = GameStatus.PLAYING,
     /** Keyed by board token. */
     val keyboardHints: Map<String, LetterEvaluation> = emptyMap(),
+    /** Revealed hints must be used in later guesses. Fixed for the whole game. */
+    val hardMode: Boolean = false,
+    /** Played against the clock ([GameRules.TIME_LIMIT_SECONDS]). Fixed for the whole game. */
+    val timed: Boolean = false,
+    /** True when a timed game was lost because the clock ran out. */
+    val timedOut: Boolean = false,
 ) {
     val currentTokens: List<String>
         get() = board.getOrNull(currentRow)?.mapNotNull { it.letter } ?: emptyList()
@@ -35,6 +41,7 @@ data class GameState(
 sealed interface Submission {
     data object NotEnoughLetters : Submission
     data object NotInWordList : Submission
+    data class BreaksHardMode(val violation: HardModeViolation) : Submission
     /**
      * [revealed]: the row with its colours, for the flip animation.
      * [resolved]: the state after the reveal (hints merged, row advanced or game over).
@@ -46,11 +53,13 @@ sealed interface Submission {
 object GameRules {
     const val MAX_GUESSES = 6
     const val WORD_LENGTH = 5
+    /** Timed mode: 3 minutes per game. */
+    const val TIME_LIMIT_SECONDS = 180
 
     fun emptyBoard(): List<List<Tile>> = List(MAX_GUESSES) { List(WORD_LENGTH) { Tile() } }
 
-    fun newGame(language: GameLanguage, targetWord: String) =
-        GameState(language = language, targetWord = targetWord.uppercase())
+    fun newGame(language: GameLanguage, targetWord: String, hardMode: Boolean = false, timed: Boolean = false) =
+        GameState(language = language, targetWord = targetWord.uppercase(), hardMode = hardMode, timed = timed)
 
     /** Typed character (soft or hardware keyboard). */
     fun insert(state: GameState, character: Char): GameState {
@@ -97,6 +106,9 @@ object GameRules {
         val guessTokens = state.currentTokens
         val guess = guessTokens.joinToString("")
         if (!words.isValidGuess(guess)) return Submission.NotInWordList
+        if (state.hardMode) {
+            HardMode.violation(state.board, state.currentRow, guessTokens)?.let { return Submission.BreaksHardMode(it) }
+        }
 
         val evaluations = evaluate(guessTokens, state.language.tokenize(state.targetWord))
         val row = state.board[state.currentRow].mapIndexed { i, tile ->
@@ -122,6 +134,16 @@ object GameRules {
         pendingResolved != null && pendingResolved.status != GameStatus.PLAYING -> pendingResolved.status
         (pendingResolved ?: state).isInProgress -> GameStatus.LOST
         else -> null
+    }
+
+    /**
+     * The timed game's clock ran out. A guess still revealing ([pendingResolved])
+     * decides it if it ended the game; otherwise the game is lost.
+     */
+    fun timeUp(state: GameState, pendingResolved: GameState?): GameState {
+        val current = pendingResolved ?: state
+        if (current.status != GameStatus.PLAYING) return current
+        return current.copy(status = GameStatus.LOST, timedOut = true)
     }
 
     /** Green beats yellow beats gray; a key is never downgraded. */
