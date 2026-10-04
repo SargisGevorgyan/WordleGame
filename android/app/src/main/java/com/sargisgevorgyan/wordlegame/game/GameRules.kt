@@ -146,6 +146,27 @@ object GameRules {
         return current.copy(status = GameStatus.LOST, timedOut = true)
     }
 
+    /** Rows that have been scored, top to bottom. */
+    fun submittedRows(state: GameState): List<List<Tile>> = state.board.filter { row ->
+        row.firstOrNull()?.evaluation.let { it != null && it != LetterEvaluation.EMPTY && it != LetterEvaluation.TBD }
+    }
+
+    /** The scored guesses, e.g. to save daily progress. */
+    fun guesses(state: GameState): List<String> =
+        submittedRows(state).map { row -> row.joinToString("") { it.letter.orEmpty() } }
+
+    /** Rebuilds a game from saved [guesses]; stops at the first one that is no longer playable. */
+    fun replay(language: GameLanguage, targetWord: String, guesses: List<String>, words: WordBank): GameState {
+        var state = newGame(language, targetWord)
+        for (guess in guesses) {
+            if (state.status != GameStatus.PLAYING) break
+            var typed = state
+            language.tokenize(guess).forEach { typed = insertToken(typed, it) }
+            state = (submit(typed, words) as? Submission.Scored)?.resolved ?: break
+        }
+        return state
+    }
+
     /** Green beats yellow beats gray; a key is never downgraded. */
     fun mergeHints(
         current: Map<String, LetterEvaluation>,

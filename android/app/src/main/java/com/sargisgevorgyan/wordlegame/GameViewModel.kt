@@ -11,35 +11,46 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.sargisgevorgyan.wordlegame.game.DailyPuzzle
 import com.sargisgevorgyan.wordlegame.game.GameLanguage
+import com.sargisgevorgyan.wordlegame.game.GameMode
 import com.sargisgevorgyan.wordlegame.game.GameRules
 import com.sargisgevorgyan.wordlegame.game.GameState
 import com.sargisgevorgyan.wordlegame.game.GameStatus
-import com.sargisgevorgyan.wordlegame.game.Glossary
 import com.sargisgevorgyan.wordlegame.game.HardModeViolation
+import com.sargisgevorgyan.wordlegame.game.ShareCard
 import com.sargisgevorgyan.wordlegame.game.Stats
 import com.sargisgevorgyan.wordlegame.game.Submission
 import com.sargisgevorgyan.wordlegame.game.WordBank
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 /** A toast: a string resource plus its format arguments. */
 data class UiMessage(@StringRes val res: Int, val args: List<Any> = emptyList())
 
-/** Drives the board, keyboard and game state; persists language, modes, stats and hints. */
+/** Drives the board, keyboard and game state; persists language, mode, daily progress, stats and hints. */
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private val prefs = application.getSharedPreferences("wordle", Context.MODE_PRIVATE)
     private val banks = mutableMapOf<GameLanguage, WordBank>()
 
-    /** Settings; a change applies now if the game hasn't started, otherwise from the next game. */
+    var mode by mutableStateOf(GameMode.fromCode(prefs.getString(KEY_MODE, null)) ?: GameMode.DAILY)
+        private set
+    /**
+     * Settings; a change applies now if the game hasn't started, otherwise from the next game.
+     * Hard mode covers daily and free play; Timed mode is free play only.
+     */
     var hardMode by mutableStateOf(prefs.getBoolean(KEY_HARD_MODE, false))
         private set
     var timedMode by mutableStateOf(prefs.getBoolean(KEY_TIMED_MODE, false))
         private set
-
+    /** Timed mode: seconds left. The clock starts with the first letter. */
+    var secondsLeft by mutableIntStateOf(GameRules.TIME_LIMIT_SECONDS)
+        private set
+    /** Day of the daily game on the board (see [DailyPuzzle.dayNumber]). */
+    var dailyDay by mutableIntStateOf(DailyPuzzle.dayNumber())
+        private set
     var state by mutableStateOf(startGame(storedLanguage()))
         private set
     var isRevealing by mutableStateOf(false)
@@ -58,9 +69,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     var hintsRemaining by mutableIntStateOf(prefs.getInt(KEY_HINTS, 3))
         private set
 
-    /** Timed mode: seconds left. The clock starts with the first letter. */
-    var secondsLeft by mutableIntStateOf(GameRules.TIME_LIMIT_SECONDS)
-        private set
+    /** The free-play game set aside while the daily game is on screen. */
+    private var freeGame: GameState? = null
+
+    val puzzleNumber: Int? get() = if (mode == GameMode.DAILY) DailyPuzzle.puzzleNumber(dailyDay) else null
+    val shareText: String get() = ShareCard.text(state, puzzleNumber)
+
+    /** Whether switching language now would forfeit a free-play game (the daily one is saved). */
+    val languageSwitchLosesGame: Boolean
+        get() = (if (mode == GameMode.FREE) state else freeGame)?.isInProgress == true
 
     private var toastJob: Job? = null
     private var revealJob: Job? = null
@@ -82,6 +99,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun useHint() {
         if (isRevealing || state.status != GameStatus.PLAYING) return
+        if (mode == GameMode.DAILY) return flashToast(R.string.hints_off_daily)
         if (hintsRemaining <= 0) return flashToast(R.string.no_hints_left)
         val token = GameRules.hintToken(state) ?: return
         setHints(hintsRemaining - 1)
@@ -107,24 +125,32 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         pendingResolved = result.resolved
         revealJob = viewModelScope.launch {
             delay(REVEAL_MILLIS)
-            state = result.resolved
-            pendingResolved = null
-            isRevealing = false
-            revealingRow = -1
+            completeReveal(result.resolved)
             if (state.status != GameStatus.PLAYING) {
-                stopClock()
-                recordResult(won = state.status == GameStatus.WON)
                 delay(450)
                 showGameOver = true
             }
         }
     }
 
+    private fun completeReveal(resolved: GameState) {
+        state = resolved
+        pendingResolved = null
+        isRevealing = false
+        revealingRow = -1
+        if (mode == GameMode.DAILY) saveDaily(resolved)
+        if (resolved.status != GameStatus.PLAYING) {
+            stopClock()
+            recordResult(won = resolved.status == GameStatus.WON)
+        }
+    }
+
     // Timed mode
 
+    /** Starts (or resumes) the clock with the time left once the game has its first letter. */
     private fun startClockIfNeeded() {
         if (!state.timed || timerJob != null || state.status != GameStatus.PLAYING || !state.isInProgress) return
-        val deadline = SystemClock.elapsedRealtime() + GameRules.TIME_LIMIT_SECONDS * 1000L
+        val deadline = SystemClock.elapsedRealtime() + secondsLeft * 1000L
         timerJob = viewModelScope.launch {
             while (true) {
                 val left = deadline - SystemClock.elapsedRealtime()
@@ -173,24 +199,57 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     // New game / language
 
+    /** "Play again" / dismissing the game-over dialog: a new free game, or back to the finished daily board. */
     fun newGame() {
+        showGameOver = false
+        if (mode == GameMode.DAILY) return
         cancelReveal()
         stopClock()
         secondsLeft = GameRules.TIME_LIMIT_SECONDS
-        showGameOver = false
         state = startGame(state.language)
     }
 
-    /** The game in progress is abandoned and counts as a loss, so switching can't protect a streak. */
+    /**
+     * A free-play game in progress is abandoned and counts as a loss, so switching
+     * can't protect a streak. Daily progress is saved per language and kept.
+     */
     fun changeLanguage(language: GameLanguage) {
         if (language == state.language) return
-        GameRules.abandonOutcome(state, pendingResolved)?.let { recordResult(won = it == GameStatus.WON) }
+        if (mode == GameMode.DAILY) {
+            pendingResolved?.let { revealJob?.cancel(); completeReveal(it) }
+            if (freeGame?.isInProgress == true) recordResult(won = false)
+        } else {
+            GameRules.abandonOutcome(state, pendingResolved)?.let { recordResult(won = it == GameStatus.WON) }
+        }
         cancelReveal()
         stopClock()
         secondsLeft = GameRules.TIME_LIMIT_SECONDS
+        freeGame = null
         prefs.edit { putString(KEY_LANGUAGE, language.code) }
         state = startGame(language)
         showGameOver = false
+    }
+
+    /** Switches between the daily word and free play; the free game waits while the daily is shown. */
+    fun changeMode(newMode: GameMode) {
+        if (newMode == mode || isRevealing) return
+        // A timed free game waits with its clock paused, and resumes on the next letter.
+        stopClock()
+        val language = state.language
+        if (newMode == GameMode.DAILY) freeGame = state
+        mode = newMode
+        prefs.edit { putString(KEY_MODE, newMode.code) }
+        showGameOver = false
+        state = freeGame?.takeIf { newMode == GameMode.FREE && it.status == GameStatus.PLAYING }
+            ?: startGame(language).also { if (newMode == GameMode.FREE) secondsLeft = GameRules.TIME_LIMIT_SECONDS }
+        if (newMode == GameMode.FREE) freeGame = null
+    }
+
+    /** Loads the new day's word when the date has changed (app resumed, countdown ran out). */
+    fun refreshDaily() {
+        if (mode != GameMode.DAILY || isRevealing || DailyPuzzle.dayNumber() == dailyDay) return
+        showGameOver = false
+        state = startGame(state.language)
     }
 
     fun changeHardMode(enabled: Boolean) {
@@ -202,30 +261,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun changeTimedMode(enabled: Boolean) {
         timedMode = enabled
         prefs.edit { putBoolean(KEY_TIMED_MODE, enabled) }
-        if (!state.isInProgress && state.status == GameStatus.PLAYING) {
+        if (mode == GameMode.FREE && !state.isInProgress && state.status == GameStatus.PLAYING) {
             state = state.copy(timed = enabled)
             secondsLeft = GameRules.TIME_LIMIT_SECONDS
         }
-    }
-
-    // Meanings
-
-    /** English meaning of the finished game's word, when the shared glossary has one. */
-    val targetMeaning: String?
-        get() = glossary(state.language)?.meaning(state.targetWord)
-
-    /** Today's Armenian word and its English meaning, for learners. */
-    val armenianWordOfTheDay: Pair<String, String>?
-        get() = glossary(GameLanguage.ARMENIAN)?.wordOfTheDay(LocalDate.now().toEpochDay(), bank(GameLanguage.ARMENIAN))
-
-    private val glossaries = mutableMapOf<GameLanguage, Glossary?>()
-
-    /** Loads `assets/words/glosses_<code>.tsv` (from the repo's shared/words), or null if there is none. */
-    private fun glossary(language: GameLanguage): Glossary? = glossaries.getOrPut(language) {
-        runCatching {
-            getApplication<Application>().assets.open("words/${language.glossFileName}")
-                .bufferedReader().use { Glossary.parse(it.readText()) }
-        }.getOrNull()
     }
 
     fun resetStats() {
@@ -263,12 +302,25 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun startGame(language: GameLanguage) = GameRules.newGame(
-        language,
-        bank(language).randomWord(),
-        hardMode = prefs.getBoolean(KEY_HARD_MODE, false),
-        timed = prefs.getBoolean(KEY_TIMED_MODE, false),
-    )
+    private fun startGame(language: GameLanguage): GameState {
+        val hard = prefs.getBoolean(KEY_HARD_MODE, false)
+        if (mode == GameMode.FREE) {
+            return GameRules.newGame(language, bank(language).randomWord(), hardMode = hard, timed = prefs.getBoolean(KEY_TIMED_MODE, false))
+        }
+        dailyDay = DailyPuzzle.dayNumber()
+        val word = DailyPuzzle.word(bank(language), dailyDay)
+        // Saved as "<day>|GUESS,GUESS"; another day's progress is ignored.
+        val saved = prefs.getString(dailyKey(language), null)?.split('|', limit = 2)
+        val guesses = saved?.takeIf { it.size == 2 && it[0] == dailyDay.toString() }
+            ?.get(1)?.split(',')?.filter { it.isNotEmpty() }.orEmpty()
+        return GameRules.replay(language, word, guesses, bank(language)).copy(hardMode = hard)
+    }
+
+    private fun saveDaily(state: GameState) = prefs.edit {
+        putString(dailyKey(state.language), "$dailyDay|" + GameRules.guesses(state).joinToString(","))
+    }
+
+    private fun dailyKey(language: GameLanguage) = "daily.${language.code}"
 
     /** Loads `assets/words/words_<code>.txt` — packaged from the repo's shared/words. */
     private fun bank(language: GameLanguage): WordBank = banks.getOrPut(language) {
@@ -305,6 +357,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         private const val MAX_HINTS = 99
         private const val FREE_HINT_CEILING = 5
         private const val KEY_LANGUAGE = "gameLanguage"
+        private const val KEY_MODE = "gameMode"
         private const val KEY_HARD_MODE = "hardMode"
         private const val KEY_TIMED_MODE = "timedMode"
         private const val KEY_HINTS = "hintsRemaining"

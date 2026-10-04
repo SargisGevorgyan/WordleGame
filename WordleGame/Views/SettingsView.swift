@@ -59,7 +59,7 @@ struct SettingsView: View {
                     Toggle(isOn: $timedMode) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Timed mode")
-                            Text("3 minutes per game. The clock starts with your first letter.")
+                            Text("3 minutes per free-play game. The clock starts with your first letter.")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -170,7 +170,7 @@ struct SettingsView: View {
 
     private func select(_ language: GameLanguage) {
         guard language != selectedLanguage else { return }
-        if game.isInProgress {
+        if game.languageSwitchLosesGame {
             pendingLanguage = language
         } else {
             languageRaw = language.rawValue

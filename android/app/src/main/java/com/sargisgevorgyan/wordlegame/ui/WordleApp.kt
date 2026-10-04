@@ -1,5 +1,7 @@
 package com.sargisgevorgyan.wordlegame.ui
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.LinearEasing
@@ -28,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,15 +57,18 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sargisgevorgyan.wordlegame.GameViewModel
 import com.sargisgevorgyan.wordlegame.R
 import com.sargisgevorgyan.wordlegame.UiMessage
+import com.sargisgevorgyan.wordlegame.game.GameMode
 import com.sargisgevorgyan.wordlegame.game.GameStatus
 import kotlin.math.cos
 import kotlin.math.sin
@@ -75,6 +81,13 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
         var showIntro by rememberSaveable { mutableStateOf(true) }
         val focus = remember { FocusRequester() }
         LaunchedEffect(Unit) { focus.requestFocus() }
+        // A new day may have started while the app was in the background.
+        LifecycleResumeEffect(Unit) {
+            vm.refreshDaily()
+            onPauseOrDispose {}
+        }
+        val context = LocalContext.current
+        val share = { shareResult(context, vm.shareText) }
 
         Box(
             Modifier
@@ -107,6 +120,7 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                     secondsLeft = vm.secondsLeft.takeIf { vm.state.timed },
                     hardMode = vm.state.hardMode,
                     onHint = vm::useHint,
+                    onShare = share.takeIf { vm.state.status != GameStatus.PLAYING },
                     onSettings = { showSettings = true },
                 )
                 Text(
@@ -118,7 +132,13 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                         letterSpacing = 4.sp,
                         shadow = Shadow(Palette.auroraPurple, Offset.Zero, blurRadius = 24f),
                     ),
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                )
+                ModePicker(
+                    mode = vm.mode,
+                    puzzleNumber = vm.puzzleNumber,
+                    enabled = !vm.isRevealing,
+                    onMode = vm::changeMode,
                 )
                 Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Board(vm.state, vm.revealingRow, vm.shakeToken)
@@ -142,18 +162,20 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                 won = vm.state.status == GameStatus.WON,
                 timedOut = vm.state.timedOut,
                 word = vm.state.targetWord,
-                meaning = vm.targetMeaning,
                 wordOfTheDay = vm.armenianWordOfTheDay,
                 stats = vm.stats,
-                onPlayAgain = vm::newGame,
-                // Back / tap outside also moves on; the finished game has no other way out.
+                puzzleNumber = vm.puzzleNumber,
+                onShare = share,
+                onPlayAgain = { if (vm.mode == GameMode.DAILY) vm.changeMode(GameMode.FREE) else vm.newGame() },
+                onNewDay = vm::refreshDaily,
+                // Back / tap outside also moves on: a new free game, or back to the finished daily board.
                 onDismiss = vm::newGame,
             )
         }
         if (showSettings) {
             SettingsDialog(
                 current = vm.state.language,
-                isInProgress = vm.state.isInProgress,
+                isInProgress = vm.languageSwitchLosesGame,
                 stats = vm.stats,
                 hardMode = vm.hardMode,
                 timedMode = vm.timedMode,
@@ -167,8 +189,50 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
     }
 }
 
+/** Opens the system share sheet with the emoji result grid. */
+private fun shareResult(context: Context, text: String) {
+    val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
+    context.startActivity(Intent.createChooser(send, null))
+}
+
 @Composable
-private fun Hud(hints: Int, secondsLeft: Int?, hardMode: Boolean, onHint: () -> Unit, onSettings: () -> Unit) {
+private fun ModePicker(mode: GameMode, puzzleNumber: Int?, enabled: Boolean, onMode: (GameMode) -> Unit) {
+    Row(
+        Modifier
+            .padding(bottom = 6.dp)
+            .background(Palette.glassFill, RoundedCornerShape(50))
+            .padding(4.dp),
+    ) {
+        GameMode.entries.forEach { option ->
+            val selected = option == mode
+            val label = when (option) {
+                GameMode.DAILY -> puzzleNumber?.let { stringResource(R.string.daily_number, it) }
+                    ?: stringResource(R.string.daily)
+                GameMode.FREE -> stringResource(R.string.free_play)
+            }
+            Text(
+                label,
+                color = if (selected) Palette.indigoDeep else Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .background(if (selected) Palette.neonGreen else Color.Transparent, RoundedCornerShape(50))
+                    .clickable(enabled = enabled && !selected) { onMode(option) }
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun Hud(
+    hints: Int,
+    secondsLeft: Int?,
+    hardMode: Boolean,
+    onHint: () -> Unit,
+    onShare: (() -> Unit)?,
+    onSettings: () -> Unit,
+) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -187,24 +251,29 @@ private fun Hud(hints: Int, secondsLeft: Int?, hardMode: Boolean, onHint: () -> 
                 .clickable(onClick = onHint)
                 .padding(horizontal = 14.dp, vertical = 8.dp),
         )
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (hardMode) {
-                Text(
-                    stringResource(R.string.hard_mode),
-                    color = Palette.auroraMagenta,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-            if (secondsLeft != null) {
-                Text(
-                    "⏱ %d:%02d".format(secondsLeft / 60, secondsLeft % 60),
-                    color = if (secondsLeft <= 30) Palette.warmYellow else Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .background(Palette.keyIdle, CircleShape)
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                )
+        Spacer(Modifier.weight(1f))
+        if (hardMode) {
+            Text(
+                stringResource(R.string.hard_mode),
+                color = Palette.auroraMagenta,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 6.dp),
+            )
+        }
+        if (secondsLeft != null) {
+            Text(
+                "⏱ %d:%02d".format(secondsLeft / 60, secondsLeft % 60),
+                color = if (secondsLeft <= 30) Palette.warmYellow else Color.White,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .background(Palette.keyIdle, CircleShape)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+            )
+        }
+        if (onShare != null) {
+            IconButton(onClick = onShare) {
+                Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.share), tint = Color.White)
             }
         }
         IconButton(onClick = onSettings) {

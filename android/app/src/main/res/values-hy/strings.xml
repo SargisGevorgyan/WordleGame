@@ -32,9 +32,16 @@
     <string name="hard_mode">Բարդ ռեժիմ</string>
     <string name="hard_mode_desc">Բացված հուշումները պետք է օգտագործել հաջորդ փորձերում։</string>
     <string name="timed_mode">Ժամանակով ռեժիմ</string>
-    <string name="timed_mode_desc">3 րոպե յուրաքանչյուր խաղի համար։ Ժամացույցը սկսվում է առաջին տառից։</string>
+    <string name="timed_mode_desc">3 րոպե յուրաքանչյուր ազատ խաղի համար։ Ժամացույցը սկսվում է առաջին տառից։</string>
     <string name="modes_next_game">Խաղի ընթացքում արված փոփոխությունները կգործեն հաջորդ խաղից։</string>
     <string name="times_up">ԺԱՄԱՆԱԿԸ ՍՊԱՌՎԵՑ</string>
     <string name="meaning">Թարգմանություն</string>
     <string name="word_of_the_day">Օրվա հայերեն բառը</string>
+
+    <string name="daily">Օրվա բառ</string>
+    <string name="daily_number">Օրվա բառ #%d</string>
+    <string name="free_play">Ազատ խաղ</string>
+    <string name="share">Կիսվել</string>
+    <string name="next_word_in">Հաջորդ բառը՝</string>
+    <string name="hints_off_daily">Օրվա խաղում հուշումներ չկան</string>
 </resources>
