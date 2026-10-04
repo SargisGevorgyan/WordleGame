@@ -33,4 +33,10 @@
     <string name="achievements">Achievements</string>
     <string name="play_games_unavailable">Play Games isn\'t set up for this build yet.</string>
     <string name="stats_sync_note">Signed in, your stats and streaks sync across devices.</string>
+    <string name="daily">Daily</string>
+    <string name="daily_number">Daily #%d</string>
+    <string name="free_play">Free play</string>
+    <string name="share">Share</string>
+    <string name="next_word_in">Next word in</string>
+    <string name="hints_off_daily">Hints are off in the daily game</string>
 </resources>

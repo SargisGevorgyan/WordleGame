@@ -31,4 +31,10 @@
     <string name="achievements">Նվաճումներ</string>
     <string name="play_games_unavailable">Play Games-ը դեռ կարգավորված չէ այս տարբերակի համար։</string>
     <string name="stats_sync_note">Մուտք գործելիս վիճակագրությունն ու շարքերը համաժամեցվում են սարքերի միջև։</string>
+    <string name="daily">Օրվա բառ</string>
+    <string name="daily_number">Օրվա բառ #%d</string>
+    <string name="free_play">Ազատ խաղ</string>
+    <string name="share">Կիսվել</string>
+    <string name="next_word_in">Հաջորդ բառը՝</string>
+    <string name="hints_off_daily">Օրվա խաղում հուշումներ չկան</string>
 </resources>

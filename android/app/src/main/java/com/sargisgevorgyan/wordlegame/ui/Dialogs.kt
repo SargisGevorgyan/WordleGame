@@ -17,6 +17,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,9 @@ import com.sargisgevorgyan.wordlegame.R
 import com.sargisgevorgyan.wordlegame.game.GameLanguage
 import com.sargisgevorgyan.wordlegame.game.Stats
 import com.sargisgevorgyan.wordlegame.games.PlayGamesService
+import kotlinx.coroutines.delay
+import java.time.Duration
+import java.time.ZonedDateTime
 
 private val panelShape = RoundedCornerShape(28.dp)
 
@@ -51,10 +55,26 @@ private fun GlassPanel(content: @Composable () -> Unit) {
     ) { content() }
 }
 
+/**
+ * [puzzleNumber] is set for the daily game: the dialog then counts down to the
+ * next word and its main button switches to free play.
+ */
 @Composable
-fun GameOverDialog(won: Boolean, word: String, stats: Stats, onPlayAgain: () -> Unit, onDismiss: () -> Unit) {
+fun GameOverDialog(
+    won: Boolean,
+    word: String,
+    stats: Stats,
+    puzzleNumber: Int?,
+    onShare: () -> Unit,
+    onPlayAgain: () -> Unit,
+    onNewDay: () -> Unit,
+    onDismiss: () -> Unit,
+) {
     Dialog(onDismissRequest = onDismiss) {
         GlassPanel {
+            if (puzzleNumber != null) {
+                Text(stringResource(R.string.daily_number, puzzleNumber), color = Palette.secondaryText, fontWeight = FontWeight.SemiBold)
+            }
             Text(
                 stringResource(if (won) R.string.brilliant else R.string.so_close),
                 color = if (won) Palette.neonGreen else Palette.warmYellow,
@@ -67,6 +87,17 @@ fun GameOverDialog(won: Boolean, word: String, stats: Stats, onPlayAgain: () -> 
             )
             Text(word, color = Color.White, fontSize = 34.sp, fontWeight = FontWeight.Black, letterSpacing = 6.sp)
             StatsRow(stats)
+            if (puzzleNumber != null) NextWordCountdown(onNewDay)
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .border(1.5.dp, Palette.neonGreen, RoundedCornerShape(50))
+                    .clickable(onClick = onShare)
+                    .padding(vertical = 12.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(stringResource(R.string.share), color = Palette.neonGreen, fontWeight = FontWeight.Black, fontSize = 18.sp)
+            }
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -75,10 +106,34 @@ fun GameOverDialog(won: Boolean, word: String, stats: Stats, onPlayAgain: () -> 
                     .padding(vertical = 14.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(stringResource(R.string.play_again), color = Palette.indigoDeep, fontWeight = FontWeight.Black, fontSize = 18.sp)
+                Text(stringResource(if (puzzleNumber != null) R.string.free_play else R.string.play_again), color = Palette.indigoDeep, fontWeight = FontWeight.Black, fontSize = 18.sp)
             }
         }
     }
+}
+
+/** "Next word in 05:12:33", ticking down to local midnight. */
+@Composable
+private fun NextWordCountdown(onNewDay: () -> Unit) {
+    var remaining by remember { mutableStateOf(untilMidnight()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000)
+            remaining = untilMidnight()
+            if (remaining.isZero || remaining.isNegative) onNewDay()
+        }
+    }
+    val seconds = remaining.seconds.coerceAtLeast(0)
+    val clock = "%02d:%02d:%02d".format(seconds / 3600, seconds / 60 % 60, seconds % 60)
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(stringResource(R.string.next_word_in), color = Palette.secondaryText, fontSize = 13.sp)
+        Text(clock, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+private fun untilMidnight(): Duration {
+    val now = ZonedDateTime.now()
+    return Duration.between(now, now.toLocalDate().plusDays(1).atStartOfDay(now.zone))
 }
 
 @Composable
