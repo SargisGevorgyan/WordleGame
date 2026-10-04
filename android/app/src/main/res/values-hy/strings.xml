@@ -26,4 +26,10 @@
     <string name="switch_and_restart">Փոխել և վերսկսել</string>
     <string name="cancel">Չեղարկել</string>
     <string name="current_game_lost">Ընթացիկ խաղը կկորչի։</string>
+    <string name="daily">Օրվա բառ</string>
+    <string name="daily_number">Օրվա բառ #%d</string>
+    <string name="free_play">Ազատ խաղ</string>
+    <string name="share">Կիսվել</string>
+    <string name="next_word_in">Հաջորդ բառը՝</string>
+    <string name="hints_off_daily">Օրվա խաղում հուշումներ չկան</string>
 </resources>
