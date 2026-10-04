@@ -169,8 +169,9 @@ enum GameLanguage: String, CaseIterable, Identifiable {
             ]
         case .armenian:
             // Armenian phonetic (KDWIN-style) layout — covers the full alphabet.
+            // No և key: modern spelling writes it as Ե + Վ, and `normalize` rejects it.
             return [
-                ["Է", "Թ", "Փ", "Ձ", "Ջ", "և", "Ր", "Չ", "Ճ", "Ժ", "DELETE"],
+                ["Է", "Թ", "Փ", "Ձ", "Ջ", "Ր", "Չ", "Ճ", "Ժ", "DELETE"],
                 ["Ք", "Ո", "Ե", "Ռ", "Տ", "Ը", "Ւ", "Ի", "Օ", "Պ", "Խ", "Ծ"],
                 ["Ա", "Ս", "Դ", "Ֆ", "Գ", "Հ", "Յ", "Կ", "Լ", "Շ"],
                 ["Զ", "Ղ", "Ց", "Վ", "Բ", "Ն", "Մ", "ENTER"]

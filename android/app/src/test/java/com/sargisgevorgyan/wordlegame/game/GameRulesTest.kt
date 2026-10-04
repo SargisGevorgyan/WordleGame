@@ -99,6 +99,19 @@ class GameRulesTest {
         assertEquals(hy, GameRules.insert(hy, 'և'))
     }
 
+    @Test fun abandoningCountsInProgressGamesAsLosses() {
+        val fresh = GameRules.newGame(GameLanguage.ENGLISH, "CRANE")
+        assertNull(GameRules.abandonOutcome(fresh, null))                       // nothing typed yet
+        assertEquals(GameStatus.LOST, GameRules.abandonOutcome(type(fresh, "PL"), null))
+        // A guess still revealing decides it: a winning one counts as a win.
+        val winning = GameRules.submit(type(fresh, "CRANE"), english) as Submission.Scored
+        assertEquals(GameStatus.WON, GameRules.abandonOutcome(winning.revealed, winning.resolved))
+        val wrong = GameRules.submit(type(fresh, "PLANT"), english) as Submission.Scored
+        assertEquals(GameStatus.LOST, GameRules.abandonOutcome(wrong.revealed, wrong.resolved))
+        // Already finished games were recorded when they ended.
+        assertNull(GameRules.abandonOutcome(winning.resolved, null))
+    }
+
     @Test fun keyboardHintsNeverDowngrade() {
         val merged = GameRules.mergeHints(mapOf("A" to CORRECT), listOf("A", "B"), listOf(ABSENT, PRESENT))
         assertEquals(CORRECT, merged["A"])

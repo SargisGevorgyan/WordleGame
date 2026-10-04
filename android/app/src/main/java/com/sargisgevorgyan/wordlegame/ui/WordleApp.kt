@@ -134,7 +134,8 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                 word = vm.state.targetWord,
                 stats = vm.stats,
                 onPlayAgain = vm::newGame,
-                onDismiss = { vm.showGameOver = false },
+                // Back / tap outside also moves on; the finished game has no other way out.
+                onDismiss = vm::newGame,
             )
         }
         if (showSettings) {

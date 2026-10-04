@@ -151,6 +151,22 @@ final class WordleGameTests: XCTestCase {
     }
 
     @MainActor
+    func testSwitchingLanguageMidGameCountsAsLossAndDropsPendingReveal() {
+        StatsStore.reset()
+        let vm = GameViewModel(targetWord: "PLANT")
+        type("crane", into: vm)
+        vm.submit()                          // reveal still pending
+        vm.changeLanguage(.armenian)
+        XCTAssertEqual(UserDefaults.standard.integer(forKey: StatsKey.gamesPlayed), 1)
+        XCTAssertEqual(UserDefaults.standard.integer(forKey: StatsKey.gamesWon), 0)
+        XCTAssertEqual(vm.language, .armenian)
+        XCTAssertEqual(vm.currentRow, 0)
+        XCTAssertEqual(vm.status, .playing)
+        XCTAssertFalse(vm.isRevealing)
+        StatsStore.reset()
+    }
+
+    @MainActor
     func testUseHintReturnsFalseWhenEmptyAndAddHintsStacks() {
         UserDefaults.standard.set(0, forKey: GameViewModel.hintsKey)
         let vm = GameViewModel(targetWord: "PLANT")

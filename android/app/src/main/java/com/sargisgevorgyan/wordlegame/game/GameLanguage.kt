@@ -66,8 +66,9 @@ enum class GameLanguage(
                 listOf("Z", "X", "C", "V", "B", "N", "M", KEY_ENTER),
             )
             // Armenian phonetic (KDWIN-style) layout — covers the full alphabet.
+            // No և key: modern spelling writes it as Ե + Վ, and normalize() rejects it.
             ARMENIAN -> listOf(
-                listOf("Է", "Թ", "Փ", "Ձ", "Ջ", "և", "Ր", "Չ", "Ճ", "Ժ", KEY_DELETE),
+                listOf("Է", "Թ", "Փ", "Ձ", "Ջ", "Ր", "Չ", "Ճ", "Ժ", KEY_DELETE),
                 listOf("Ք", "Ո", "Ե", "Ռ", "Տ", "Ը", "Ւ", "Ի", "Օ", "Պ", "Խ", "Ծ"),
                 listOf("Ա", "Ս", "Դ", "Ֆ", "Գ", "Հ", "Յ", "Կ", "Լ", "Շ"),
                 listOf("Զ", "Ղ", "Ց", "Վ", "Բ", "Ն", "Մ", KEY_ENTER),

@@ -113,6 +113,17 @@ object GameRules {
         return Submission.Scored(revealed, resolved)
     }
 
+    /**
+     * What to record when a game is abandoned (language switch): the result of a
+     * guess that was still revealing ([pendingResolved]) if it ended the game,
+     * a loss if the game was in progress, or null if there's nothing to record.
+     */
+    fun abandonOutcome(state: GameState, pendingResolved: GameState?): GameStatus? = when {
+        pendingResolved != null && pendingResolved.status != GameStatus.PLAYING -> pendingResolved.status
+        (pendingResolved ?: state).isInProgress -> GameStatus.LOST
+        else -> null
+    }
+
     /** Green beats yellow beats gray; a key is never downgraded. */
     fun mergeHints(
         current: Map<String, LetterEvaluation>,

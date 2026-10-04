@@ -46,6 +46,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         private set
 
     private var toastJob: Job? = null
+    private var revealJob: Job? = null
+    /** State to apply when the running reveal finishes. */
+    private var pendingResolved: GameState? = null
 
     // Input
 
@@ -81,31 +84,48 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         isRevealing = true
         revealingRow = state.currentRow
         state = result.revealed
-        viewModelScope.launch {
+        pendingResolved = result.resolved
+        revealJob = viewModelScope.launch {
             delay(REVEAL_MILLIS)
             state = result.resolved
+            pendingResolved = null
             isRevealing = false
             revealingRow = -1
-            if (state.status != GameStatus.PLAYING) finishGame(won = state.status == GameStatus.WON)
+            if (state.status != GameStatus.PLAYING) {
+                recordResult(won = state.status == GameStatus.WON)
+                delay(450)
+                showGameOver = true
+            }
         }
     }
 
-    private suspend fun finishGame(won: Boolean) {
+    private fun recordResult(won: Boolean) {
         stats = stats.record(won).also(::saveStats)
         if (won && hintsRemaining < FREE_HINT_CEILING) setHints(hintsRemaining + 1)
-        delay(450)
-        showGameOver = true
+    }
+
+    /** Stops any running reveal / game-over timer so it can't touch the next game. */
+    private fun cancelReveal() {
+        revealJob?.cancel()
+        revealJob = null
+        pendingResolved = null
+        isRevealing = false
+        revealingRow = -1
     }
 
     // New game / language
 
     fun newGame() {
+        cancelReveal()
         showGameOver = false
         state = startGame(state.language)
     }
 
+    /** The game in progress is abandoned and counts as a loss, so switching can't protect a streak. */
     fun changeLanguage(language: GameLanguage) {
         if (language == state.language) return
+        GameRules.abandonOutcome(state, pendingResolved)?.let { recordResult(won = it == GameStatus.WON) }
+        cancelReveal()
         prefs.edit { putString(KEY_LANGUAGE, language.code) }
         state = startGame(language)
         showGameOver = false
