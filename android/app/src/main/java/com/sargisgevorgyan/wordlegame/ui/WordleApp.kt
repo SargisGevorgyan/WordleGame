@@ -1,6 +1,7 @@
 package com.sargisgevorgyan.wordlegame.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -69,6 +70,8 @@ import kotlin.math.sin
 fun WordleApp(vm: GameViewModel = viewModel()) {
     MaterialTheme(colorScheme = darkColorScheme(primary = Palette.neonGreen, background = Palette.indigoDeep)) {
         var showSettings by rememberSaveable { mutableStateOf(false) }
+        // Intro after the system splash; saveable so rotation doesn't replay it.
+        var showIntro by rememberSaveable { mutableStateOf(true) }
         val focus = remember { FocusRequester() }
         LaunchedEffect(Unit) { focus.requestFocus() }
 
@@ -125,6 +128,9 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                     onKey = vm::onKey,
                     modifier = Modifier.padding(bottom = 8.dp),
                 )
+            }
+            AnimatedVisibility(showIntro, enter = EnterTransition.None, exit = fadeOut(tween(350))) {
+                SplashIntro(vm.state.language.sampleTitle, onFinished = { showIntro = false })
             }
         }
 
