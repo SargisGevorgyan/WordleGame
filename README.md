@@ -219,13 +219,11 @@ without App Store Connect.
 * `Info.plist` already contains a test `GADApplicationIdentifier`,
   `NSUserTrackingUsageDescription` and a starter `SKAdNetworkItems` list.
 
-**Enabling real ads (one step):**
-
-1. Xcode ▸ *File ▸ Add Package Dependencies…* →
-   `https://github.com/googleads/googleads-mobile-ios-sdk`
-   *(or uncomment the `packages` / `dependencies` blocks in `project.yml` and
-   re‑run `xcodegen generate`).*
-2. Build. `#if canImport(GoogleMobileAds)` now activates every ad path.
+**AdMob SDK:** linked as a Swift package
+(`https://github.com/googleads/swift-package-manager-google-mobile-ads`, pinned
+to 11.13.0 up to 12.0) in both `project.yml` and the Xcode project, so every
+`#if canImport(GoogleMobileAds)` ad path is active. Xcode resolves the package
+on first open.
 
 > **SDK version note.** This code uses the classic `GAD`‑prefixed API
 > (`GADMobileAds`, `GADBannerView`, `GADInterstitialAd`, `GADRequest`), available

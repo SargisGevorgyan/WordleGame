@@ -4,18 +4,16 @@
 //
 //  Handles Google Mobile Ads (AdMob): SDK start-up + interstitial lifecycle.
 //
-//  Every ad reference is wrapped in `#if canImport(GoogleMobileAds)`, so the
-//  app builds and runs with ZERO external dependencies. To switch real ads on:
-//
-//    1. Xcode > File > Add Package Dependencies…
-//       https://github.com/googleads/googleads-mobile-ios-sdk  (see note below)
-//    2. Re-run `xcodegen generate` (or add the framework to the target).
+//  The SDK is linked as a Swift package (project.yml / Xcode project):
+//  https://github.com/googleads/swift-package-manager-google-mobile-ads
+//  Ad references stay wrapped in `#if canImport(GoogleMobileAds)` so the code
+//  still builds if the package is removed.
 //
 //  ⚠️  SDK version note: this file uses the classic `GAD`-prefixed API
 //      (GADMobileAds / GADBannerView / GADInterstitialAd / GADRequest), which is
 //      available up to Google-Mobile-Ads-SDK 11.x. v12+ renamed these symbols
-//      in Swift (MobileAds / BannerView / InterstitialAd / Request). Pin to
-//      "11.13.0" for a drop-in build, or rename the symbols for v12+.
+//      in Swift (MobileAds / BannerView / InterstitialAd / Request). The package
+//      is pinned to 11.13.0 up to (not including) 12.0.
 //
 
 import SwiftUI
@@ -55,8 +53,24 @@ final class AdManager: ObservableObject {
     #if canImport(GoogleMobileAds)
     private var interstitial: GADInterstitialAd?
     private var rewardedAd: GADRewardedAd?
-    private lazy var fullScreenDelegate = FullScreenDelegate(owner: self)
+    private lazy var interstitialDelegate = FullScreenDelegate(owner: self, kind: .interstitial)
+    private lazy var rewardedDelegate = FullScreenDelegate(owner: self, kind: .rewarded)
+    /// Completion for the rewarded ad on screen; called once, when it closes.
+    private var pendingReward: ((Int) -> Void)?
+    private var rewardEarned = false
+    private var isLoadingRewardedAd = false
     #endif
+
+    /// Whether "Watch a video" can be offered right now.
+    var canShowRewardedAd: Bool {
+        #if canImport(GoogleMobileAds)
+        return isRewardedAdReady
+        #elseif DEBUG
+        return true     // simulated in debug builds so the flow is testable
+        #else
+        return false
+        #endif
+    }
 
     // MARK: - Bootstrap
 
@@ -87,7 +101,7 @@ final class AdManager: ObservableObject {
                 self.isInterstitialReady = false
                 return
             }
-            ad?.fullScreenContentDelegate = self.fullScreenDelegate
+            ad?.fullScreenContentDelegate = self.interstitialDelegate
             self.interstitial = ad
             self.isInterstitialReady = true
         }
@@ -118,54 +132,96 @@ final class AdManager: ObservableObject {
 
     func loadRewardedAd() {
         #if canImport(GoogleMobileAds)
+        isLoadingRewardedAd = true
         GADRewardedAd.load(
             withAdUnitID: Self.rewardedAdUnitID,
             request: GADRequest()
         ) { [weak self] ad, error in
             guard let self else { return }
+            self.isLoadingRewardedAd = false
             if let error {
                 print("[AdManager] Rewarded failed to load: \(error.localizedDescription)")
                 self.isRewardedAdReady = false
                 return
             }
-            ad?.fullScreenContentDelegate = self.fullScreenDelegate
+            ad?.fullScreenContentDelegate = self.rewardedDelegate
             self.rewardedAd = ad
             self.isRewardedAdReady = true
         }
         #endif
     }
 
-    /// Presents a rewarded ad. `onReward` is called with the hint count to grant
-    /// once the user has earned the reward (0 if the ad could not be shown).
+    /// Loads a rewarded ad unless one is ready, loading or on screen. Called when
+    /// the hint store opens, so a failed load (offline, no fill) is retried.
+    func loadRewardedAdIfNeeded() {
+        #if canImport(GoogleMobileAds)
+        guard rewardedAd == nil, !isLoadingRewardedAd, pendingReward == nil else { return }
+        loadRewardedAd()
+        #endif
+    }
+
+    /// Presents a rewarded ad. `onReward` is called exactly once, when the ad
+    /// closes, with the hint count to grant (0 if the ad could not be shown or
+    /// was closed before the reward was earned).
     func showRewardedAd(onReward: @escaping (Int) -> Void) {
         #if canImport(GoogleMobileAds)
+        guard pendingReward == nil else { onReward(0); return }   // one already on screen
         guard let rewardedAd, let root = Self.rootViewController else {
-            loadRewardedAd()
+            loadRewardedAdIfNeeded()
             onReward(0)
             return
         }
+        // A rewarded ad can only be presented once: drop it now; the next one loads when it closes.
+        self.rewardedAd = nil
+        isRewardedAdReady = false
+        pendingReward = onReward
+        rewardEarned = false
         rewardedAd.present(fromRootViewController: root) { [weak self] in
-            onReward(Self.hintsPerRewardedAd)
-            self?.rewardedAd = nil
-            self?.isRewardedAdReady = false
-            self?.loadRewardedAd()
+            self?.rewardEarned = true
         }
-        #else
+        #elseif DEBUG
         // No SDK linked: simulate a completed rewarded ad so the flow is testable.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             onReward(Self.hintsPerRewardedAd)
         }
+        #else
+        // No SDK linked in a release build: never grant hints without an ad.
+        onReward(0)
         #endif
     }
 
+    #if canImport(GoogleMobileAds)
+    /// Called when the rewarded ad closes or fails to present.
+    fileprivate func finishRewardedAd() {
+        let completion = pendingReward
+        let granted = rewardEarned ? Self.hintsPerRewardedAd : 0
+        pendingReward = nil
+        rewardEarned = false
+        completion?(granted)
+        loadRewardedAd()
+    }
+
+    fileprivate func finishInterstitial() {
+        isInterstitialReady = false
+        interstitial = nil
+        loadInterstitial()
+    }
+    #endif
+
     // MARK: - Helpers
 
+    /// The topmost presented controller of the key window, so ads can show on
+    /// top of an open sheet (e.g. the hint store).
     static var rootViewController: UIViewController? {
-        UIApplication.shared.connectedScenes
+        var top = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap { $0.windows }
             .first { $0.isKeyWindow }?
             .rootViewController
+        while let presented = top?.presentedViewController, !presented.isBeingDismissed {
+            top = presented
+        }
+        return top
     }
 }
 
@@ -173,22 +229,32 @@ final class AdManager: ObservableObject {
 
 #if canImport(GoogleMobileAds)
 extension AdManager {
+    /// One delegate per ad type, so closing one kind never resets the other.
     final class FullScreenDelegate: NSObject, GADFullScreenContentDelegate {
+        enum Kind { case interstitial, rewarded }
+
         weak var owner: AdManager?
-        init(owner: AdManager) { self.owner = owner }
+        let kind: Kind
+        init(owner: AdManager, kind: Kind) {
+            self.owner = owner
+            self.kind = kind
+        }
 
         func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
-            Task { @MainActor in
-                self.owner?.isInterstitialReady = false
-                self.owner?.interstitial = nil
-                self.owner?.loadInterstitial()
-            }
+            Task { @MainActor in self.finish() }
         }
 
         func ad(_ ad: GADFullScreenPresentingAd,
                 didFailToPresentFullScreenContentWithError error: Error) {
-            print("[AdManager] Interstitial present error: \(error.localizedDescription)")
-            Task { @MainActor in self.owner?.loadInterstitial() }
+            print("[AdManager] \(kind) present error: \(error.localizedDescription)")
+            Task { @MainActor in self.finish() }
+        }
+
+        @MainActor private func finish() {
+            switch kind {
+            case .interstitial: owner?.finishInterstitial()
+            case .rewarded:     owner?.finishRewardedAd()
+            }
         }
     }
 }
