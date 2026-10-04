@@ -188,6 +188,13 @@ final class WordleGameTests: XCTestCase {
 
     // MARK: - Word banks
 
+    func testSharedWordFilesAreBundledAndParsed() {
+        // Loaded from shared/words/*.txt (the bank shared with Android).
+        XCTAssertFalse(WordBank.english.isEmpty)
+        XCTAssertFalse(WordBank.armenian.isEmpty)
+        XCTAssertEqual(WordBank.parse("# comment\n\n plant \r\nՔԱՂԱՔ\n"), ["PLANT", "ՔԱՂԱՔ"])
+    }
+
     func testEnglishPlayableWordsAreFiveLetterUppercase() {
         let playable = GameLanguage.englishPlayableWords
         XCTAssertGreaterThanOrEqual(playable.count, 100)

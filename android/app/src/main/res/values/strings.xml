@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WordleGame</string>
+    <string name="settings">Settings</string>
+    <string name="enter">Enter</string>
+    <string name="delete">Delete</string>
+    <string name="hints_count">Hints: %d</string>
+    <string name="not_enough_letters">Not enough letters</string>
+    <string name="not_in_word_list">Not in word list</string>
+    <string name="hint_revealed">Hint revealed</string>
+    <string name="no_hints_left">No hints left</string>
+    <string name="brilliant">BRILLIANT</string>
+    <string name="so_close">SO CLOSE</string>
+    <string name="you_cracked_it">You cracked it</string>
+    <string name="the_word_was">The word was</string>
+    <string name="play_again">Play Again</string>
+    <string name="win_rate">Win rate</string>
+    <string name="streak">Streak</string>
+    <string name="best">Best</string>
+    <string name="played">Played</string>
+    <string name="done">Done</string>
+    <string name="word_language">Word Language</string>
+    <string name="statistics">Statistics</string>
+    <string name="reset_statistics">Reset Statistics</string>
+    <string name="how_to_play">How to play: guess the 5-letter word in 6 tries. Green = right spot, Yellow = wrong spot, Gray = not in the word.</string>
+    <string name="start_new_game_in">Start a new game in %s?</string>
+    <string name="switch_and_restart">Switch &amp; restart</string>
+    <string name="cancel">Cancel</string>
+    <string name="current_game_lost">Your current game will be lost.</string>
+</resources>

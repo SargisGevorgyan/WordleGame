@@ -38,6 +38,56 @@ system, stats math and Armenian keyboard / word‑list coverage.
 
 ---
 
+## Shared word bank (iOS + Android)
+
+Both apps read the same word lists — the single source of truth is
+[`shared/words/`](shared/words):
+
+| File | Language |
+|------|----------|
+| `shared/words/words_en.txt` | English |
+| `shared/words/words_hy.txt` | Armenian (Հայերեն) |
+
+One UPPERCASE word per line; blank lines and `#` comments are ignored. Entries
+that aren't exactly 5 board letters (Armenian ու counts as one) are skipped at
+load time, so a typo can't become an unwinnable target. To add or remove words,
+edit these files only: iOS bundles them as resources (`project.yml` /
+`WordleGame.xcodeproj`), Android packages them as assets
+(`android/app/build.gradle.kts`).
+
+---
+
+## Android
+
+Native Kotlin + Jetpack Compose app in [`android/`](android), with the same
+rules as iOS: 6 tries, two‑pass duplicate‑aware scoring, English / Հայերեն with
+the KDWIN Armenian keyboard and the ու digraph as one tile, hints (start at 3,
++1 per win up to 5), stats, language auto‑detection, physical‑keyboard input
+and the dark‑indigo look. Ads, in‑app purchases and Game Center are iOS‑only
+for now.
+
+```bash
+cd android
+./gradlew testDebugUnitTest   # game rules + shared word bank checks
+./gradlew assembleDebug       # app/build/outputs/apk/debug/app-debug.apk
+```
+
+Or open `android/` in Android Studio and run the **app** configuration.
+Requires JDK 17 and the Android SDK (compileSdk 35, minSdk 26). CI builds the
+APK on every PR touching `android/` or `shared/` (`.github/workflows/android.yml`)
+and attaches it as an artifact.
+
+```
+android/app/src/main/java/com/sargisgevorgyan/wordlegame/
+├─ game/            pure Kotlin, unit-tested: GameLanguage, WordBank, GameRules, Stats
+├─ GameViewModel.kt state, reveal timing, hints, persistence (SharedPreferences)
+├─ MainActivity.kt
+└─ ui/              Compose: WordleApp (HUD, aurora background, hardware keys),
+                    Board (flip / pop / shake), Keyboard, Dialogs (game over, settings)
+```
+
+---
+
 ## Architecture (MVVM)
 
 ```
@@ -47,7 +97,7 @@ WordleGame/
 ├─ Models/                        pure value types, no SwiftUI state
 │  ├─ GameModels.swift            LetterEvaluation, Tile, GameStatus, GameConstants
 │  ├─ GameLanguage.swift          English / Հայերեն — word list, keyboard layout, casing
-│  ├─ WordBank.swift              built‑in 5‑letter word lists (EN + HY), uppercase
+│  ├─ WordBank.swift              loads the shared word bank (shared/words/*.txt) from the bundle
 │  └─ StatsStore.swift            UserDefaults persistence (same keys as @AppStorage)
 ├─ ViewModels/
 │  └─ GameViewModel.swift         @MainActor ObservableObject — the single source of truth
