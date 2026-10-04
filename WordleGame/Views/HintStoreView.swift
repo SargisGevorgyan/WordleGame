@@ -113,7 +113,8 @@ struct HintStoreView: View {
             .shadow(color: .neonGreen.opacity(0.5), radius: 12)
         }
         .buttonStyle(.plain)
-        .disabled(watchingAd)
+        .disabled(watchingAd || !ads.canShowRewardedAd)
+        .opacity(ads.canShowRewardedAd || watchingAd ? 1 : 0.5)
         .accessibilityIdentifier("watch-ad-button")
         .accessibilityLabel("Watch a video")
     }

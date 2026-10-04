@@ -49,8 +49,13 @@ final class StoreManager: ObservableObject {
     @Published private(set) var isAdFree: Bool = UserDefaults.standard.bool(forKey: "isAdFree")
 
     /// Called with the number of hints to grant after a successful consumable
-    /// purchase (wired to `GameViewModel.addHints` by the app).
-    var onHintsGranted: ((Int) -> Void)?
+    /// purchase (wired to `GameViewModel.addHints` by the app). Hints granted
+    /// before this is set (e.g. an interrupted purchase delivered at launch) are
+    /// held and handed over as soon as it is assigned.
+    var onHintsGranted: ((Int) -> Void)? {
+        didSet { flushPendingHints() }
+    }
+    private var pendingHints = 0
 
     private var updatesTask: Task<Void, Never>?
     private var grantedTransactionIDs = Set<UInt64>()
@@ -184,8 +189,16 @@ final class StoreManager: ObservableObject {
         guard let count = HintPack.hints(forProductID: transaction.productID),
               !grantedTransactionIDs.contains(transaction.id) else { return false }
         grantedTransactionIDs.insert(transaction.id)
-        onHintsGranted?(count)
+        pendingHints += count
+        flushPendingHints()
         return true
+    }
+
+    private func flushPendingHints() {
+        guard pendingHints > 0, let onHintsGranted else { return }
+        let count = pendingHints
+        pendingHints = 0
+        onHintsGranted(count)
     }
 
     private func setAdFree(_ value: Bool) async {
