@@ -76,3 +76,11 @@
 /* Language names */
 "English" = "English";
 "Armenian" = "Armenian";
+
+/* Daily word & sharing */
+"Daily" = "Daily";
+"Daily #%lld" = "Daily #%lld";
+"Free play" = "Free play";
+"Share" = "Share";
+"Next word in" = "Next word in";
+"Hints are off in the daily game" = "Hints are off in the daily game";

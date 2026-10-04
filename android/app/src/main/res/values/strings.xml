@@ -31,4 +31,10 @@
     <string name="haptics">Haptics</string>
     <string name="high_contrast_colors">High contrast colors</string>
     <string name="high_contrast_footer">Color-blind friendly: orange = right spot, blue = wrong spot.</string>
+    <string name="daily">Daily</string>
+    <string name="daily_number">Daily #%d</string>
+    <string name="free_play">Free play</string>
+    <string name="share">Share</string>
+    <string name="next_word_in">Next word in</string>
+    <string name="hints_off_daily">Hints are off in the daily game</string>
 </resources>

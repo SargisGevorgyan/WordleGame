@@ -24,6 +24,7 @@
 		522D99CA4336CA5D51A66138 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22A07B1031DD52F2A477F86B /* Assets.xcassets */; };
 		53C14711047BFC78166380DC /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237B2ED37A3F9DBE219309BB /* RootView.swift */; };
 		278EAB0E0C9C2DA4EC768A61 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CDEA7ABCB0CCA231F160D6E /* SplashView.swift */; };
+		DA11D0C0DE00000000000002 /* DailyPuzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA11D0C0DE00000000000001 /* DailyPuzzle.swift */; };
 		590E562657D3CC8CB2E2025D /* GameModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8ECEE3F5A45011204B76BED /* GameModels.swift */; };
 		5E77FD3CA1FB2773022FF3CF /* WordleGameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD93B12C3043D02A1026EDD0 /* WordleGameTests.swift */; };
 		6273A7F2ED761B4D12B6BC13 /* AdManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE551C7A237744B1B7A418DF /* AdManager.swift */; };
@@ -98,6 +99,7 @@
 		D1D20DFEED5CD0FD7B93A9CB /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		D28D12A9BF6E52CF24464F8C /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
 		E496287F67034578BCDE3A13 /* WordBank.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordBank.swift; sourceTree = "<group>"; };
+		DA11D0C0DE00000000000001 /* DailyPuzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyPuzzle.swift; sourceTree = "<group>"; };
 		E8ECEE3F5A45011204B76BED /* GameModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModels.swift; sourceTree = "<group>"; };
 		F299B20918461DD4EB07D83C /* WordleGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WordleGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE551C7A237744B1B7A418DF /* AdManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdManager.swift; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				C5F71C5D8E7E18C428B94E55 /* GameLanguage.swift */,
+				DA11D0C0DE00000000000001 /* DailyPuzzle.swift */,
 				E8ECEE3F5A45011204B76BED /* GameModels.swift */,
 				6ABFF73F7BAA5C14FA24DD55 /* StatsStore.swift */,
 				E496287F67034578BCDE3A13 /* WordBank.swift */,
@@ -389,6 +392,7 @@
 				1551D007FC8E85875FE6C696 /* GameCenterManager.swift in Sources */,
 				37AD308D266D9DDB14B48663 /* GameCenterView.swift in Sources */,
 				FAB5123F7CF28B1931F65E1A /* GameLanguage.swift in Sources */,
+				DA11D0C0DE00000000000002 /* DailyPuzzle.swift in Sources */,
 				590E562657D3CC8CB2E2025D /* GameModels.swift in Sources */,
 				8518AEFBC297C390DF097C31 /* GameOverView.swift in Sources */,
 				9D1D2FA5E9E1D20026632141 /* GameViewModel.swift in Sources */,

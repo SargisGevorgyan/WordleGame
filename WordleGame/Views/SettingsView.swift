@@ -150,7 +150,7 @@ struct SettingsView: View {
 
     private func select(_ language: GameLanguage) {
         guard language != selectedLanguage else { return }
-        if game.isInProgress {
+        if game.languageSwitchLosesGame {
             pendingLanguage = language
         } else {
             languageRaw = language.rawValue
