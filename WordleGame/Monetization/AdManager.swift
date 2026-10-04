@@ -4,18 +4,16 @@
 //
 //  Handles Google Mobile Ads (AdMob): SDK start-up + interstitial lifecycle.
 //
-//  Every ad reference is wrapped in `#if canImport(GoogleMobileAds)`, so the
-//  app builds and runs with ZERO external dependencies. To switch real ads on:
-//
-//    1. Xcode > File > Add Package Dependencies…
-//       https://github.com/googleads/googleads-mobile-ios-sdk  (see note below)
-//    2. Re-run `xcodegen generate` (or add the framework to the target).
+//  The SDK is linked as a Swift package (project.yml / Xcode project):
+//  https://github.com/googleads/swift-package-manager-google-mobile-ads
+//  Ad references stay wrapped in `#if canImport(GoogleMobileAds)` so the code
+//  still builds if the package is removed.
 //
 //  ⚠️  SDK version note: this file uses the classic `GAD`-prefixed API
 //      (GADMobileAds / GADBannerView / GADInterstitialAd / GADRequest), which is
 //      available up to Google-Mobile-Ads-SDK 11.x. v12+ renamed these symbols
-//      in Swift (MobileAds / BannerView / InterstitialAd / Request). Pin to
-//      "11.13.0" for a drop-in build, or rename the symbols for v12+.
+//      in Swift (MobileAds / BannerView / InterstitialAd / Request). The package
+//      is pinned to 11.13.0 up to (not including) 12.0.
 //
 
 import SwiftUI

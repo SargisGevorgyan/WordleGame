@@ -62,10 +62,9 @@ CURRENT_PROJECT_VERSION: "1"  # build number — bump every upload
 > button just grants a hint directly. To ship real ads you must add the SDK.
 
 ### 2.1 Add the SDK
-- [ ] Xcode → *File ▸ Add Package Dependencies…* →
-      `https://github.com/googleads/googleads-mobile-ios-sdk`
-      _or_ uncomment the `packages:` + `dependencies:` blocks in `project.yml`
-      and re-run `xcodegen generate`.
+- [x] Linked as a Swift package:
+      `https://github.com/googleads/swift-package-manager-google-mobile-ads`
+      (in `project.yml` and the Xcode project, pinned 11.13.0 ..< 12.0).
 - [ ] ⚠️ **SDK version:** the code uses the classic `GAD`-prefixed API
       (`GADBannerView`, `GADInterstitialAd`, `GADRewardedAd`, `GADRequest`,
       `GADMobileAds`). That API exists **up to Google-Mobile-Ads-SDK 11.x** —

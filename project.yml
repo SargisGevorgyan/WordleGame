@@ -27,16 +27,13 @@ settings:
 # ---------------------------------------------------------------------------
 # Google Mobile Ads (AdMob)
 #
-# All ad code is wrapped in `#if canImport(GoogleMobileAds)`, so the project
-# compiles and runs offline out of the box. To enable real ads, uncomment the
-# `packages` + `dependencies` blocks below (or add the package from Xcode:
-# File > Add Package Dependencies… > https://github.com/googleads/googleads-mobile-ios-sdk)
-# and re-run `xcodegen generate`.
+# Pinned to 11.x: the ad code uses the `GAD`-prefixed API that SDK 12 renamed.
+# Ad code stays wrapped in `#if canImport(GoogleMobileAds)`.
 # ---------------------------------------------------------------------------
-# packages:
-#   GoogleMobileAds:
-#     url: https://github.com/googleads/googleads-mobile-ios-sdk
-#     minVersion: "11.0.0"
+packages:
+  GoogleMobileAds:
+    url: https://github.com/googleads/swift-package-manager-google-mobile-ads
+    majorVersion: "11.13.0"
 
 targets:
   WordleGame:
@@ -56,9 +53,9 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         TARGETED_DEVICE_FAMILY: "1,2"
         SWIFT_EMIT_LOC_STRINGS: YES
-    # dependencies:
-    #   - package: GoogleMobileAds
-    #     product: GoogleMobileAds
+    dependencies:
+      - package: GoogleMobileAds
+        product: GoogleMobileAds
 
   WordleGameTests:
     type: bundle.unit-test
