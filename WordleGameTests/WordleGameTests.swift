@@ -211,6 +211,16 @@ final class WordleGameTests: XCTestCase {
         XCTAssertEqual(WordBank.parse("# comment\n\n plant \r\nՔԱՂԱՔ\n"), ["PLANT", "ՔԱՂԱՔ"])
     }
 
+    func testEveryPlayableWordHasAMeaning() {
+        XCTAssertEqual(WordMeanings.parse("# c\n\nplant | a living thing\nNOBAR\nԳԱՐՈՒՆ|spring\n"),
+                       ["PLANT": "a living thing", "ԳԱՐՈՒՆ": "spring"])
+        for language in GameLanguage.allCases {
+            for word in language.words {
+                XCTAssertNotNil(language.meaning(of: word), "\(word) has no meaning")
+            }
+        }
+    }
+
     func testEnglishPlayableWordsAreFiveLetterUppercase() {
         let playable = GameLanguage.englishPlayableWords
         XCTAssertGreaterThanOrEqual(playable.count, 100)
@@ -386,10 +396,115 @@ final class WordleGameTests: XCTestCase {
         UserDefaults.standard.removeObject(forKey: GameMode.storageKey)
     }
 
+    // MARK: - Hard mode
+
+    func testHardModeRequiresGreensInPlace() {
+        // PLANT vs CRANE: A and N green.
+        let row = zip(["P", "L", "A", "N", "T"], GameViewModel.evaluate(guess: "PLANT", target: "CRANE"))
+            .map { Tile(letter: $0, evaluation: $1) }
+        var board = Array(repeating: row, count: 1)
+        board.append(row)
+        XCTAssertEqual(HardMode.violation(board: board, row: 1, guess: ["S", "L", "A", "T", "E"]),
+                       .missingCorrect(position: 3, token: "N"))
+        XCTAssertNil(HardMode.violation(board: board, row: 1, guess: ["C", "R", "A", "N", "E"]))
+    }
+
+    func testHardModeRequiresYellowsSomewhere() {
+        // EERIE: two yellow Es → later guesses need at least two Es.
+        let row = ["E", "E", "R", "I", "E"].enumerated()
+            .map { Tile(letter: $1, evaluation: $0 < 2 ? .present : .absent) }
+        XCTAssertEqual(HardMode.violation(board: [row], row: 1, guess: ["C", "R", "A", "N", "E"]),
+                       .missingPresent(token: "E"))
+        XCTAssertNil(HardMode.violation(board: [row], row: 1, guess: ["E", "X", "E", "R", "T"]))
+    }
+
+    @MainActor
+    func testHardModeRejectsGuessThatIgnoresHints() {
+        let vm = GameViewModel(targetWord: "CRANE")
+        vm.setModesForTesting(hard: true, timed: false)
+        type("plant", into: vm)
+        vm.submit()
+        vm.forceFinishRevealForTesting(guess: vm.currentGuess)
+        XCTAssertEqual(vm.currentRow, 1)
+
+        type("slate", into: vm)
+        let tokenBefore = vm.shakeToken
+        vm.submit()
+        XCTAssertGreaterThan(vm.shakeToken, tokenBefore)
+        XCTAssertFalse(vm.isRevealing)
+        XCTAssertEqual(vm.currentRow, 1)
+    }
+
+    // MARK: - Timed mode
+
+    @MainActor
+    func testTimeUpLosesTheGame() {
+        let vm = GameViewModel(targetWord: "CRANE")
+        vm.setModesForTesting(hard: false, timed: true)
+        type("pl", into: vm)
+        vm.timeUpForTesting()
+        XCTAssertEqual(vm.status, .lost)
+        XCTAssertTrue(vm.timedOut)
+
+        vm.newGame()
+        XCTAssertFalse(vm.timedOut)
+        XCTAssertEqual(vm.secondsLeft, GameConstants.timeLimitSeconds)
+    }
+
+    // MARK: - Armenian word of the day
+
+    func testLearnerWordNeverGivesAwayADailyAnswerNearby() {
+        for day in 0..<60 {
+            let learner = DailyPuzzle.learnerWord(day: day)
+            XCTAssertTrue(GameLanguage.armenianPlayableSet.contains(learner))
+            for offset in -7...7 {
+                XCTAssertNotEqual(learner, DailyPuzzle.word(for: .armenian, day: day + offset))
+            }
+        }
+    }
+
+    func testEveryLearnerWordHasAMeaning() {
+        let missing = GameLanguage.armenianPlayableWords.filter { WordMeanings.armenian[$0.uppercased()] == nil }
+        XCTAssertEqual(missing, [])
+    }
+
     // MARK: - Helpers
 
     @MainActor
     private func type(_ text: String, into vm: GameViewModel) {
         for character in text { vm.insert(character) }
+    }
+
+    // MARK: - Cloud stats merge
+
+    func testMergeKeepsLargerCountsAndNewerCurrentStreak() {
+        let phone = StatsSnapshot(gamesPlayed: 10, gamesWon: 8, currentStreak: 0, maxStreak: 6, updatedAt: 200)
+        let tablet = StatsSnapshot(gamesPlayed: 12, gamesWon: 7, currentStreak: 4, maxStreak: 5, updatedAt: 100)
+        let merged = phone.merged(with: tablet)
+        XCTAssertEqual(merged.gamesPlayed, 12)
+        XCTAssertEqual(merged.gamesWon, 8)
+        XCTAssertEqual(merged.currentStreak, 0)    // phone changed last: its loss broke the streak
+        XCTAssertEqual(merged.maxStreak, 6)
+        XCTAssertEqual(merged.updatedAt, 200)
+        XCTAssertEqual(merged, tablet.merged(with: phone))
+    }
+
+    func testMergeDropsStatsOlderThanAReset() {
+        let reset = StatsSnapshot(updatedAt: 300, resetAt: 300)
+        let old = StatsSnapshot(gamesPlayed: 50, gamesWon: 40, currentStreak: 9, maxStreak: 12, updatedAt: 250)
+        XCTAssertEqual(old.merged(with: reset), reset)
+        XCTAssertEqual(reset.merged(with: old), reset)
+    }
+
+    func testMergeKeepsGamesPlayedAfterAReset() {
+        let reset = StatsSnapshot(updatedAt: 300, resetAt: 300)
+        let after = StatsSnapshot(gamesPlayed: 1, gamesWon: 1, currentStreak: 1, maxStreak: 1, updatedAt: 400, resetAt: 300)
+        XCTAssertEqual(reset.merged(with: after), after)
+    }
+
+    func testAchievementThresholds() {
+        typealias A = GameCenterManager.Achievement
+        XCTAssertEqual(A.allCases.filter { $0.isEarned(wins: 0, bestStreak: 0) }, [])
+        XCTAssertEqual(A.allCases.filter { $0.isEarned(wins: 12, bestStreak: 3) }, [.firstWin, .wins10, .streak3])
     }
 }

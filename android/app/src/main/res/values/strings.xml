@@ -64,6 +64,28 @@
     <string name="purchases_restored">Purchases restored.</string>
     <string name="no_purchases_found">No previous purchases found.</string>
     <string name="restore_failed">Restore failed.</string>
+
+    <string name="hard_mode_position">Position %1$d must be %2$s</string>
+    <string name="hard_mode_contain">Guess must contain %s</string>
+    <string name="game_modes">Game Modes</string>
+    <string name="hard_mode">Hard mode</string>
+    <string name="hard_mode_desc">Revealed hints must be used in later guesses.</string>
+    <string name="timed_mode">Timed mode</string>
+    <string name="timed_mode_desc">3 minutes per free-play game. The clock starts with your first letter.</string>
+    <string name="modes_next_game">Changes made during a game apply from the next one.</string>
+    <string name="times_up">TIME\'S UP</string>
+    <string name="word_of_the_day">Armenian word of the day</string>
+
+    <string name="accessibility">Accessibility</string>
+    <string name="haptics">Haptics</string>
+    <string name="high_contrast_colors">High contrast colors</string>
+    <string name="high_contrast_footer">Color-blind friendly: orange = right spot, blue = wrong spot.</string>
+    <string name="play_games" translatable="false">Google Play Games</string>
+    <string name="sign_in_play_games">Sign in to Play Games</string>
+    <string name="leaderboards">Leaderboards</string>
+    <string name="achievements">Achievements</string>
+    <string name="play_games_unavailable">Play Games isn\'t set up for this build yet.</string>
+    <string name="stats_sync_note">Signed in, your stats and streaks sync across devices.</string>
     <string name="daily">Daily</string>
     <string name="daily_number">Daily #%d</string>
     <string name="free_play">Free play</string>

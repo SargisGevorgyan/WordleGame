@@ -81,6 +81,9 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    // Play Games: sign-in, leaderboards, achievements, saved-game stats sync.
+    implementation("com.google.android.gms:play-services-games-v2:20.1.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     // Monetization: Play Billing (Remove Ads, hint packs, Pro), AdMob, UMP consent.

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.os.Build
+import android.view.HapticFeedbackConstants
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.LinearEasing
@@ -40,10 +42,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,6 +66,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -71,18 +76,21 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sargisgevorgyan.wordlegame.GameViewModel
 import com.sargisgevorgyan.wordlegame.R
+import com.sargisgevorgyan.wordlegame.UiMessage
 import com.sargisgevorgyan.wordlegame.WordleApplication
 import com.sargisgevorgyan.wordlegame.game.GameMode
 import com.sargisgevorgyan.wordlegame.game.GameStatus
+import com.sargisgevorgyan.wordlegame.games.PlayGamesService
 import com.sargisgevorgyan.wordlegame.monetization.BannerAd
 import com.sargisgevorgyan.wordlegame.monetization.Links
 import com.sargisgevorgyan.wordlegame.monetization.Products
 import com.sargisgevorgyan.wordlegame.monetization.yearlySavingsPercent
+import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun WordleApp(vm: GameViewModel = viewModel()) {
+fun WordleApp(vm: GameViewModel = viewModel(), playGames: PlayGamesService? = null) {
     MaterialTheme(colorScheme = darkColorScheme(primary = Palette.neonGreen, background = Palette.indigoDeep)) {
         var showSettings by rememberSaveable { mutableStateOf(false) }
         var showHintStore by rememberSaveable { mutableStateOf(false) }
@@ -109,6 +117,18 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
         var showIntro by rememberSaveable { mutableStateOf(true) }
         val focus = remember { FocusRequester() }
         LaunchedEffect(Unit) { focus.requestFocus() }
+        val view = LocalView.current
+        LaunchedEffect(vm) {
+            vm.feedback.collect { view.performHapticFeedback(hapticConstant(it)) }
+        }
+        val scope = rememberCoroutineScope()
+
+        // Play Games: pick up the launch sign-in, then merge stats with the cloud
+        // save on sign-in and after every change (a no-op while signed out).
+        LaunchedEffect(playGames) { playGames?.refreshSignIn() }
+        LaunchedEffect(playGames?.status, vm.statsRecord) {
+            playGames?.sync(vm.statsRecord)?.let(vm::applySyncedStats)
+        }
         // A new day may have started while the app was in the background.
         LifecycleResumeEffect(Unit) {
             vm.refreshDaily()
@@ -116,111 +136,131 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
         }
         val share = { shareResult(context, vm.shareText) }
 
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(Palette.backdrop)
-                // Physical keyboard: letters, Enter = submit, Backspace = delete.
-                .onKeyEvent { event ->
-                    if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                    when (event.key) {
-                        Key.Enter, Key.NumPadEnter -> { vm.submit(); true }
-                        Key.Backspace, Key.Delete -> { vm.delete(); true }
-                        else -> {
-                            val code = event.utf16CodePoint
-                            if (code > 0 && Character.isLetter(code)) {
-                                vm.onTypedChar(code.toChar()); true
-                            } else false
+        CompositionLocalProvider(LocalHighContrast provides vm.highContrast) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Palette.backdrop)
+                    // Physical keyboard: letters, Enter = submit, Backspace = delete.
+                    .onKeyEvent { event ->
+                        if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
+                        when (event.key) {
+                            Key.Enter, Key.NumPadEnter -> { vm.submit(); true }
+                            Key.Backspace, Key.Delete -> { vm.delete(); true }
+                            else -> {
+                                val code = event.utf16CodePoint
+                                if (code > 0 && Character.isLetter(code)) {
+                                    vm.onTypedChar(code.toChar()); true
+                                } else false
+                            }
                         }
                     }
-                }
-                .focusRequester(focus)
-                .focusable(),
-        ) {
-            AuroraBackground()
-            Column(
-                Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .focusRequester(focus)
+                    .focusable(),
             ) {
-                Hud(
-                    hints = if (vm.hasUnlimitedHints) "∞" else vm.hintsRemaining.toString(),
-                    isPro = entitlements.isPro,
-                    onHint = {
-                        when {
-                            // Daily mode: useHint explains that hints are off.
-                            vm.mode == GameMode.DAILY || vm.canUseHint -> vm.useHint()
-                            vm.state.status == GameStatus.PLAYING -> showHintStore = true
-                        }
-                    },
-                    onPro = { showPro = true },
-                    onShare = share.takeIf { vm.state.status != GameStatus.PLAYING },
-                    onSettings = { showSettings = true },
-                )
-                Text(
-                    vm.state.language.sampleTitle,
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 4.sp,
-                        shadow = Shadow(Palette.auroraPurple, Offset.Zero, blurRadius = 24f),
-                    ),
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
-                )
-                ModePicker(
-                    mode = vm.mode,
-                    puzzleNumber = vm.puzzleNumber,
-                    enabled = !vm.isRevealing,
-                    onMode = vm::changeMode,
-                )
-                Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Board(vm.state, vm.revealingRow, vm.shakeToken)
-                    ToastBanner(vm.toast, Modifier.align(Alignment.TopCenter))
+                AuroraBackground()
+                Column(
+                    Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Hud(
+                        hints = if (vm.hasUnlimitedHints) "∞" else vm.hintsRemaining.toString(),
+                        isPro = entitlements.isPro,
+                        secondsLeft = vm.secondsLeft.takeIf { vm.state.timed },
+                        hardMode = vm.state.hardMode,
+                        onHint = {
+                            when {
+                                // Daily mode: useHint explains that hints are off.
+                                vm.mode == GameMode.DAILY || vm.canUseHint -> vm.useHint()
+                                vm.state.status == GameStatus.PLAYING -> showHintStore = true
+                            }
+                        },
+                        onPro = { showPro = true },
+                        onShare = share.takeIf { vm.state.status != GameStatus.PLAYING },
+                        onSettings = { showSettings = true },
+                    )
+                    Text(
+                        vm.state.language.sampleTitle,
+                        style = TextStyle(
+                            color = Color.White,
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 4.sp,
+                            shadow = Shadow(Palette.auroraPurple, Offset.Zero, blurRadius = 24f),
+                        ),
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                    )
+                    ModePicker(
+                        mode = vm.mode,
+                        puzzleNumber = vm.puzzleNumber,
+                        enabled = !vm.isRevealing,
+                        onMode = vm::changeMode,
+                    )
+                    Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Board(vm.state, vm.revealingRow, vm.shakeToken)
+                        ToastBanner(vm.toast, Modifier.align(Alignment.TopCenter))
+                    }
+                    Spacer(Modifier.height(10.dp))
+                    Keyboard(
+                        language = vm.state.language,
+                        hints = vm.state.keyboardHints,
+                        onKey = vm::onKey,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        hapticsEnabled = vm.hapticsEnabled,
+                    )
+                    if (canRequestAds && !entitlements.isAdFree) {
+                        BannerAd(Modifier.padding(bottom = 4.dp))
+                    }
                 }
-                Spacer(Modifier.height(10.dp))
-                Keyboard(
-                    language = vm.state.language,
-                    hints = vm.state.keyboardHints,
-                    onKey = vm::onKey,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
-                if (canRequestAds && !entitlements.isAdFree) {
-                    BannerAd(Modifier.padding(bottom = 4.dp))
+                AnimatedVisibility(showIntro, enter = EnterTransition.None, exit = fadeOut(tween(350))) {
+                    SplashIntro(vm.state.language.sampleTitle, onFinished = { showIntro = false })
                 }
             }
-            AnimatedVisibility(showIntro, enter = EnterTransition.None, exit = fadeOut(tween(350))) {
-                SplashIntro(vm.state.language.sampleTitle, onFinished = { showIntro = false })
-            }
-        }
 
-        if (vm.showGameOver) {
-            GameOverDialog(
-                won = vm.state.status == GameStatus.WON,
-                word = vm.state.targetWord,
-                stats = vm.stats,
-                puzzleNumber = vm.puzzleNumber,
-                onShare = share,
-                onPlayAgain = playAgain,
-                onNewDay = vm::refreshDaily,
-                // Back / tap outside also moves on: a new free game, or back to the finished daily board.
-                onDismiss = vm::newGame,
-            )
-        }
-        if (showSettings) {
-            SettingsDialog(
-                current = vm.state.language,
-                isInProgress = vm.languageSwitchLosesGame,
-                stats = vm.stats,
-                onLanguage = vm::changeLanguage,
-                onResetStats = vm::resetStats,
-                entitlements = entitlements,
-                proMonthlyPrice = proMonthlyPrice,
-                privacyOptionsRequired = privacyOptionsRequired,
-                onGoPro = { showSettings = false; showPro = true },
-                onRestore = billing::restorePurchases,
-                onPrivacyOptions = { ads.showPrivacyOptions(activity) },
-                onDismiss = { showSettings = false },
-            )
+            if (vm.showGameOver) {
+                GameOverDialog(
+                    won = vm.state.status == GameStatus.WON,
+                    timedOut = vm.state.timedOut,
+                    word = vm.state.targetWord,
+                    meaning = vm.meaning,
+                    wordOfTheDay = vm.armenianWordOfTheDay,
+                    stats = vm.stats,
+                    puzzleNumber = vm.puzzleNumber,
+                    onShare = share,
+                    onPlayAgain = playAgain,
+                    onNewDay = vm::refreshDaily,
+                    // Back / tap outside also moves on: a new free game, or back to the finished daily board.
+                    onDismiss = vm::newGame,
+                )
+            }
+            if (showSettings) {
+                SettingsDialog(
+                    current = vm.state.language,
+                    isInProgress = vm.languageSwitchLosesGame,
+                    stats = vm.stats,
+                    hardMode = vm.hardMode,
+                    timedMode = vm.timedMode,
+                    onLanguage = vm::changeLanguage,
+                    onHardMode = vm::changeHardMode,
+                    onTimedMode = vm::changeTimedMode,
+                    onResetStats = vm::resetStats,
+                    entitlements = entitlements,
+                    proMonthlyPrice = proMonthlyPrice,
+                    privacyOptionsRequired = privacyOptionsRequired,
+                    onGoPro = { showSettings = false; showPro = true },
+                    onRestore = billing::restorePurchases,
+                    onPrivacyOptions = { ads.showPrivacyOptions(activity) },
+                    hapticsEnabled = vm.hapticsEnabled,
+                    onHaptics = vm::updateHaptics,
+                    highContrast = vm.highContrast,
+                    onHighContrast = vm::updateHighContrast,
+                    playGamesStatus = playGames?.status ?: PlayGamesService.Status.UNAVAILABLE,
+                    onPlayGamesSignIn = { scope.launch { playGames?.signIn() } },
+                    onLeaderboards = { scope.launch { playGames?.showLeaderboards() } },
+                    onAchievements = { scope.launch { playGames?.showAchievements() } },
+                    onDismiss = { showSettings = false },
+                )
+            }
         }
         if (showHintStore) {
             LaunchedEffect(Unit) { ads.loadRewardedIfNeeded() }
@@ -268,6 +308,13 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
     }
 }
 
+/** REJECT / CONFIRM need API 30; older devices fall back to a long-press buzz. */
+private fun hapticConstant(feedback: GameViewModel.Feedback): Int = when {
+    Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> HapticFeedbackConstants.LONG_PRESS
+    feedback == GameViewModel.Feedback.WIN -> HapticFeedbackConstants.CONFIRM
+    else -> HapticFeedbackConstants.REJECT
+}
+
 /** Opens the system share sheet with the emoji result grid. */
 private fun shareResult(context: Context, text: String) {
     val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
@@ -307,6 +354,8 @@ private fun ModePicker(mode: GameMode, puzzleNumber: Int?, enabled: Boolean, onM
 private fun Hud(
     hints: String,
     isPro: Boolean,
+    secondsLeft: Int?,
+    hardMode: Boolean,
     onHint: () -> Unit,
     onPro: () -> Unit,
     onShare: (() -> Unit)?,
@@ -331,6 +380,25 @@ private fun Hud(
                 .padding(horizontal = 14.dp, vertical = 8.dp),
         )
         Spacer(Modifier.weight(1f))
+        if (hardMode) {
+            Text(
+                stringResource(R.string.hard_mode),
+                color = Palette.auroraMagenta,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 6.dp),
+            )
+        }
+        if (secondsLeft != null) {
+            Text(
+                "⏱ %d:%02d".format(secondsLeft / 60, secondsLeft % 60),
+                color = if (secondsLeft <= 30) Palette.warmYellow else Color.White,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .background(Palette.keyIdle, CircleShape)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+            )
+        }
         Text(
             if (isPro) stringResource(R.string.pro) else "👑 " + stringResource(R.string.go_pro),
             color = Color.White,
@@ -363,12 +431,12 @@ private tailrec fun Context.findActivity(): Activity = when (this) {
 }
 
 @Composable
-private fun ToastBanner(message: Int?, modifier: Modifier = Modifier) {
+private fun ToastBanner(message: UiMessage?, modifier: Modifier = Modifier) {
     var last by remember { mutableStateOf(message) }
     if (message != null) last = message
     AnimatedVisibility(message != null, modifier = modifier, enter = fadeIn(), exit = fadeOut()) {
         Text(
-            last?.let { stringResource(it) }.orEmpty(),
+            last?.let { stringResource(it.res, *it.args.toTypedArray()) }.orEmpty(),
             color = Color.White,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier

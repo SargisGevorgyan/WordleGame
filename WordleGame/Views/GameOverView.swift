@@ -10,7 +10,10 @@ import SwiftUI
 
 struct GameOverView: View {
     let didWin: Bool
+    var timedOut = false
     let targetWord: String
+    let meaning: String?
+    var wordOfTheDay: (word: String, gloss: String)? = nil
     /// Set for the daily game: shows the countdown to the next word, and the
     /// main button switches to free play.
     var puzzleNumber: Int? = nil
@@ -30,7 +33,7 @@ struct GameOverView: View {
                     .foregroundStyle(.white.opacity(0.6))
             }
 
-            Text(didWin ? headline.won : headline.lost)
+            Text(didWin ? headline.won : (timedOut ? "TIME'S UP" : headline.lost))
                 .font(.system(size: 30, weight: .black, design: .rounded))
                 .tracking(2)
                 .foregroundStyle(.white)
@@ -45,6 +48,17 @@ struct GameOverView: View {
                     .tracking(6)
                     .foregroundStyle(.white)
                     .neonGlow(.warmYellow, radius: 8, strength: 0.6)
+                if let meaning {
+                    Text(verbatim: meaning)
+                        .font(.callout)
+                        .italic()
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.white.opacity(0.8))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, 4)
+                        .accessibilityLabel(Text("Meaning") + Text(verbatim: ": \(meaning)"))
+                        .accessibilityIdentifier("word-meaning")
+                }
             }
 
             StatsView()
@@ -71,6 +85,30 @@ struct GameOverView: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("share-result")
+
+            // Learners: one Armenian word a day, skipped when it's the word just played.
+            if let daily = wordOfTheDay, daily.word != targetWord.uppercased() {
+                VStack(spacing: 4) {
+                    Text("Armenian word of the day")
+                        .font(.caption2.weight(.semibold))
+                        .textCase(.uppercase)
+                        .foregroundStyle(.white.opacity(0.55))
+                    Text(verbatim: daily.word)
+                        .font(.system(size: 20, weight: .black, design: .rounded))
+                        .tracking(3)
+                        .foregroundStyle(Color.neonGreen)
+                    Text(verbatim: daily.gloss)
+                        .font(.footnote)
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Color.white.opacity(0.12)))
+                .accessibilityIdentifier("word-of-the-day")
+            }
 
             Button(action: onPlayAgain) {
                 Text(puzzleNumber == nil ? LocalizedStringKey("Play Again") : "Free play")

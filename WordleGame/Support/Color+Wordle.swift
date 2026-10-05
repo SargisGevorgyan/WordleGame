@@ -34,6 +34,10 @@ extension Color {
     static let warmYellow = Color(hex: 0xF4C13B)
     static let glassSlate = Color(hex: 0x3A3B52)
 
+    // MARK: High contrast (colour-blind friendly: orange = right spot, blue = wrong spot)
+    static let contrastOrange = Color(hex: 0xF5793A)
+    static let contrastBlue   = Color(hex: 0x85C0F9)
+
     // MARK: Glass / text
     static let glassFill    = Color.white.opacity(0.06)
     static let glassStroke  = Color.white.opacity(0.18)

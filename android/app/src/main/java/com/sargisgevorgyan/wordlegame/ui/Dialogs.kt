@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,6 +40,7 @@ import com.sargisgevorgyan.wordlegame.R
 import com.sargisgevorgyan.wordlegame.game.GameLanguage
 import com.sargisgevorgyan.wordlegame.game.Stats
 import com.sargisgevorgyan.wordlegame.monetization.Entitlements
+import com.sargisgevorgyan.wordlegame.games.PlayGamesService
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -62,7 +68,10 @@ internal fun GlassPanel(content: @Composable () -> Unit) {
 @Composable
 fun GameOverDialog(
     won: Boolean,
+    timedOut: Boolean,
     word: String,
+    meaning: String?,
+    wordOfTheDay: Pair<String, String>?,
     stats: Stats,
     puzzleNumber: Int?,
     onShare: () -> Unit,
@@ -76,7 +85,13 @@ fun GameOverDialog(
                 Text(stringResource(R.string.daily_number, puzzleNumber), color = Palette.secondaryText, fontWeight = FontWeight.SemiBold)
             }
             Text(
-                stringResource(if (won) R.string.brilliant else R.string.so_close),
+                stringResource(
+                    when {
+                        won -> R.string.brilliant
+                        timedOut -> R.string.times_up
+                        else -> R.string.so_close
+                    },
+                ),
                 color = if (won) Palette.neonGreen else Palette.warmYellow,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Black,
@@ -86,7 +101,18 @@ fun GameOverDialog(
                 color = Palette.secondaryText,
             )
             Text(word, color = Color.White, fontSize = 34.sp, fontWeight = FontWeight.Black, letterSpacing = 6.sp)
+            if (meaning != null) {
+                Text(
+                    meaning,
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontSize = 15.sp,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Center,
+                )
+            }
             StatsRow(stats)
+            // Learners: one Armenian word a day, skipped when it's the word just played.
+            wordOfTheDay?.takeIf { it.first != word }?.let { (hyWord, meaning) -> WordOfTheDayCard(hyWord, meaning) }
             if (puzzleNumber != null) NextWordCountdown(onNewDay)
             Box(
                 Modifier
@@ -137,6 +163,23 @@ private fun untilMidnight(): Duration {
 }
 
 @Composable
+private fun WordOfTheDayCard(word: String, meaning: String) {
+    val shape = RoundedCornerShape(16.dp)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(Palette.glassFill, shape)
+            .border(1.dp, Palette.borderIdle, shape)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(stringResource(R.string.word_of_the_day).uppercase(), color = Palette.secondaryText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+        Text(word, color = Palette.neonGreen, fontSize = 22.sp, fontWeight = FontWeight.Black, letterSpacing = 3.sp)
+        Text(meaning, color = Color.White, fontSize = 14.sp, textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
 fun StatsRow(stats: Stats) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
         StatCell(stats.gamesPlayed.toString(), stringResource(R.string.played))
@@ -159,7 +202,11 @@ fun SettingsDialog(
     current: GameLanguage,
     isInProgress: Boolean,
     stats: Stats,
+    hardMode: Boolean,
+    timedMode: Boolean,
     onLanguage: (GameLanguage) -> Unit,
+    onHardMode: (Boolean) -> Unit,
+    onTimedMode: (Boolean) -> Unit,
     onResetStats: () -> Unit,
     entitlements: Entitlements,
     proMonthlyPrice: String?,
@@ -167,6 +214,14 @@ fun SettingsDialog(
     onGoPro: () -> Unit,
     onRestore: () -> Unit,
     onPrivacyOptions: () -> Unit,
+    hapticsEnabled: Boolean,
+    onHaptics: (Boolean) -> Unit,
+    highContrast: Boolean,
+    onHighContrast: (Boolean) -> Unit,
+    playGamesStatus: PlayGamesService.Status,
+    onPlayGamesSignIn: () -> Unit,
+    onLeaderboards: () -> Unit,
+    onAchievements: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var pending by remember { mutableStateOf<GameLanguage?>(null) }
@@ -201,6 +256,11 @@ fun SettingsDialog(
                     }
                 }
 
+                SectionTitle(stringResource(R.string.game_modes))
+                ModeSwitch(stringResource(R.string.hard_mode), stringResource(R.string.hard_mode_desc), hardMode, onHardMode)
+                ModeSwitch(stringResource(R.string.timed_mode), stringResource(R.string.timed_mode_desc), timedMode, onTimedMode)
+                Text(stringResource(R.string.modes_next_game), color = Palette.secondaryText, fontSize = 12.sp, modifier = Modifier.fillMaxWidth())
+
                 SectionTitle(stringResource(R.string.statistics))
                 StatsRow(stats)
                 TextButton(onClick = onResetStats) {
@@ -234,6 +294,32 @@ fun SettingsDialog(
                         }
                     }
                 }
+                SectionTitle(stringResource(R.string.accessibility))
+                SettingSwitch(stringResource(R.string.haptics), hapticsEnabled, onHaptics)
+                SettingSwitch(stringResource(R.string.high_contrast_colors), highContrast, onHighContrast)
+                Text(stringResource(R.string.high_contrast_footer), color = Palette.secondaryText, fontSize = 12.sp)
+                SectionTitle(stringResource(R.string.play_games))
+                when (playGamesStatus) {
+                    PlayGamesService.Status.SIGNED_IN -> {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                            TextButton(onClick = onLeaderboards) {
+                                Text("🏆 " + stringResource(R.string.leaderboards), color = Palette.neonGreen)
+                            }
+                            TextButton(onClick = onAchievements) {
+                                Text("⭐ " + stringResource(R.string.achievements), color = Palette.neonGreen)
+                            }
+                        }
+                        Text(stringResource(R.string.stats_sync_note), color = Palette.secondaryText, fontSize = 13.sp)
+                    }
+                    PlayGamesService.Status.UNAVAILABLE ->
+                        Text(stringResource(R.string.play_games_unavailable), color = Palette.secondaryText, fontSize = 13.sp)
+                    PlayGamesService.Status.UNKNOWN, PlayGamesService.Status.SIGNED_OUT -> {
+                        TextButton(onClick = onPlayGamesSignIn) {
+                            Text(stringResource(R.string.sign_in_play_games), color = Palette.neonGreen)
+                        }
+                        Text(stringResource(R.string.stats_sync_note), color = Palette.secondaryText, fontSize = 13.sp)
+                    }
+                }
 
                 Text(stringResource(R.string.how_to_play), color = Palette.secondaryText, fontSize = 13.sp)
 
@@ -257,6 +343,39 @@ fun SettingsDialog(
             dismissButton = {
                 TextButton(onClick = { pending = null }) { Text(stringResource(R.string.cancel)) }
             },
+        )
+    }
+}
+
+@Composable
+private fun ModeSwitch(title: String, description: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(title, color = Color.White, fontWeight = FontWeight.SemiBold)
+            Text(description, color = Palette.secondaryText, fontSize = 12.sp)
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onChange,
+            colors = SwitchDefaults.colors(checkedTrackColor = Palette.neonGreen, checkedThumbColor = Palette.indigoDeep),
+        )
+    }
+}
+
+@Composable
+private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onChange),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(label, color = Color.White)
+        Switch(
+            checked = checked,
+            onCheckedChange = null,
+            colors = SwitchDefaults.colors(checkedTrackColor = Palette.neonGreen, checkedThumbColor = Palette.indigoDeep),
         )
     }
 }

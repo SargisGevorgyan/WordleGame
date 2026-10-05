@@ -106,7 +106,7 @@ static let rewardedAdUnitID     = "ca-app-pub-0000000000000000/2222222222"  // �
 
 ---
 
-## 2b. Game Center (leaderboards)
+## 2b. Game Center (leaderboards + achievements)
 
 The **Game Center** capability is already declared in
 `WordleGame/WordleGame.entitlements` (`com.apple.developer.game-center`).
@@ -125,6 +125,18 @@ and from **Settings ▸ Game Center**.
   | `com.sargisgevorgyan.wordlegame.wins`         | total wins (`gamesWon`)             |
   | `com.sargisgevorgyan.wordlegame.beststreak`   | best streak (`maxStreak`)           |
 
+- [ ] In the same place create six achievements (point values are up to you),
+      with these IDs (`GameCenterManager.Achievement`):
+
+  | 🔧 Achievement ID                                  | Unlocked when      |
+  |---------------------------------------------------|--------------------|
+  | `com.sargisgevorgyan.wordlegame.first_win`        | 1 win              |
+  | `com.sargisgevorgyan.wordlegame.wins_10`          | 10 wins            |
+  | `com.sargisgevorgyan.wordlegame.wins_100`         | 100 wins           |
+  | `com.sargisgevorgyan.wordlegame.streak_3`         | best streak ≥ 3    |
+  | `com.sargisgevorgyan.wordlegame.streak_7`         | best streak ≥ 7    |
+  | `com.sargisgevorgyan.wordlegame.streak_30`        | best streak ≥ 30   |
+
 - [ ] Test with a **Sandbox Apple ID** signed into Game Center on a real device
       (the Simulator can't fully exercise Game Center).
 - [ ] Attach the leaderboards to the app version before submitting.
@@ -134,6 +146,18 @@ and from **Settings ▸ Game Center**.
 > matching descriptor" / "not recognized by Game Center"). This is expected — the
 > app handles it (`status = .unavailable`, Settings shows a notice) and keeps
 > working. It's a signing + App Store Connect step, not a code issue.
+
+### iCloud stats sync
+
+`CloudStatsSync` (in `StatsStore.swift`) mirrors stats and streaks through the
+iCloud key-value store; the entitlement
+`com.apple.developer.ubiquity-kvstore-identifier` is declared.
+Merging keeps the larger counts and best streak, takes the current streak from
+the copy changed last, and honours "Reset Statistics" on every device.
+
+- [ ] Enable **iCloud** for the App ID in the Apple Developer portal, and in
+      Xcode ▸ Signing & Capabilities ▸ iCloud tick **Key-value storage**.
+- [ ] Test on two devices signed into the same Apple ID.
 
 ---
 
@@ -154,6 +178,29 @@ auto‑selected from the device locale on first launch.
       reviewed).
 - [ ] Run the app with the scheme's *App Language → Հայերեն* (or
       `-AppleLanguages (hy)`) and check every screen for truncation.
+
+---
+
+## 2d. Android: Google Play Games Services
+
+Android mirrors Game Center with Play Games (sign-in, the same two leaderboards
+and six achievements) and syncs stats through a Play Games **saved game**, with
+the same merge rules as iOS. Until real IDs are in place Play Games stays off
+and the app works as before; stats still survive a reinstall through Android
+Auto Backup (`allowBackup` is on).
+
+- [ ] Play Console ▸ **Play Games Services ▸ Setup and management ▸
+      Configuration**: create the game project, link the app, add OAuth
+      credentials for the debug and release (Play App Signing) SHA-1s.
+- [ ] Turn on **Saved Games** in the Play Games configuration.
+- [ ] Create leaderboards *Wins* and *Best Streak* (Integer, larger is better)
+      and achievements *First Win*, *Wins 10*, *Wins 100*, *Streak 3*,
+      *Streak 7*, *Streak 30* with the thresholds above.
+- [ ] 🔧 **Get resources** (Android XML) and paste it over
+      `android/app/src/main/res/values/games-ids.xml`, keeping the resource
+      names the file already uses (`app_id`, `leaderboard_wins`,
+      `leaderboard_best_streak`, `achievement_first_win`, …).
+- [ ] Add testers under Play Games ▸ Testers, then publish the configuration.
 
 ---
 
@@ -328,7 +375,7 @@ Notes:
 | new file | `WordleGame/PrivacyInfo.xcprivacy` |
 | Apple Developer portal | App ID `com.sargisgevorgyan.wordlegame` with In-App Purchase + Game Center |
 | `StoreManager.swift` / `Links.kt` | Privacy policy URL (draft in `PRIVACY.md`) |
-| App Store Connect | 3 IAPs + "Wordy Pro" subscription group (2 plans) + 2 Game Center leaderboards with matching IDs, en+hy metadata, privacy label, privacy-policy URL, support URL, screenshots |
+| App Store Connect | 3 IAPs + "Wordy Pro" subscription group (2 plans) + 2 Game Center leaderboards + 6 achievements with matching IDs, en+hy metadata, privacy label, privacy-policy URL, support URL, screenshots |
 | AdMob | app + 3 ad units + `app-ads.txt` |
 
 ---

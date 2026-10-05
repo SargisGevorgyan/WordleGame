@@ -5,10 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.sargisgevorgyan.wordlegame.games.PlayGamesService
 import com.sargisgevorgyan.wordlegame.ui.WordleApp
 
 class MainActivity : ComponentActivity() {
     private val app get() = application as WordleApplication
+    private val playGames by lazy { PlayGamesService(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must precede super.onCreate: swaps the launch theme for Theme.WordleGame.
@@ -17,7 +19,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         // Consent (UMP) before any ad request; shows the form only where required.
         if (savedInstanceState == null) app.ads.gatherConsent(this)
-        setContent { WordleApp() }
+        setContent { WordleApp(playGames = playGames) }
     }
 
     override fun onResume() {

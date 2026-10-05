@@ -1,0 +1,1181 @@
+# Short meanings shown after each game, shared by the iOS and Android apps.
+# One entry per line: WORD|meaning. Lines starting with # and blank lines are ignored.
+ABBEY|a building where monks or nuns live and worship
+ABIDE|to accept or tolerate; to live or stay
+ABOUT|on the subject of; approximately
+ABOVE|at a higher level than
+ABUSE|cruel or wrong treatment; misuse
+ACORN|the nut of an oak tree
+ACTOR|a person who performs in plays or films
+ACUTE|sharp or severe; very perceptive
+ADAPT|to change to suit new conditions
+ADMIT|to confess to be true; to let in
+ADOPT|to take up as your own; to legally raise another's child
+ADORE|to love and admire deeply
+ADORN|to decorate or make beautiful
+ADULT|a fully grown person
+AFTER|later than; following
+AGAIN|once more
+AGENT|a person who acts on behalf of others
+AGREE|to have the same opinion
+AHEAD|in front; in advance
+AISLE|a passage between rows of seats
+ALARM|a warning sound or signal; sudden fear
+ALBUM|a collection of recordings or photos
+ALERT|watchful and ready; a warning
+ALIEN|a foreigner; a being from another world
+ALIGN|to put in a straight line or in agreement
+ALIKE|similar; in the same way
+ALIVE|living; not dead
+ALLOW|to let something happen
+ALLOY|a metal made by mixing metals
+ALONE|without anyone else
+ALONG|moving on a line; together with
+ALOUD|out loud, so others can hear
+ALPHA|the first letter of the Greek alphabet
+ALTER|to change
+AMBER|fossil tree resin; a yellow-orange color
+AMONG|surrounded by; in the middle of
+AMPLE|more than enough
+AMUSE|to make someone laugh or smile
+ANGEL|a spiritual messenger; a very kind person
+ANGER|a strong feeling of being upset or annoyed
+ANGLE|the space between two lines that meet
+ANGRY|feeling or showing anger
+ANKLE|the joint between the foot and the leg
+ANNOY|to irritate or bother
+ANVIL|an iron block on which metal is hammered
+APART|separated by distance or time
+APPLE|a round fruit with red or green skin
+APPLY|to put on; to make a formal request
+APRON|a garment worn to protect clothes
+ARENA|a large space for sports or shows
+ARGUE|to disagree with words
+ARISE|to come up; to get up
+ARMOR|a protective metal covering
+AROMA|a pleasant smell
+ARRAY|an ordered arrangement or display
+ARROW|a pointed shaft shot from a bow
+ASIDE|to one side; a remark said privately
+ASSET|something useful or valuable
+ATLAS|a book of maps
+ATTIC|a room just under the roof
+AUDIO|sound, especially recorded
+AUDIT|an official check of accounts
+AVOID|to keep away from
+AWAKE|not asleep
+AWARD|a prize for an achievement
+AWARE|knowing about something
+AWFUL|very bad or unpleasant
+BACON|salted, smoked meat from a pig
+BADGE|a pin or emblem showing membership or rank
+BADLY|in a poor way
+BAGEL|a dense, ring-shaped bread roll
+BAKER|a person who bakes bread and cakes
+BANJO|a stringed instrument with a round body
+BARON|a nobleman of low rank; a powerful businessman
+BASIC|simple and essential
+BASIN|a bowl for water; a low area of land
+BASIS|the foundation or main part
+BATCH|a group made or handled together
+BEACH|the sandy shore by the sea
+BEARD|hair growing on the chin and cheeks
+BEAST|a large or wild animal
+BEGAN|past tense of begin
+BEGIN|to start
+BEING|existence; a living creature
+BELLY|the stomach
+BELOW|at a lower level than
+BENCH|a long seat for several people
+BERRY|a small juicy fruit
+BIRTH|the act of being born
+BISON|a large wild ox with a shaggy mane
+BLACK|the darkest color, like coal
+BLADE|the cutting edge of a knife; a leaf of grass
+BLAME|to say someone is responsible for a fault
+BLANK|empty; with nothing written
+BLAST|an explosion; a strong gust
+BLAZE|a large, bright fire
+BLEAK|cold, bare and hopeless
+BLEED|to lose blood
+BLEND|to mix together smoothly
+BLESS|to ask for divine favor on
+BLIND|unable to see
+BLINK|to shut and open the eyes quickly
+BLISS|perfect happiness
+BLOCK|a solid piece; to obstruct
+BLOOD|the red liquid that flows in the body
+BLOOM|a flower; to produce flowers
+BLUNT|not sharp; very direct in speech
+BLUSH|to turn red in the face from embarrassment
+BOARD|a flat piece of wood; to get on a vehicle
+BOAST|to talk with too much pride
+BONUS|something extra and welcome
+BOOST|to raise or increase
+BOOTH|a small enclosed stall or cabin
+BOUND|tied; certain to; a leap
+BOWEL|the intestine
+BRAIN|the organ of thought in the head
+BRAKE|a device to slow or stop a vehicle
+BRAND|a product name; a burnt mark
+BRASS|a yellow alloy of copper and zinc
+BRAVE|ready to face danger
+BREAD|food baked from flour and water
+BREAK|to split into pieces; a short rest
+BREED|a type of animal; to produce young
+BRICK|a baked clay block for building
+BRIDE|a woman on her wedding day
+BRIEF|short in time
+BRINE|very salty water
+BRING|to carry toward
+BRINK|the edge of a steep place or new situation
+BRISK|quick and energetic
+BROAD|wide
+BROOK|a small stream
+BROOM|a brush with a long handle for sweeping
+BROTH|a thin soup
+BROWN|the color of earth or wood
+BRUSH|a tool with bristles; to clean or paint with one
+BUDDY|a close friend
+BUGGY|a light carriage; full of bugs
+BUILD|to make by putting parts together
+BUNCH|a group of things held together
+BURST|to break open suddenly
+BUYER|a person who buys
+CABIN|a small wooden house; a room on a ship or plane
+CABLE|a thick wire or rope
+CAMEL|a desert animal with one or two humps
+CANAL|a man-made waterway
+CANDY|a sweet treat made with sugar
+CANOE|a light, narrow boat moved with paddles
+CAPER|a playful leap; a pickled flower bud
+CARAT|a unit of weight for gems
+CARGO|goods carried by ship, plane or truck
+CARRY|to hold and move from place to place
+CARVE|to cut into a shape
+CATCH|to grab something moving
+CAUSE|a reason something happens
+CEDAR|a tall evergreen tree with fragrant wood
+CHAIN|a row of connected metal links
+CHAIR|a seat for one person
+CHALK|soft white rock used for writing on boards
+CHAMP|a champion
+CHANT|a repeated rhythmic phrase
+CHAOS|complete disorder
+CHARM|the power to delight; a lucky trinket
+CHART|a map or diagram of information
+CHASE|to run after
+CHEAP|low in price
+CHECK|to examine; a mark of approval
+CHEEK|the side of the face below the eye
+CHEER|a shout of joy; to encourage
+CHESS|a board game with kings and queens
+CHEST|the front of the body; a large box
+CHICK|a baby bird
+CHIEF|a leader; most important
+CHILD|a young person
+CHILL|coldness; to make cold
+CHIRP|a short, high sound of a bird
+CHOIR|a group of singers
+CHOKE|to be unable to breathe because of a blockage
+CHORD|notes played together
+CHOSE|past tense of choose
+CHUNK|a thick, solid piece
+CIDER|a drink made from apples
+CIGAR|a roll of tobacco leaves for smoking
+CINCH|something very easy; to fasten tightly
+CIVIC|relating to a city or citizens
+CIVIL|polite; relating to citizens
+CLAIM|to say something is true or yours
+CLAMP|a tool that holds things tightly
+CLASH|a conflict; a loud metal noise
+CLASP|to hold tightly; a fastener
+CLASS|a group of students; a category
+CLEAN|free of dirt
+CLEAR|easy to see through or understand
+CLERK|an office or shop worker
+CLICK|a short, sharp sound
+CLIFF|a steep rock face
+CLIMB|to go up
+CLOAK|a loose sleeveless coat
+CLOCK|a device that shows the time
+CLONE|an exact copy
+CLOSE|to shut; near
+CLOTH|woven fabric
+CLOUD|a white or gray mass floating in the sky
+CLOVE|a dried flower bud spice; a segment of garlic
+CLOWN|a comic performer
+COACH|a sports trainer; a long bus
+COAST|land next to the sea
+COBRA|a venomous snake with a hood
+COCOA|powder from cacao seeds; a hot chocolate drink
+COMET|an icy body in space with a glowing tail
+COMIC|funny; a story told in drawings
+CORAL|a hard sea growth formed by tiny animals
+COUCH|a long padded seat; a sofa
+COUGH|to push air out of the lungs noisily
+COULD|past tense of can; expresses possibility
+COUNT|to say numbers in order; a nobleman
+COURT|a place of law; an area for some sports
+COVER|to put something over
+CRACK|a thin break; a sharp noise
+CRAFT|a skill of making things by hand
+CRAMP|a sudden painful muscle tightening
+CRANE|a lifting machine; a long-legged bird
+CRASH|a violent collision
+CRATE|a wooden box for transport
+CRAWL|to move on hands and knees
+CRAZY|wild or foolish; mad
+CREAM|the fatty part of milk
+CREED|a set of beliefs
+CREEK|a small stream
+CREPT|past tense of creep
+CRIED|past tense of cry
+CRIME|an act that breaks the law
+CRISP|firm and crunchy
+CROSS|to go across; an X shape; angry
+CROWD|a large group of people
+CROWN|a royal headdress
+CRUDE|rough or unrefined
+CRUEL|causing pain on purpose
+CRUMB|a tiny piece of bread or cake
+CRUSH|to press hard and break; a sudden fondness
+CRUST|the hard outer layer
+CUBIC|shaped like a cube; in three dimensions
+CURLY|having curls
+CURVE|a smoothly bending line
+CYCLE|a repeating series; to ride a bicycle
+DAILY|every day
+DAISY|a flower with white petals and a yellow center
+DANCE|to move to music
+DEALT|past tense of deal
+DECAY|to rot slowly
+DECOY|a fake used to lure
+DELAY|to make late
+DELTA|land where a river splits before the sea; Greek letter D
+DENSE|thick; closely packed
+DEPTH|how deep something is
+DIARY|a daily personal record
+DIGIT|a single number 0 to 9; a finger
+DINER|a person eating; a small restaurant
+DITCH|a long narrow trench; to abandon
+DIZZY|feeling that things are spinning
+DODGE|to avoid quickly
+DOING|the act of performing something
+DONOR|a person who gives
+DOUBT|a feeling of being unsure
+DOUGH|a mix of flour and water for baking
+DOZEN|a group of twelve
+DRAFT|a first version; a cold air current
+DRAIN|a pipe that carries away water
+DRAMA|a play; exciting events
+DRANK|past tense of drink
+DRAPE|to hang cloth loosely; a curtain
+DRAWL|slow speech with long vowels
+DRAWN|past participle of draw; looking tired
+DREAD|great fear
+DREAM|images and stories in the mind during sleep
+DRESS|a one-piece garment; to put on clothes
+DRIED|having had the water removed
+DRIFT|to be carried slowly by water or air
+DRILL|a tool for boring holes; a practice exercise
+DRINK|to swallow liquid
+DRIVE|to operate a vehicle
+DRONE|a low hum; a remote-controlled aircraft; a male bee
+DROVE|past tense of drive; a herd
+DROWN|to die under water
+DUSTY|covered with dust
+DWARF|a very small being or thing
+DWELL|to live in a place; to keep thinking about
+EAGER|wanting very much
+EAGLE|a large bird of prey
+EARLY|before the usual time
+EARTH|our planet; soil
+EASEL|a stand that holds a painting
+EATEN|past participle of eat
+EBONY|a dark hard wood; deep black
+EERIE|strange and frightening
+EIGHT|the number 8
+ELBOW|the joint in the middle of the arm
+ELDER|older; an older person of authority
+ELECT|to choose by voting
+ELITE|the best of a group
+EMBER|a glowing piece of coal or wood
+EMPTY|containing nothing
+ENACT|to make into law; to act out
+ENDOW|to give money or a quality to
+ENEMY|a person who opposes or hates you
+ENJOY|to take pleasure in
+ENTER|to go in
+ENTRY|a way in; an item in a list
+EPOCH|a period of time in history
+EQUAL|the same in amount or value
+EQUIP|to supply with what is needed
+ERASE|to rub out or delete
+ERODE|to wear away slowly
+ERROR|a mistake
+ESSAY|a short piece of writing
+ETHIC|a moral principle
+EVADE|to escape or avoid
+EVENT|something that happens
+EVERY|each one of a group
+EXACT|completely correct
+EXCEL|to be very good at
+EXERT|to apply force or effort
+EXILE|being sent away from your country
+EXIST|to be real; to live
+EXPEL|to force out
+EXTRA|more than usual
+FABLE|a short story with a moral
+FACET|one side or aspect
+FAINT|weak or unclear; to pass out
+FAIRY|a small magical being
+FAITH|strong trust or belief
+FALSE|not true
+FANCY|elaborate; to like
+FATAL|causing death
+FAULT|a mistake or flaw
+FAVOR|a kind act; approval
+FEAST|a large meal
+FEIGN|to pretend
+FENCE|a barrier around an area
+FERRY|a boat that carries people across water
+FETCH|to go and bring back
+FEVER|a high body temperature
+FIBER|a thread; roughage in food
+FIELD|an open area of land
+FIERY|full of fire or passion
+FIFTH|number five in order
+FIFTY|the number 50
+FIGHT|to struggle against
+FINAL|last
+FINCH|a small seed-eating bird
+FIRST|before all others
+FJORD|a narrow sea inlet between cliffs
+FLAIR|a natural talent or style
+FLAKE|a small thin piece
+FLAME|the glowing gas of a fire
+FLASH|a sudden burst of light
+FLASK|a narrow-necked bottle
+FLEET|a group of ships or vehicles
+FLESH|the soft tissue of the body
+FLINT|a hard stone that makes sparks
+FLIRT|to behave playfully to attract
+FLOAT|to rest on the surface of a liquid
+FLOCK|a group of birds or sheep
+FLOOD|an overflow of water onto land
+FLOOR|the surface you walk on indoors
+FLORA|the plants of an area
+FLOSS|thread for cleaning between teeth
+FLOUR|ground grain used for baking
+FLUID|a liquid or gas; flowing
+FLUSH|to turn red; to wash out with water
+FLUTE|a wind instrument played sideways
+FOAMY|covered with foam
+FOCUS|the center of attention
+FOGGY|full of fog; unclear
+FOLLY|foolishness
+FORCE|strength or power
+FORGE|a blacksmith's workshop; to shape metal; to fake
+FORTH|forward; onward
+FORTY|the number 40
+FORUM|a place for discussion
+FOUND|past tense of find; to establish
+FRAME|a border around a picture
+FRAUD|deception for gain
+FRESH|new; recently made
+FRONT|the forward part
+FROST|thin ice that forms on cold surfaces
+FROTH|a mass of small bubbles
+FROZE|past tense of freeze
+FRUIT|the sweet part of a plant with seeds
+FUDGE|a soft sugary sweet
+FUNGI|mushrooms, molds and yeasts
+FUNNY|making people laugh
+GAUGE|a measuring instrument
+GAUZE|a thin, loosely woven cloth
+GECKO|a small lizard that climbs walls
+GENRE|a type or style of art
+GHOST|the spirit of a dead person
+GIANT|a very large being
+GIDDY|dizzy; excitedly happy
+GIVEN|past participle of give
+GLAND|an organ that produces substances
+GLARE|a harsh light; an angry stare
+GLASS|a hard, clear material; a cup for drinks
+GLEAM|a soft shine
+GLIDE|to move smoothly
+GLINT|a small flash of light
+GLOBE|a sphere; a model of the Earth
+GLOOM|darkness; sadness
+GLORY|great fame and honor
+GLOSS|a shine on a surface
+GLOVE|a covering for the hand
+GNOME|a small bearded creature of folklore
+GOOSE|a large water bird
+GORGE|a narrow valley; to eat greedily
+GOURD|a hard-skinned fruit like a squash
+GRACE|elegance of movement; kindness
+GRADE|a level or a mark in school
+GRAIN|a seed of a cereal plant
+GRAND|large and impressive
+GRANT|to give or allow; money given
+GRAPE|a small fruit growing in bunches
+GRAPH|a diagram showing data
+GRASP|to grip; to understand
+GRASS|green plants covering the ground
+GRAVE|a place of burial; serious
+GRAVY|a sauce made from meat juices
+GRAZE|to eat grass; to scrape lightly
+GREAT|very large or very good
+GREED|wanting more than you need
+GREEN|the color of grass
+GREET|to say hello to
+GRIEF|deep sorrow
+GRILL|to cook over direct heat
+GRIME|dirt that is hard to remove
+GRIND|to crush into powder
+GRIPE|a complaint
+GROAN|a low sound of pain
+GROOM|a man on his wedding day; to clean an animal
+GROSS|disgusting; total before deductions
+GROUP|several things together
+GROVE|a small group of trees
+GROWL|a low, threatening sound
+GROWN|fully developed
+GRUEL|a thin porridge
+GUARD|to protect; a person who protects
+GUAVA|a tropical fruit
+GUESS|to give an answer without being sure
+GUEST|a visitor
+GUIDE|a person who shows the way
+GUILD|an association of craftspeople
+GUILT|a feeling of having done wrong
+GUISE|an outward appearance or disguise
+GUSTO|enthusiasm and enjoyment
+HABIT|something done regularly
+HAPPY|feeling joy
+HARSH|rough or severe
+HASTE|hurry
+HATCH|to break out of an egg; a small door
+HAUNT|to visit often, like a ghost
+HAVEN|a safe place
+HEART|the organ that pumps blood; the center
+HEAVY|weighing a lot
+HEDGE|a row of bushes
+HEIST|a robbery
+HELIX|a spiral shape
+HELLO|a greeting
+HENCE|for this reason
+HERON|a long-legged wading bird
+HINGE|a joint on which a door swings
+HIPPO|a hippopotamus
+HOIST|to lift up
+HOLLY|an evergreen shrub with red berries
+HONEY|sweet food made by bees
+HONOR|respect; good name
+HORSE|a large animal people ride
+HOTEL|a building with rooms for travelers
+HOUSE|a building where people live
+HUMAN|a person
+HUMID|warm and damp
+HUMOR|the quality of being funny
+HURRY|to move quickly
+HYENA|a wild dog-like animal known for its cackling call
+ICING|a sweet coating for cakes
+IDEAL|perfect
+IDIOM|a phrase whose meaning isn't literal
+IDIOT|a foolish person
+IGLOO|a dome house made of snow
+IMAGE|a picture
+IMPLY|to suggest without saying
+INDEX|an alphabetical list at the back of a book
+INEPT|lacking skill
+INFER|to conclude from evidence
+INLET|a narrow bay
+INNER|inside
+INPUT|what is put in
+IRONY|saying the opposite of what you mean
+ISSUE|a topic or problem; one edition
+IVORY|the hard white material of tusks
+JAUNT|a short pleasure trip
+JELLY|a soft wobbly food
+JEWEL|a precious stone
+JOINT|a place where two parts meet; shared
+JOKER|a person who jokes; a wild playing card
+JOLLY|cheerful
+JUDGE|a person who decides cases in court
+JUICE|liquid from fruit
+JUMBO|very large
+KAYAK|a narrow boat moved with a double paddle
+KEBAB|pieces of meat grilled on a skewer
+KNEAD|to press and fold dough
+KNEEL|to rest on your knees
+KNIFE|a tool with a blade for cutting
+KNOCK|to hit a door to be let in
+KOALA|an Australian tree-dwelling marsupial
+LABEL|a tag with information
+LABOR|hard work
+LADLE|a deep spoon for serving soup
+LAPSE|a brief failure; to slip
+LARGE|big
+LASER|a narrow, intense beam of light
+LATCH|a simple lock for a door or gate
+LATER|after some time
+LATTE|coffee with steamed milk
+LAUGH|to make sounds of amusement
+LAYER|a sheet covering a surface
+LEAFY|having many leaves
+LEAPT|past tense of leap
+LEARN|to gain knowledge
+LEASE|a rental agreement
+LEAST|the smallest amount
+LEDGE|a narrow shelf
+LEMON|a sour yellow citrus fruit
+LEVEL|flat; a height or stage
+LEVER|a bar used to lift or move things
+LIGHT|what makes things visible; not heavy
+LILAC|a shrub with fragrant purple flowers
+LIMIT|the furthest point allowed
+LINEN|cloth made from flax
+LINER|a large passenger ship; a lining
+LLAMA|a South American animal related to the camel
+LOBBY|an entrance hall
+LOCAL|of a nearby area
+LODGE|a small house in the country
+LOFTY|very high; noble
+LOGIC|reasoning
+LOOSE|not tight
+LOTUS|a water lily
+LOWER|to move down; less high
+LOYAL|faithful
+LUCKY|having good luck
+LUNAR|relating to the moon
+LUNCH|a midday meal
+LUNGE|a sudden forward movement
+LYRIC|the words of a song
+MAGIC|supernatural power; tricks that seem impossible
+MAJOR|important; an army officer
+MAKER|a person who makes things
+MANGO|a sweet tropical fruit
+MANOR|a large country house
+MAPLE|a tree with lobed leaves; sweet syrup comes from it
+MARCH|to walk in step; the third month
+MARSH|wet, low land
+MATCH|a stick that lights fire; a game
+MATTE|without shine
+MAXIM|a short rule or saying
+MAYOR|the head of a city
+MEDAL|a metal disc given as an award
+MEDIA|newspapers, TV and the internet
+MELON|a large sweet fruit
+MERCY|kindness shown to someone
+MERIT|worth or value
+MERRY|happy and cheerful
+MESSY|untidy
+METAL|a hard shiny material like iron
+METER|a unit of length; a measuring device
+MICRO|very small
+MIGHT|great strength; may
+MIMIC|to copy someone's behavior
+MINCE|to chop into tiny pieces
+MINOR|small; a person under legal age
+MINUS|less; the sign -
+MIRTH|laughter and fun
+MISTY|covered with mist
+MODEL|a small copy; a person who poses
+MODEM|a device connecting a computer to the internet
+MOIST|slightly wet
+MOLAR|a back tooth for grinding
+MONEY|coins and notes used to buy things
+MONTH|one of the twelve parts of a year
+MOOSE|a large deer with broad antlers
+MORAL|about right and wrong
+MORPH|to change shape gradually
+MOSSY|covered with moss
+MOTEL|a roadside hotel
+MOTOR|an engine
+MOTTO|a short guiding phrase
+MOULD|a hollow form for casting; a fungus (mold)
+MOUNT|to climb onto; a mountain
+MOURN|to feel sorrow for a death
+MOUSE|a small rodent; a computer pointer
+MOUTH|the opening in the face for eating
+MOVIE|a film
+MUDDY|covered with mud
+MULCH|a layer of material spread on soil
+MUMMY|a preserved body; mother
+MURAL|a painting on a wall
+MUSIC|organized sound
+NAKED|without clothes
+NANNY|a person who cares for children
+NASAL|relating to the nose
+NAVAL|relating to the navy
+NERVE|a fiber carrying signals; courage
+NEVER|at no time
+NEWLY|recently
+NICHE|a recess in a wall; a specialized area
+NIECE|a daughter of your brother or sister
+NIGHT|the dark time between evening and morning
+NINJA|a Japanese warrior skilled in stealth
+NOBLE|honorable; of high rank
+NOISE|a loud, unwanted sound
+NOMAD|a person who moves from place to place
+NORTH|the direction toward the North Pole
+NOTCH|a small V-shaped cut
+NOVEL|a long fictional story; new
+NUDGE|a gentle push
+NURSE|a person who cares for the sick
+NYMPH|a nature spirit in mythology
+OASIS|a fertile spot in a desert
+OCCUR|to happen
+OCEAN|a huge body of salt water
+ODDLY|strangely
+OFFAL|the organs of an animal used as food
+OFFER|to present for acceptance
+OFTEN|many times
+OLIVE|a small oily fruit
+OMEGA|the last letter of the Greek alphabet
+ONION|a bulb vegetable with a strong smell
+OPERA|a drama set to music
+OPTIC|relating to the eye or vision
+ORBIT|a path around a planet or star
+ORDER|a command; a tidy arrangement
+ORGAN|a body part with a function; a keyboard instrument
+OTHER|different; the remaining one
+OTTER|a playful water mammal
+OUNCE|a small unit of weight
+OUTER|outside
+OVERT|done openly
+OWNER|a person who owns something
+OXIDE|a compound of oxygen
+OZONE|a form of oxygen high in the atmosphere
+PADDY|a flooded field for growing rice
+PAGAN|a follower of an old polytheistic religion
+PAINT|colored liquid for covering surfaces
+PANDA|a black-and-white bear from China
+PANEL|a flat section; a group of experts
+PANIC|sudden overwhelming fear
+PANSY|a garden flower with velvety petals
+PAPER|thin material for writing on
+PARKA|a warm hooded jacket
+PARTY|a social gathering
+PASTA|Italian food made from dough
+PASTE|a thick soft mixture
+PATIO|a paved outdoor area by a house
+PAUSE|a short stop
+PEACE|freedom from war or noise
+PEACH|a soft, fuzzy fruit
+PEARL|a gem formed inside an oyster
+PEDAL|a lever pushed with the foot
+PENAL|relating to punishment
+PENNY|a coin worth one cent
+PERCH|a place where a bird rests
+PERIL|serious danger
+PETAL|a colored part of a flower
+PHASE|a stage in a process
+PHONE|a telephone
+PHOTO|a photograph
+PIANO|a keyboard instrument
+PIECE|a part of something
+PIETY|religious devotion
+PILOT|a person who flies an aircraft
+PINCH|to squeeze between finger and thumb
+PITCH|how high a sound is; a sports field
+PIXEL|a tiny dot on a screen
+PIZZA|flat dough baked with toppings
+PLACE|a location
+PLAIN|simple; a flat area of land
+PLANE|an airplane; a flat surface
+PLANT|a living thing that grows in soil
+PLATE|a flat dish
+PLAZA|a public square
+PLEAD|to beg
+PLUCK|to pull out; courage
+PLUMB|exactly vertical; to measure depth
+PLUME|a large feather; a column of smoke
+PLUMP|pleasantly round
+PLUSH|soft and luxurious
+POINT|a sharp end; a dot; to indicate
+POKER|a card game; a fire rod
+POLAR|relating to the North or South Pole
+POLKA|a lively dance
+POPPY|a red flower
+PORCH|a covered entrance to a house
+POUCH|a small bag
+POUND|a unit of weight or money; to hit hard
+POWER|strength; energy
+PRANK|a playful trick
+PRAWN|a shellfish like a large shrimp
+PRESS|to push; newspapers
+PRICE|the cost of something
+PRIDE|a feeling of self-respect; a group of lions
+PRIME|main; a number divisible only by 1 and itself
+PRINT|to put text on paper
+PRIOR|earlier
+PRISM|a glass shape that splits light into colors
+PRIZE|an award
+PROBE|to examine closely
+PRONE|lying face down; likely to
+PROOF|evidence
+PROSE|ordinary written language
+PROUD|feeling pride
+PROVE|to show something is true
+PROWL|to move around quietly like a hunter
+PRUNE|a dried plum; to trim
+PSALM|a sacred song
+PUDGY|a little fat
+PULSE|the beat of the heart felt in the wrist
+PUPIL|a student; the dark center of the eye
+PUPPY|a young dog
+PUREE|food blended smooth
+PURSE|a small bag for money
+QUACK|the sound a duck makes; a fake doctor
+QUAIL|a small game bird
+QUAKE|to shake; an earthquake
+QUART|a quarter of a gallon
+QUASH|to put an end to
+QUEEN|a female ruler
+QUEST|a long search
+QUEUE|a line of people waiting
+QUICK|fast
+QUIET|making little noise
+QUILL|a feather pen
+QUILT|a padded bed cover
+QUIRK|an odd habit
+QUITE|fairly; completely
+QUOTA|a fixed share or amount
+RADAR|a system that detects objects with radio waves
+RADIO|a device that receives broadcasts
+RAISE|to lift up
+RALLY|a mass meeting; to recover
+RANGE|a variety; a line of mountains
+RAPID|very fast
+RATIO|a relation between two numbers
+RAVEN|a large black bird
+RAZOR|a sharp tool for shaving
+REACH|to stretch out to touch; to arrive at
+REACT|to respond
+READY|prepared
+REALM|a kingdom; a field of activity
+REBEL|a person who resists authority
+REBUS|a puzzle using pictures for words
+RECAP|a short summary
+REFER|to mention; to direct to
+REIGN|the rule of a monarch
+RELAX|to rest
+RELIC|an object from the past
+REMIX|a new version of a song
+RENEW|to make new again
+REPLY|an answer
+RESET|to set again
+RESIN|a sticky substance from trees
+RHYME|words with the same ending sound
+RIDER|a person who rides
+RIDGE|a long narrow raised strip
+RIFLE|a long gun
+RIGHT|correct; the opposite of left
+RIGID|stiff
+RINSE|to wash lightly with water
+RIPEN|to become ripe
+RISKY|dangerous
+RIVAL|a competitor
+RIVER|a large stream of flowing water
+RIVET|a metal pin; to hold attention
+ROAST|to cook in an oven
+ROBIN|a small bird with a red breast
+ROBOT|a machine that does tasks automatically
+ROCKY|full of rocks; unsteady
+RODEO|a show of cowboy skills
+ROGUE|a dishonest person
+ROOMY|spacious
+ROOST|a place where birds rest
+ROUGH|not smooth
+ROUND|shaped like a circle
+ROUTE|a way from one place to another
+ROWDY|noisy and rough
+ROYAL|relating to a king or queen
+RUGBY|a team sport with an oval ball
+RULER|a measuring stick; a leader
+RUMOR|an unconfirmed story
+RURAL|of the countryside
+RUSTY|covered with rust
+SADLY|unhappily
+SAFER|more safe
+SAINT|a very holy person
+SALAD|a dish of raw vegetables
+SALES|the selling of goods
+SALON|a hair or beauty shop
+SALSA|a spicy sauce; a Latin dance
+SANDY|covered with sand
+SATIN|a smooth, shiny fabric
+SAUCE|a liquid served with food
+SAUNA|a hot room for sweating
+SAVOR|to enjoy slowly
+SCALD|to burn with hot liquid
+SCALE|a weighing device; a fish plate; a size
+SCALP|the skin of the head
+SCARE|to frighten
+SCARF|a strip of fabric worn around the neck
+SCENE|a place where something happens; part of a play
+SCENT|a smell
+SCOLD|to criticize angrily
+SCONE|a small baked cake
+SCOPE|the range of something
+SCORE|the points in a game
+SCOUT|a person sent to gather information
+SCRAP|a small leftover piece
+SCREW|a metal pin with a spiral thread
+SCRUB|to rub hard to clean
+SEDAN|a car with four doors
+SEIZE|to grab
+SENSE|a way of perceiving like sight or touch
+SERUM|a clear liquid used in medicine or skin care
+SERVE|to give food; to work for
+SEVEN|the number 7
+SHACK|a rough hut
+SHADE|an area out of sunlight
+SHAFT|a long pole; a vertical passage
+SHAKE|to move quickly back and forth
+SHALL|will
+SHAME|a painful feeling of guilt
+SHAPE|the outline of something
+SHARE|to divide and give a part
+SHARK|a large predatory fish
+SHARP|having a fine cutting edge
+SHAWL|a cloth worn over the shoulders
+SHEEP|a woolly farm animal
+SHEER|pure; very steep; see-through
+SHEET|a flat piece of paper or cloth
+SHELF|a flat board for holding things
+SHELL|a hard outer covering
+SHIFT|to move; a work period
+SHINE|to give off light
+SHIRT|a garment for the upper body
+SHOCK|a sudden upsetting surprise
+SHONE|past tense of shine
+SHOOK|past tense of shake
+SHOOT|to fire a weapon; a young plant stem
+SHORE|land along water
+SHORT|not long
+SHOUT|to speak very loudly
+SHRUB|a bush
+SHRUG|to raise the shoulders
+SIEGE|surrounding a place to capture it
+SIEVE|a mesh tool for straining
+SIGHT|the ability to see
+SIGMA|the 18th letter of the Greek alphabet
+SILKY|smooth like silk
+SINCE|from then until now
+SINEW|a tendon
+SIREN|a loud warning device
+SKATE|to glide on ice or wheels
+SKIER|a person who skis
+SKILL|an ability to do something well
+SKIRT|a garment hanging from the waist
+SKULL|the bone of the head
+SLANT|a slope
+SLASH|to cut with a sweeping stroke; the / sign
+SLATE|a dark gray rock that splits into sheets
+SLAVE|a person owned by another
+SLEEK|smooth and glossy
+SLEEP|a state of rest with eyes closed
+SLEET|a mix of rain and snow
+SLEPT|past tense of sleep
+SLICE|a thin piece cut off
+SLIDE|to move smoothly
+SLIME|a thick, slippery liquid
+SLING|a strap for support or throwing
+SLOPE|a surface with one end higher
+SLOTH|a slow-moving tree animal; laziness
+SLUMP|a sudden fall
+SMACK|a sharp slap
+SMART|clever
+SMEAR|to spread a greasy mark
+SMELL|to sense through the nose
+SMILE|a happy facial expression
+SMIRK|a smug smile
+SMOKE|gas from burning
+SNACK|a small meal
+SNAIL|a slow creature with a shell
+SNAKE|a long reptile without legs
+SNARE|a trap
+SNEAK|to move secretly
+SNIFF|to breathe in through the nose
+SNORE|to breathe noisily while sleeping
+SNOWY|covered with snow
+SOBER|not drunk; serious
+SOLAR|relating to the sun
+SOLID|firm; not liquid
+SOLVE|to find an answer
+SONIC|relating to sound
+SORRY|feeling regret
+SOUND|something you hear
+SOUTH|the direction toward the South Pole
+SPACE|an empty area; the universe beyond Earth
+SPADE|a digging tool
+SPARE|extra
+SPARK|a tiny burning particle
+SPAWN|eggs of fish or frogs; to produce
+SPEAK|to talk
+SPEAR|a long pointed weapon
+SPEED|how fast something moves
+SPELL|to name letters of a word; a magic charm
+SPEND|to use money or time
+SPENT|past tense of spend; exhausted
+SPICE|a flavoring from plants
+SPIKE|a sharp point
+SPILL|to let liquid fall out
+SPINE|the backbone
+SPITE|a desire to hurt
+SPLIT|to divide
+SPOIL|to ruin
+SPOKE|past tense of speak; a wheel rod
+SPOOK|a ghost; to frighten
+SPOON|a utensil for eating soup
+SPORE|a tiny reproductive cell of fungi or ferns
+SPORT|a physical game
+SPOUT|a tube for pouring
+SPRAY|a fine mist of liquid
+SPRIG|a small stem with leaves
+SPUNK|courage and spirit
+SQUAD|a small team
+SQUAT|to crouch low
+STACK|a neat pile
+STAFF|the employees; a long stick
+STAGE|a platform for performing; a step
+STAIN|a mark that is hard to remove
+STAKE|a pointed post; a share
+STALE|no longer fresh
+STALK|a plant stem; to follow secretly
+STALL|a stand at a market; to stop
+STAMP|a postage label; to stomp
+STAND|to be upright on your feet
+STARE|to look fixedly
+STARK|bare; complete
+START|to begin
+STATE|a condition; a nation or region
+STEAK|a thick slice of meat
+STEAM|vapor from boiling water
+STEEL|a strong alloy of iron
+STEEP|sharply sloping
+STEER|to guide a vehicle
+STICK|a thin piece of wood; to attach
+STIFF|hard to bend
+STILL|not moving; even now
+STING|a sharp pain from an insect
+STINK|a strong bad smell
+STOCK|a supply; a share in a company
+STOMP|to walk heavily
+STONE|a piece of rock
+STOOD|past tense of stand
+STOOL|a seat without a back
+STOOP|to bend forward
+STORE|a shop; to keep for later
+STORM|bad weather with wind and rain
+STORY|a tale
+STOVE|a device for cooking
+STRAW|dried stalks; a drinking tube
+STRAY|lost; to wander
+STRIP|a long narrow piece
+STRUM|to play a guitar by brushing the strings
+STRUT|to walk proudly
+STUCK|unable to move
+STUDY|to learn about
+STUFF|things; to fill
+STUMP|the base of a cut tree
+STUNG|past tense of sting
+STUNK|past participle of stink
+STYLE|a way of doing something
+SUGAR|a sweet substance
+SUITE|a set of rooms
+SULKY|moody and silent
+SUNNY|full of sunshine
+SUPER|excellent
+SURGE|a sudden increase
+SWAMP|wet, spongy land
+SWARM|a large group of insects
+SWEAR|to promise; to curse
+SWEAT|liquid from the skin when hot
+SWEEP|to clean with a broom
+SWEET|tasting of sugar
+SWELL|to grow larger
+SWEPT|past tense of sweep
+SWIFT|fast; a fast-flying bird
+SWING|to move back and forth
+SWIRL|to spin around
+SWORD|a long blade weapon
+SYRUP|a thick sweet liquid
+TABBY|a striped cat
+TABLE|furniture with a flat top
+TACIT|understood without being said
+TAFFY|a chewy candy
+TALON|a claw of a bird of prey
+TANGO|a passionate dance
+TANGY|sharp in taste
+TAPIR|a pig-like animal with a short trunk
+TARDY|late
+TAROT|cards used for fortune telling
+TASTE|the flavor of something
+TEACH|to help someone learn
+TEARY|full of tears
+TEDDY|a soft toy bear
+TEMPO|the speed of music
+TENOR|a high male singing voice
+TENSE|tight; nervous
+TENTH|number ten in order
+THEME|the main subject
+THERE|in that place
+THICK|wide from side to side; dense
+THIEF|a person who steals
+THING|an object
+THINK|to use the mind
+THIRD|number three in order
+THORN|a sharp point on a plant
+THOSE|plural of that
+THREE|the number 3
+THROW|to send through the air
+THUMB|the short thick finger
+TIARA|a jeweled crown
+TIDAL|relating to tides
+TIGER|a big striped cat
+TIGHT|firmly fixed; not loose
+TIMID|shy and easily frightened
+TIPSY|slightly drunk
+TITLE|a name of a book or film
+TOAST|browned bread; a drink in someone's honor
+TODAY|this day
+TOKEN|a sign or symbol; a coin-like disc
+TONIC|a drink that refreshes; a medicine
+TOOTH|a hard white bone in the mouth
+TOPAZ|a yellow gemstone
+TORCH|a burning stick; a flashlight
+TOTAL|the whole amount
+TOUCH|to feel with the hand
+TOUGH|strong; difficult
+TOWEL|a cloth for drying
+TOWER|a tall narrow building
+TOXIC|poisonous
+TRACK|a path; a song on an album
+TRADE|to exchange goods
+TRAIN|a line of railway cars; to practice
+TRAIT|a quality or characteristic
+TRAMP|a homeless wanderer; to walk heavily
+TRASH|garbage
+TREAD|to step; the grooves of a tire
+TREAT|something special; to handle
+TREND|a general direction
+TRIAL|a court case; a test
+TRIBE|a group of families with a common culture
+TRICK|a clever act to deceive
+TROLL|an ugly creature in folklore; an online provoker
+TROOP|a group of soldiers
+TROUT|a freshwater fish
+TRUCE|an agreement to stop fighting
+TRUCK|a large vehicle for goods
+TRULY|really
+TRUNK|the main stem of a tree; a large box; an elephant's nose
+TRUST|firm belief in someone
+TRUTH|what is true
+TULIP|a cup-shaped spring flower
+TUMOR|an abnormal growth in the body
+TUTOR|a private teacher
+TWEED|a rough woolen cloth
+TWICE|two times
+TWINE|strong string
+TWIST|to turn around
+ULCER|an open sore
+ULTRA|beyond; extreme
+UNCLE|the brother of your parent
+UNCUT|not cut
+UNDER|below
+UNDUE|more than is needed
+UNFIT|not suitable or healthy
+UNION|joining together; a workers' group
+UNITE|to join together
+UNITY|being one
+UNTIL|up to the time
+UNZIP|to open a zipper
+UPPER|higher
+UPSET|unhappy; to knock over
+URBAN|relating to a city
+USAGE|the way something is used
+USHER|a person who shows people to seats
+USUAL|normal
+UTTER|to say; complete
+VAGUE|not clear
+VALID|acceptable or true
+VALUE|worth
+VALVE|a device controlling flow
+VAPOR|gas from a liquid
+VAULT|a secure room; to jump
+VENOM|poison from an animal
+VERSE|lines of poetry
+VIDEO|recorded moving pictures
+VIGOR|energy
+VILLA|a large country house
+VINYL|a plastic; records
+VIOLA|a stringed instrument slightly larger than a violin
+VIPER|a poisonous snake
+VIRUS|a tiny germ that causes disease
+VISIT|to go to see
+VISOR|the front part of a cap or helmet
+VISTA|a wide view
+VITAL|essential
+VIVID|bright and clear
+VOCAL|relating to the voice
+VODKA|a clear alcoholic drink
+VOICE|the sound of speaking
+VOMIT|to throw up
+VOTER|a person who votes
+VOUCH|to confirm or guarantee
+VOWEL|a letter like A, E, I, O, U
+WAFER|a thin crisp biscuit
+WAGON|a four-wheeled cart
+WAIST|the middle of the body
+WALTZ|a dance in three-four time
+WATER|a clear liquid that falls as rain
+WEARY|tired
+WEDGE|a triangular block
+WHALE|a huge sea mammal
+WHEAT|a grain used for flour
+WHEEL|a round frame that turns
+WHERE|in which place
+WHICH|what one
+WHIFF|a faint smell
+WHILE|during the time that
+WHISK|a kitchen tool for beating
+WHITE|the color of snow
+WHOLE|complete
+WHOSE|belonging to whom
+WIDEN|to make wider
+WIDOW|a woman whose husband has died
+WIDTH|how wide something is
+WIELD|to hold and use
+WINCE|to flinch in pain
+WITCH|a woman with magic powers
+WOKEN|past participle of wake
+WOMAN|an adult female
+WORDY|using too many words
+WORLD|the Earth and everyone on it
+WORRY|to feel anxious
+WORSE|more bad
+WORST|most bad
+WORTH|value
+WOULD|past tense of will
+WOUND|an injury
+WREAK|to cause damage
+WRECK|something destroyed
+WREST|to pull away with force
+WRIST|the joint between the hand and arm
+WRITE|to put words on paper
+WRONG|not correct
+WROTE|past tense of write
+YACHT|a sailing boat for pleasure
+YEARN|to long for
+YEAST|a fungus used to make bread rise
+YIELD|to produce; to give way
+YOUNG|not old
+YOUTH|the time of being young
+ZEBRA|a striped horse-like animal
+ZESTY|full of flavor

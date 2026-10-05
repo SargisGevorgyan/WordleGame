@@ -55,6 +55,11 @@ edit these files only: iOS bundles them as resources (`project.yml` /
 `WordleGame.xcodeproj`), Android packages them as assets
 (`android/app/build.gradle.kts`).
 
+The meaning shown after each game comes from `meanings_en.txt` and
+`meanings_hy.txt` in the same folder, one `WORD|meaning` entry per line
+(Armenian words carry an English gloss). When you add a word, add its meaning
+too: a unit test on each platform fails if a playable word has none.
+
 ---
 
 ## Android
@@ -160,6 +165,26 @@ auto‑types the correct letter for the next slot), a **Remove Ads** button
   to `GameViewModel.handleKeyPress` (letters, Return = submit, Backspace = delete).
 * Stats via `@AppStorage`: `gamesPlayed`, `gamesWon`, `currentStreak`, `maxStreak`
   → shown as Played / Win % / Streak / Max.
+
+### Game modes (Settings → Game Modes, both apps)
+
+* **Hard mode**: revealed hints must be used in later guesses. A green letter
+  stays in its spot, and a yellow letter must appear somewhere
+  (`HardMode.violation`).
+* **Timed mode**: 3 minutes per free-play game; the clock starts with the
+  first letter, pauses while the daily game is on screen, and running out is a
+  loss ("TIME'S UP").
+* Hard mode also applies to the daily game.
+* Changing a mode mid-game applies from the next game; before the first
+  letter it applies straight away.
+
+### Armenian word of the day
+
+Every game-over card also shows an **Armenian word of the day** for learners,
+with its English meaning from `shared/words/meanings_hy.txt`. It follows the
+daily puzzle's fixed word order, half the list away from today's daily answer
+so it never spoils it (`DailyPuzzle.learnerWord`), and is the same on iOS and
+Android.
 
 ### Language (English / Հայերեն)
 

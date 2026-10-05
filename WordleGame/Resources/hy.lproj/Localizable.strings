@@ -22,6 +22,7 @@
 "You cracked it" = "Դու գտար";
 "The word was" = "Բառը սա էր";
 "Play Again" = "Խաղալ նորից";
+"Meaning" = "Իմաստը";
 
 /* Stats */
 "Win rate" = "Հաղթանակ %";
@@ -39,6 +40,10 @@
 "Restore Purchases" = "Վերականգնել գնումները";
 "Sound & Haptics" = "Ձայն և թրթռում";
 "Sound effects" = "Ձայնային էֆեկտներ";
+"Haptics" = "Թրթռում";
+"Accessibility" = "Մատչելիություն";
+"High contrast colors" = "Բարձր կոնտրաստի գույներ";
+"Color-blind friendly: orange = right spot, blue = wrong spot." = "Գունակույրների համար. նարնջագույն՝ ճիշտ տեղում, կապույտ՝ սխալ տեղում։";
 "How to play: guess the 5-letter word in 6 tries. Green = right spot, Yellow = wrong spot, Gray = not in the word." = "Ինչպես խաղալ. գուշակեք 5-տառանոց բառը 6 փորձով։ Կանաչ՝ ճիշտ տեղում, Դեղին՝ սխալ տեղում, Մոխրագույն՝ բառում չկա։";
 "Start a new game in %@?" = "Սկսե՞լ նոր խաղ %@ լեզվով։";
 "Switch & restart" = "Փոխել և վերսկսել";
@@ -93,6 +98,22 @@
 "No ads too · from %@ / month" = "Նաև առանց գովազդի · %@-ից / ամիս";
 "Go Pro: no ads + unlimited hints" = "Դառնալ Pro՝ առանց գովազդի + անսահմանափակ հուշումներ";
 "from %@" = "%@-ից";
+
+/* Game modes */
+"Game Modes" = "Խաղի ռեժիմներ";
+"Hard mode" = "Բարդ ռեժիմ";
+"Revealed hints must be used in later guesses." = "Բացված հուշումները պետք է օգտագործել հաջորդ փորձերում։";
+"Timed mode" = "Ժամանակով ռեժիմ";
+"3 minutes per free-play game. The clock starts with your first letter." = "3 րոպե յուրաքանչյուր ազատ խաղի համար։ Ժամացույցը սկսվում է առաջին տառից։";
+"Changes made during a game apply from the next one." = "Խաղի ընթացքում արված փոփոխությունները կգործեն հաջորդ խաղից։";
+"Position %lld must be %@" = "Դիրք %lld-ում պետք է լինի %@";
+"Guess must contain %@" = "Բառը պետք է պարունակի %@";
+"Time left: %lld seconds" = "Մնաց %lld վայրկյան";
+"TIME'S UP" = "ԺԱՄԱՆԱԿԸ ՍՊԱՌՎԵՑ";
+
+/* Word of the day */
+"Armenian word of the day" = "Օրվա հայերեն բառը";
+
 /* Daily word & sharing */
 "Daily" = "Օրվա բառ";
 "Daily #%lld" = "Օրվա բառ #%lld";

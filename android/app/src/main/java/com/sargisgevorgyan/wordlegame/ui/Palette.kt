@@ -1,5 +1,6 @@
 package com.sargisgevorgyan.wordlegame.ui
 
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.sargisgevorgyan.wordlegame.game.LetterEvaluation
@@ -18,6 +19,10 @@ object Palette {
     val warmYellow = Color(0xFFF4C13B)
     val glassSlate = Color(0xFF3A3B52)
 
+    // High contrast (colour-blind friendly): orange = right spot, blue = wrong spot.
+    val contrastOrange = Color(0xFFF5793A)
+    val contrastBlue = Color(0xFF85C0F9)
+
     val glassFill = Color.White.copy(alpha = 0.06f)
     val glassStroke = Color.White.copy(alpha = 0.18f)
     val keyIdle = Color.White.copy(alpha = 0.10f)
@@ -30,10 +35,13 @@ object Palette {
     val enterGradient = Brush.linearGradient(listOf(auroraPurple, auroraBlue))
     val playAgainGradient = Brush.linearGradient(listOf(neonGreen, auroraTeal))
 
-    fun fill(evaluation: LetterEvaluation): Color = when (evaluation) {
-        LetterEvaluation.CORRECT -> neonGreen
-        LetterEvaluation.PRESENT -> warmYellow
+    fun fill(evaluation: LetterEvaluation, highContrast: Boolean = false): Color = when (evaluation) {
+        LetterEvaluation.CORRECT -> if (highContrast) contrastOrange else neonGreen
+        LetterEvaluation.PRESENT -> if (highContrast) contrastBlue else warmYellow
         LetterEvaluation.ABSENT -> glassSlate
         LetterEvaluation.EMPTY, LetterEvaluation.TBD -> tileEmpty
     }
 }
+
+/** True when the player picked the high-contrast palette in Settings. */
+val LocalHighContrast = compositionLocalOf { false }

@@ -37,4 +37,17 @@ class SharedWordBankTest {
             assertTrue("‘$c’ in $word is missing from the Armenian keyboard", c in keys)
         }
     }
+
+    @Test fun parseMeanings() = assertEquals(
+        mapOf("PLANT" to "a living thing", "ԳԱՐՈՒՆ" to "spring"),
+        WordMeanings.parse("# c\n\nplant | a living thing\nNOBAR\nԳԱՐՈՒՆ|spring\n"),
+    )
+
+    @Test fun everyPlayableWordHasAMeaning() {
+        for (language in GameLanguage.entries) {
+            val meanings = WordMeanings.parse(File(dir, language.meaningsFileName).readText())
+            val missing = load(language).playableWords.filter { it !in meanings }
+            assertTrue("No meaning for $missing", missing.isEmpty())
+        }
+    }
 }

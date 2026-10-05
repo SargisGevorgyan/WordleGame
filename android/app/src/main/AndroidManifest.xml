@@ -12,6 +12,10 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${admobAppId}" />
+        <!-- Play Games project ID, from res/values/games-ids.xml. -->
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/app_id" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
