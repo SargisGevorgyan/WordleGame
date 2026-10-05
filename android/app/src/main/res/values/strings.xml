@@ -38,15 +38,20 @@
     <string name="times_up">TIME\'S UP</string>
     <string name="word_of_the_day">Armenian word of the day</string>
 
+    <string name="accessibility">Accessibility</string>
+    <string name="haptics">Haptics</string>
+    <string name="high_contrast_colors">High contrast colors</string>
+    <string name="high_contrast_footer">Color-blind friendly: orange = right spot, blue = wrong spot.</string>
+    <string name="play_games" translatable="false">Google Play Games</string>
+    <string name="sign_in_play_games">Sign in to Play Games</string>
+    <string name="leaderboards">Leaderboards</string>
+    <string name="achievements">Achievements</string>
+    <string name="play_games_unavailable">Play Games isn\'t set up for this build yet.</string>
+    <string name="stats_sync_note">Signed in, your stats and streaks sync across devices.</string>
     <string name="daily">Daily</string>
     <string name="daily_number">Daily #%d</string>
     <string name="free_play">Free play</string>
     <string name="share">Share</string>
     <string name="next_word_in">Next word in</string>
     <string name="hints_off_daily">Hints are off in the daily game</string>
-
-    <string name="accessibility">Accessibility</string>
-    <string name="haptics">Haptics</string>
-    <string name="high_contrast_colors">High contrast colors</string>
-    <string name="high_contrast_footer">Color-blind friendly: orange = right spot, blue = wrong spot.</string>
 </resources>

@@ -20,6 +20,7 @@ import com.sargisgevorgyan.wordlegame.game.GameStatus
 import com.sargisgevorgyan.wordlegame.game.HardModeViolation
 import com.sargisgevorgyan.wordlegame.game.ShareCard
 import com.sargisgevorgyan.wordlegame.game.Stats
+import com.sargisgevorgyan.wordlegame.game.StatsRecord
 import com.sargisgevorgyan.wordlegame.game.Submission
 import com.sargisgevorgyan.wordlegame.game.WordBank
 import com.sargisgevorgyan.wordlegame.game.WordMeanings
@@ -68,8 +69,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     var toast by mutableStateOf<UiMessage?>(null)
         private set
     var showGameOver by mutableStateOf(false)
-    var stats by mutableStateOf(loadStats())
+    /** Stats plus sync timestamps; persisted locally and merged with the cloud copy. */
+    var statsRecord by mutableStateOf(loadStats())
         private set
+    val stats: Stats get() = statsRecord.stats
     var hintsRemaining by mutableIntStateOf(prefs.getInt(KEY_HINTS, 3))
         private set
     var hapticsEnabled by mutableStateOf(prefs.getBoolean(KEY_HAPTICS, true))
@@ -213,7 +216,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun recordResult(won: Boolean) {
-        stats = stats.record(won).also(::saveStats)
+        statsRecord = statsRecord.record(won, System.currentTimeMillis()).also(::saveStats)
         if (won && hintsRemaining < FREE_HINT_CEILING) setHints(hintsRemaining + 1)
     }
 
@@ -296,8 +299,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /** The reset is time-stamped so synced devices drop their older stats too. */
     fun resetStats() {
-        stats = Stats().also(::saveStats)
+        val now = System.currentTimeMillis()
+        statsRecord = StatsRecord(updatedAt = now, resetAt = now).also(::saveStats)
+    }
+
+    /** Takes the result of merging with the cloud save. */
+    fun applySyncedStats(merged: StatsRecord) {
+        if (merged != statsRecord) statsRecord = merged.also(::saveStats)
     }
 
     fun updateHaptics(enabled: Boolean) {
@@ -389,18 +399,24 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         prefs.edit { putInt(KEY_HINTS, hintsRemaining) }
     }
 
-    private fun loadStats() = Stats(
-        gamesPlayed = prefs.getInt(KEY_PLAYED, 0),
-        gamesWon = prefs.getInt(KEY_WON, 0),
-        currentStreak = prefs.getInt(KEY_STREAK, 0),
-        maxStreak = prefs.getInt(KEY_MAX_STREAK, 0),
+    private fun loadStats() = StatsRecord(
+        stats = Stats(
+            gamesPlayed = prefs.getInt(KEY_PLAYED, 0),
+            gamesWon = prefs.getInt(KEY_WON, 0),
+            currentStreak = prefs.getInt(KEY_STREAK, 0),
+            maxStreak = prefs.getInt(KEY_MAX_STREAK, 0),
+        ),
+        updatedAt = prefs.getLong(KEY_UPDATED_AT, 0),
+        resetAt = prefs.getLong(KEY_RESET_AT, 0),
     )
 
-    private fun saveStats(stats: Stats) = prefs.edit {
-        putInt(KEY_PLAYED, stats.gamesPlayed)
-        putInt(KEY_WON, stats.gamesWon)
-        putInt(KEY_STREAK, stats.currentStreak)
-        putInt(KEY_MAX_STREAK, stats.maxStreak)
+    private fun saveStats(record: StatsRecord) = prefs.edit {
+        putInt(KEY_PLAYED, record.stats.gamesPlayed)
+        putInt(KEY_WON, record.stats.gamesWon)
+        putInt(KEY_STREAK, record.stats.currentStreak)
+        putInt(KEY_MAX_STREAK, record.stats.maxStreak)
+        putLong(KEY_UPDATED_AT, record.updatedAt)
+        putLong(KEY_RESET_AT, record.resetAt)
     }
 
     companion object {
@@ -419,5 +435,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         private const val KEY_WON = "gamesWon"
         private const val KEY_STREAK = "currentStreak"
         private const val KEY_MAX_STREAK = "maxStreak"
+        private const val KEY_UPDATED_AT = "statsUpdatedAt"
+        private const val KEY_RESET_AT = "statsResetAt"
     }
 }

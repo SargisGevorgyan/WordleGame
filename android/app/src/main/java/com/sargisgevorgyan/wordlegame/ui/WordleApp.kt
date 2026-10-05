@@ -44,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -74,17 +75,31 @@ import com.sargisgevorgyan.wordlegame.R
 import com.sargisgevorgyan.wordlegame.UiMessage
 import com.sargisgevorgyan.wordlegame.game.GameMode
 import com.sargisgevorgyan.wordlegame.game.GameStatus
+import com.sargisgevorgyan.wordlegame.games.PlayGamesService
+import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun WordleApp(vm: GameViewModel = viewModel()) {
+fun WordleApp(vm: GameViewModel = viewModel(), playGames: PlayGamesService? = null) {
     MaterialTheme(colorScheme = darkColorScheme(primary = Palette.neonGreen, background = Palette.indigoDeep)) {
         var showSettings by rememberSaveable { mutableStateOf(false) }
         // Intro after the system splash; saveable so rotation doesn't replay it.
         var showIntro by rememberSaveable { mutableStateOf(true) }
         val focus = remember { FocusRequester() }
         LaunchedEffect(Unit) { focus.requestFocus() }
+        val view = LocalView.current
+        LaunchedEffect(vm) {
+            vm.feedback.collect { view.performHapticFeedback(hapticConstant(it)) }
+        }
+        val scope = rememberCoroutineScope()
+
+        // Play Games: pick up the launch sign-in, then merge stats with the cloud
+        // save on sign-in and after every change (a no-op while signed out).
+        LaunchedEffect(playGames) { playGames?.refreshSignIn() }
+        LaunchedEffect(playGames?.status, vm.statsRecord) {
+            playGames?.sync(vm.statsRecord)?.let(vm::applySyncedStats)
+        }
         // A new day may have started while the app was in the background.
         LifecycleResumeEffect(Unit) {
             vm.refreshDaily()
@@ -92,10 +107,6 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
         }
         val context = LocalContext.current
         val share = { shareResult(context, vm.shareText) }
-        val view = LocalView.current
-        LaunchedEffect(vm) {
-            vm.feedback.collect { view.performHapticFeedback(hapticConstant(it)) }
-        }
 
         CompositionLocalProvider(LocalHighContrast provides vm.highContrast) {
             Box(
@@ -198,6 +209,10 @@ fun WordleApp(vm: GameViewModel = viewModel()) {
                     onHaptics = vm::updateHaptics,
                     highContrast = vm.highContrast,
                     onHighContrast = vm::updateHighContrast,
+                    playGamesStatus = playGames?.status ?: PlayGamesService.Status.UNAVAILABLE,
+                    onPlayGamesSignIn = { scope.launch { playGames?.signIn() } },
+                    onLeaderboards = { scope.launch { playGames?.showLeaderboards() } },
+                    onAchievements = { scope.launch { playGames?.showAchievements() } },
                     onDismiss = { showSettings = false },
                 )
             }
