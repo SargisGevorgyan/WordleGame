@@ -1,0 +1,459 @@
+# Short English glosses for the Armenian words, shown after each game by the iOS and Android apps.
+# One entry per line: WORD|meaning. Lines starting with # and blank lines are ignored.
+ԱԳՌԱՎ|crow
+ԱԶՆԻՎ|honest, noble
+ԱԼԲՈՄ|album
+ԱԼՅՈՒՐ|flour
+ԱԿԱՆՋ|ear
+ԱԿՆՈՑ|eyeglasses
+ԱԿՈՒՄԲ|club
+ԱՂԱՆԴ|sect
+ԱՂՄՈՒԿ|noise
+ԱՂՈԹՔ|prayer
+ԱՂՋԻԿ|girl
+ԱՂՎԵՍ|fox
+ԱՂՏՈՏ|dirty
+ԱՂՔԱՏ|poor
+ԱՄԲԱՐ|storehouse, granary
+ԱՄԲՈԽ|crowd
+ԱՄՐՈՑ|fortress
+ԱՄՓՈՓ|concise, brief
+ԱՅՍՕՐ|today
+ԱՅՑԵԼ|to visit
+ԱՆԳԻՆ|priceless
+ԱՆԳԻՐ|illiterate; by heart
+ԱՆԴԱՄ|member
+ԱՆԹԻՎ|countless
+ԱՆԿԱԽ|independent
+ԱՆՁՈՒԿ|narrow
+ԱՆՄԱՀ|immortal
+ԱՆՏԱՌ|forest
+ԱՆՏԵՐ|ownerless, abandoned
+ԱՆՑՈՒՄ|passage, transition
+ԱՊԱԳԱ|future
+ԱՊԱԿԻ|glass (the material)
+ԱՊՐԵԼ|to live
+ԱՊՐԻԼ|April
+ԱՌԱՆՑ|without
+ԱՌՅՈՒԾ|lion
+ԱՌՈՂՋ|healthy
+ԱՌՋԵՎ|in front, ahead
+ԱՌՎԱԿ|brook, stream
+ԱՍՊԵՏ|knight, horseman
+ԱՍՏԻՃ|degree, level
+ԱՎԱՆԴ|deposit; legacy
+ԱՎԱՐՏ|end, completion
+ԱՎԵԼԻ|more
+ԱՐԱՐՉ|creator
+ԱՐԱՐՔ|act, deed
+ԱՐԴԱՐ|just, fair
+ԱՐԴԵՆ|already
+ԱՐԴՈՒԿ|clothes iron
+ԱՐԺԱՆ|worthy
+ԱՐԺԵՔ|value
+ԱՐԽԻՎ|archive
+ԱՐԾԱԹ|silver
+ԱՐԾԻՎ|eagle
+ԱՐԿԱԾ|adventure
+ԱՐՁԱԿ|prose; loose, free
+ԱՐՁԱՆ|statue, monument
+ԱՐՄԱՎ|palm tree
+ԱՐՄԱՏ|root
+ԱՐՅՈՒՆ|blood
+ԱՐՋՈՒԿ|bear cub
+ԱՔԼՈՐ|rooster
+ԲԱԶՈՒԿ|arm
+ԲԱԺԱԿ|drinking glass
+ԲԱԺԻՆ|share, portion; section
+ԲԱԼԵՏ|ballet
+ԲԱՆԱԿ|army
+ԲԱՆԱՆ|banana
+ԲԱՐԱԿ|thin
+ԲԱՐԴԻ|poplar
+ԲԱՐԵՎ|hello
+ԲԱՐԻՔ|good, a good deed
+ԲԱՐՁՐ|high, tall
+ԲԱՑԵԼ|to open
+ԲԵԿՈՐ|shard, fragment
+ԲԵՂՈՒՆ|fertile
+ԲԵՐԱՆ|mouth
+ԲԵՐԵԼ|to bring
+ԲԺԻՇԿ|doctor
+ԲՈԼՈՐ|all; around
+ԲՈՒԺԵԼ|to heal, treat
+ԲՌՆԵԼ|to catch, grab
+ԲՐԻՆՁ|rice
+ԳԱԳԱԹ|summit, peak
+ԳԱԶԱՆ|wild beast
+ԳԱԶԱՐ|carrot
+ԳԱՎԱԹ|cup
+ԳԱՎԱՌ|province, region
+ԳԱՐՈՒՆ|spring (the season)
+ԳԵՏԻՆ|ground, floor
+ԳԻՇԵՐ|night
+ԳԻՏՈՒՆ|learned, knowledgeable
+ԳՄԲԵԹ|dome
+ԳՆԱՑՔ|train
+ԳՆԴԱԿ|ball
+ԳՈՀԱՐ|jewel, gem
+ԳՈՌԱԼ|to roar, shout
+ԳՈՎԵԼ|to praise
+ԳՈՒԹԱՆ|plow
+ԳՈՒԼՊԱ|sock
+ԳՈՒՄԱՐ|sum of money
+ԳՏՆԵԼ|to find
+ԳՐԵԹԵ|almost
+ԳՐԿԵԼ|to hug
+ԳՐՊԱՆ|pocket
+ԴԱԴԱՐ|pause, break
+ԴԱԺԱՆ|cruel
+ԴԱՆԱԿ|knife
+ԴԱՐԱԿ|shelf
+ԴԵՂԻՆ|yellow
+ԴԺՎԱՐ|difficult
+ԴԻՎԱՆ|sofa; collection of poems
+ԴԻՏԵԼ|to observe
+ԴՈՂԱԼ|to tremble
+ԴՈՒԴՈՒԿ|duduk, an Armenian woodwind instrument
+ԴՈՒՍՏՐ|daughter
+ԴՊՐՈՑ|school
+ԴՐԱՄԱ|drama
+ԵՂՅԱՄ|hoarfrost
+ԵՂՆԻԿ|deer
+ԵՂՈՒՆԳ|fingernail, claw
+ԵՐԱՇՏ|drought
+ԵՐԲԵՔ|never; ever
+ԵՐԳԵԼ|to sing
+ԵՐԳԻՉ|singer
+ԵՐԴՈՒՄ|oath
+ԵՐԵԽԱ|child
+ԵՐԵԿՈ|evening
+ԵՐԻՆՋ|heifer
+ԵՐԿԱԹ|iron
+ԵՐԿԱՐ|long
+ԵՐԿԻՐ|country; the earth
+ԶԱՎԱԿ|child, offspring
+ԶԱՏԻԿ|Easter; ladybug
+ԶԳԱՍՏ|prudent, sensible
+ԶԳԵՍՏ|clothing, dress
+ԶԳՈՒՅՇ|careful
+ԶՂՋԱԼ|to regret
+ԶՂՋՈՒՄ|regret
+ԶՎԱՐՃ|cheerful, merry
+ԷՔՐԱՆ|screen
+ԸՆԿԵՐ|friend
+ԸՆՏԻՐ|choice, select
+ԹԱՆՁՐ|thick
+ԹԵԹԵՎ|light (not heavy)
+ԹԵՔԵԼ|to tilt, bend
+ԹԻԹԵՌ|butterfly
+ԹՈՆԻՐ|tonir, a clay oven set in the ground
+ԹՌՉԵԼ|to fly
+ԹՌՉՈՒՆ|bird
+ԺՈՂՈՎ|meeting, assembly
+ԺՊՏԱԼ|to smile
+ԻՄԱՍՏ|meaning
+ԻՇԽԱՆ|prince
+ԻՋՆԵԼ|to go down
+ԼԱՎԱՇ|lavash, thin Armenian flatbread
+ԼԻԶԵԼ|to lick
+ԼՅԱՐԴ|liver
+ԼՈԼԻԿ|tomato
+ԼՈՂԱԼ|to swim
+ԼՈՒՍԻՆ|moon
+ԼՑՆԵԼ|to fill
+ԽԱԲԵԼ|to deceive
+ԽԱԾԵԼ|to bite
+ԽԱՂԱԼ|to play
+ԽԱՂԱՂ|peaceful, calm
+ԽԱՂՈՂ|grapes
+ԽԱՆՈՒԹ|shop
+ԽԱՎԱՐ|darkness
+ԽԵԼՈՔ|smart, clever
+ԽԻԶԱԽ|brave
+ԽՆԱՄՔ|care
+ԽՆԴԱԼ|to laugh
+ԽՆԴԻՐ|problem, task
+ԽՆՁՈՐ|apple
+ԽՈՆԱՎ|damp, humid
+ԽՈՍԵԼ|to speak
+ԽՈՐԱՆ|altar
+ԽՈՒՃԱՊ|panic
+ԾԱՂԻԿ|flower
+ԾԱՄԵԼ|to chew
+ԾԱՆՈԹ|familiar; an acquaintance
+ԾԱՎԱԼ|volume, extent
+ԾԱՐԱՎ|thirsty
+ԾԵԾԵԼ|to beat, hit
+ԾԻԾԱՂ|laughter
+ԾԻՐԱՆ|apricot
+ԾՆՈՂՔ|parents
+ԾՆՈՒՆԴ|birth
+ԾՆՎԵԼ|to be born
+ԾՈՎԱՓ|seashore
+ԿԱԹԵԼ|to drip
+ԿԱԹԻԼ|drop
+ԿԱԹՍԱ|cauldron, kettle
+ԿԱԿԱՉ|poppy
+ԿԱՂՆԻ|oak
+ԿԱՄԱՐ|arch
+ԿԱՅԱՆ|station, stop
+ԿԱՆԱՉ|green
+ԿԱՆՈՆ|rule
+ԿԱՊԱՐ|lead (the metal)
+ԿԱՊԵԼ|to tie, connect
+ԿԱՊԻԿ|monkey
+ԿԱՏԱԿ|joke
+ԿԱՏԱՐ|perfect; summit
+ԿԱՐԱԳ|butter
+ԿԱՐԱՍ|karas, a large clay wine jar
+ԿԱՐԵԼ|to sew
+ԿԱՐԻՃ|scorpion
+ԿԱՐԻՔ|need
+ԿԱՐՈՂ|able, capable
+ԿԱՐՈՏ|longing, missing someone
+ԿԱՑԻՆ|axe
+ԿԱՔԱՎ|partridge
+ԿԵՂԵՎ|bark, peel
+ԿԵՍՕՐ|noon
+ԿԻՍԵԼ|to share, halve
+ԿԼԻՄԱ|climate
+ԿՅԱՆՔ|life
+ԿՇՌԵԼ|to weigh
+ԿՈԽԵԼ|to step on
+ԿՈԿԻԿ|neat, tidy
+ԿՈՃԱԿ|button
+ԿՈՇԻԿ|shoe
+ԿՈՉԵԼ|to call
+ԿՈՒՐԾՔ|chest, breast
+ԿՌՈՒՆԿ|crane (the bird), a symbol of longing for home
+ԿՌՎԵԼ|to fight
+ԿՏՐԵԼ|to cut
+ԿՐԹԵԼ|to educate
+ԿՐՈՒՆԿ|heel
+ՀԱԶԱՐ|thousand
+ՀԱԶԻՎ|barely, hardly
+ՀԱԼՎԱ|halva, a sweet
+ՀԱՃԱԽ|often
+ՀԱՄԱՌ|stubborn
+ՀԱՄԱՐ|number; for
+ՀԱՄԵՂ|tasty
+ՀԱՄԵՄ|spice, seasoning
+ՀԱՄՈՎ|tasty
+ՀԱՆԵԼ|to take out, remove
+ՀԱՇԻՎ|account, bill; score
+ՀԱՉԵԼ|to bark
+ՀԱՍԱԿ|height, stature
+ՀԱՍՑԵ|address
+ՀԱՎԱՏ|faith
+ՀԱՏԱԿ|floor
+ՀԱՏԻԿ|grain, seed
+ՀԱՏՈՒԿ|special
+ՀԱՐԱՎ|south
+ՀԵՐՈՍ|hero
+ՀԻՄԱՐ|fool; foolish
+ՀԻՇԵԼ|to remember
+ՀԻՍՈՒՆ|fifty
+ՀՅՈՒՍՆ|north
+ՀՆԱՐՔ|trick, means
+ՀՆՁԵԼ|to reap, harvest
+ՀՈԳԱԼ|to take care of
+ՀՈՍԵԼ|to flow
+ՀՈՎԻՎ|shepherd
+ՀՈՎԻՏ|valley
+ՀՈՒԼԻՍ|July
+ՀՈՒՆԻՍ|June
+ՀՊԱՐՏ|proud
+ՀՐԱՇՔ|miracle
+ՁԱՆՁՐ|boredom; boring
+ՁԱՎԱՐ|groats, cracked wheat
+ՁԳՏԵԼ|to strive
+ՃԱԿԱՏ|forehead
+ՃԱՂԱՏ|bald
+ՃԱՄՓԱ|road, way
+ՃԱՇԱԿ|taste
+ՃԱՐԱԿ|pasture, fodder
+ՃՇՏԵԼ|to adjust, clarify
+ՃՈՊԱՆ|rope
+ՄԱԾՈՒՆ|matsun, Armenian yogurt
+ՄԱՅԻՍ|May
+ՄԱՅՐԻ|cedar; forest
+ՄԱՆԵԼ|to spin (yarn)
+ՄԱՆԹԻ|manti, small baked dumplings
+ՄԱՆՈՒԿ|child
+ՄԱՌԱՆ|cellar, pantry
+ՄԱՍԻՆ|about, concerning
+ՄԱՍՈՒՐ|rose hip
+ՄԱՏԱՂ|matagh, a sacrificial meal shared with others
+ՄԱՏԻՏ|pencil
+ՄԱՏՈՒՌ|chapel
+ՄԱՐԱԼ|doe
+ՄԱՔՈՒՐ|clean
+ՄԵԴԱԼ|medal
+ՄԵՆԱԿ|alone
+ՄԵՏԱՂ|metal
+ՄԻԱՅՆ|only
+ՄԻՋԻՆ|middle, average
+ՄԻՋՈՑ|means, method
+ՄԿՐԱՏ|scissors
+ՄՈԴԵԼ|model
+ՄՈԾԱԿ|mosquito
+ՄՈՂԵՍ|lizard
+ՄՈՐԹԻ|fur, pelt
+ՄՈՒՐԱԶ|wish, desire
+ՄՏՆԵԼ|to enter
+ՄՐՍԵԼ|to feel cold
+ՄՐՐԻԿ|storm
+ՆԱԽԻՐ|herd
+ՆԱՄԱԿ|letter (mail)
+ՆԱՅԵԼ|to look
+ՆԱՎԱԿ|boat
+ՆԵՏԵԼ|to throw
+ՆԵՐԵԼ|to forgive
+ՆԵՐԿԱ|present, here
+ՆԵՐՈՒՄ|forgiveness
+ՆԻԶԱԿ|spear
+ՆԻՀԱՐ|thin, skinny
+ՆՊԱՍՏ|benefit, aid
+ՆՍՏԵԼ|to sit
+ՇԱԲԱԹ|Saturday; week
+ՇԱՊԻԿ|shirt
+ՇԱՔԱՐ|sugar
+ՇԻՆԵԼ|to build
+ՇՆՈՐՀ|grace; talent
+ՇՆՉԵԼ|to breathe
+ՇՈՂԱԼ|to shine, sparkle
+ՇՈՅԵԼ|to caress, pet
+ՇՈՒՏՈՎ|soon
+ՇՐՋԱՆ|circle; period; district
+ՇՐՋԵԼ|to wander; to turn over
+ՈՄԱՆՔ|some (people)
+ՈՉԻՆՉ|nothing
+ՈՉԽԱՐ|sheep
+ՈՐՊԵՍ|as, in the role of
+ՈՐՍԱԼ|to hunt
+ՈՐՏԵՂ|where
+ՈՒՐԲԱԹ|Friday
+ՉԱՄԻՉ|raisin
+ՉԱՐԻՔ|evil
+ՉԱՓԵԼ|to measure
+ՊԱԼԱՏ|palace
+ՊԱՀԱԿ|guard
+ՊԱՀԵԼ|to keep
+ՊԱՆԻՐ|cheese
+ՊԱՇԱՐ|supply, stock
+ՊԱՊԻԿ|grandpa
+ՊԱՏԱՌ|bite, piece
+ՊԱՏԵԼ|to wrap, cover
+ՊԱՏԻՎ|honor
+ՊԱՐԱՆ|rope
+ՊԱՐԱՊ|empty; idle
+ՊԱՐԵԼ|to dance
+ՊԱՐՈՂ|dancer
+ՊԱՐՈՆ|mister, sir
+ՊԱՐՍՊ|fortress wall
+ՊԱՐՏՔ|debt; duty
+ՊԻՏԱԿ|label
+ՊՂԻՆՁ|copper
+ՊՂՊԵՂ|pepper
+ՊՈԿԵԼ|to tear off, pluck
+ՊՏՈՒՅՏ|stroll; a turn
+ՋԱՀԵԼ|young
+ՋԱՂԱՑ|mill
+ՋԱՆԱԼ|to try hard
+ՋՆՋԵԼ|to delete, wipe out
+ՋՈՒԹԱԿ|violin
+ՋՐՀՈՐ|water well
+ՋՐՎԵԺ|waterfall
+ՌԱԴԻՈ|radio
+ՌԵՀԱՆ|basil
+ՌԵՏԻՆ|rubber
+ՍԱԼՈՐ|plum
+ՍԱՀԵԼ|to slide, glide
+ՍԱՎԱՆ|bed sheet
+ՍԱՓՈՐ|jug, pitcher
+ՍԵՂԱՆ|table
+ՍԻՍԵՌ|chickpea
+ՍԻՐԵԼ|to love
+ՍԻՐՈՒՆ|pretty
+ՍԽՏՈՐ|garlic
+ՍԿԻԶԲ|beginning
+ՍԿՅՈՒՌ|squirrel
+ՍԿՍԵԼ|to begin
+ՍՆՈՒՆԴ|food, nourishment
+ՍՈԽԱԿ|nightingale
+ՍՈՂԱԼ|to crawl
+ՍՈՂՈՒՆ|reptile
+ՍՈՎՈՐ|usual; used to
+ՍՈՒՋՈՒԽ|sujukh, walnuts on a string dipped in grape syrup
+ՍՈՒՍԵՐ|sword
+ՍՈՒՐԱԼ|to rush, speed
+ՍՊԱՍՔ|dishes, tableware
+ՍՊՈՐՏ|sport
+ՍՏՎԵՐ|shadow
+ՍՏՐՈՒԿ|slave
+ՍՐԲԵԼ|to wipe
+ՍՐԲԻՉ|towel
+ՍՐԻՆԳ|shepherd's flute
+ՎԱԳՈՆ|railway car
+ՎԱԶԵԼ|to run
+ՎԱՀԱՆ|shield
+ՎԱՅՐԻ|wild
+ՎԱՌԵԼ|to light, burn
+ՎԱՐԵԼ|to drive; to plow
+ՎԵՃԵԼ|to argue
+ՎԵՐԵՎ|up, above
+ՎԶՆՈՑ|necklace
+ՎԻՃԱԿ|state, condition
+ՎԻՇԱՊ|dragon
+ՎՍՏԱՀ|sure, confident
+ՎՏԱՆԳ|danger
+ՏԱԲԱՏ|trousers
+ՏԱՆԵԼ|to take, carry away
+ՏԱՆԻՔ|roof
+ՏԱՏԻԿ|grandma
+ՏԱՐԻՔ|age
+ՏԵՍԱԿ|kind, type
+ՏԵՐԵՎ|leaf
+ՏԻԿԻՆ|madam, lady
+ՏՈԼՄԱ|tolma, stuffed grape leaves
+ՏՈԿՈՍ|percent
+ՏՈՆԵԼ|to celebrate
+ՏՐՏՈՒՄ|sad
+ՑԱՄԱՔ|land, dry land
+ՑԱՆԵԼ|to sow
+ՑԵՐԵԿ|daytime
+ՑՈՐԵՆ|wheat
+ՑՈՒՑԱԿ|list
+ՑՐՎԵԼ|to scatter
+ՓԱԿԵԼ|to close
+ՓԱՐԱԽ|barn, stable
+ՓԱՓՈՒԿ|soft
+ՓԵՏՈՒՐ|feather
+ՓՈԽԵԼ|to change
+ՓՈՂՈՑ|street
+ՓՈՒԹԱԼ|to hurry
+ՓՐԿԵԼ|to save, rescue
+ՔԱՂԱՔ|city
+ՔԱՂԵԼ|to pick, harvest
+ՔԱՂՑՐ|sweet
+ՔԱՄԵԼ|to squeeze, strain
+ՔԱՆԱԿ|quantity
+ՔԱՆՈՆ|kanon, a zither-like instrument
+ՔԱՇԵԼ|to pull; to weigh
+ՔԱՐԱՓ|rocky shore, cliff
+ՔԱՐՈԶ|sermon
+ՔԱՑԱԽ|vinegar
+ՔԵՌԻԿ|aunt (mother's sister)
+ՔԵՐԵԼ|to scrape, scratch
+ՔԻՄԻԱ|chemistry
+ՔՆՆԵԼ|to examine
+ՔՆՔՈՒՇ|tender, delicate
+ՔՈՒՌԱԿ|foal
+ՕԳՆԵԼ|to help
+ՕԴԱՉՈՒ|pilot
+ՕԺՏԵԼ|to endow
+ՕՐԵՆՔ|law
+ՕՐՐԱՆ|cradle
+ՖԵՐՄԱ|farm
+ՖԻՆԻԿ|date (the fruit)

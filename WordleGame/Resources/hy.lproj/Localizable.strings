@@ -22,6 +22,7 @@
 "You cracked it" = "Դու գտար";
 "The word was" = "Բառը սա էր";
 "Play Again" = "Խաղալ նորից";
+"Meaning" = "Իմաստը";
 
 /* Stats */
 "Win rate" = "Հաղթանակ %";
@@ -39,6 +40,10 @@
 "Restore Purchases" = "Վերականգնել գնումները";
 "Sound & Haptics" = "Ձայն և թրթռում";
 "Sound effects" = "Ձայնային էֆեկտներ";
+"Haptics" = "Թրթռում";
+"Accessibility" = "Մատչելիություն";
+"High contrast colors" = "Բարձր կոնտրաստի գույներ";
+"Color-blind friendly: orange = right spot, blue = wrong spot." = "Գունակույրների համար. նարնջագույն՝ ճիշտ տեղում, կապույտ՝ սխալ տեղում։";
 "How to play: guess the 5-letter word in 6 tries. Green = right spot, Yellow = wrong spot, Gray = not in the word." = "Ինչպես խաղալ. գուշակեք 5-տառանոց բառը 6 փորձով։ Կանաչ՝ ճիշտ տեղում, Դեղին՝ սխալ տեղում, Մոխրագույն՝ բառում չկա։";
 "Start a new game in %@?" = "Սկսե՞լ նոր խաղ %@ լեզվով։";
 "Switch & restart" = "Փոխել և վերսկսել";

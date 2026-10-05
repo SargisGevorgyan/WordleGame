@@ -334,6 +334,7 @@ struct RootView: View {
                 GameOverView(
                     didWin: game.status == .won,
                     targetWord: game.targetWord,
+                    meaning: game.language.meaning(of: game.targetWord),
                     puzzleNumber: game.puzzleNumber,
                     shareText: game.shareText,
                     onPlayAgain: {

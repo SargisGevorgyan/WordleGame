@@ -155,6 +155,14 @@ enum GameLanguage: String, CaseIterable, Identifiable {
         wordSet.contains(guess.uppercased())
     }
 
+    /// Short meaning shown after a game (English gloss for Armenian words).
+    func meaning(of word: String) -> String? {
+        switch self {
+        case .english:  return WordMeanings.english[word.uppercased()]
+        case .armenian: return WordMeanings.armenian[word.uppercased()]
+        }
+    }
+
     // MARK: - Keyboard
 
     /// Rows of key tokens. `"ENTER"` and `"DELETE"` are action keys; everything
