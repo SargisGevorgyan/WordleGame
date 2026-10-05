@@ -67,8 +67,10 @@ private fun GlassPanel(content: @Composable () -> Unit) {
 @Composable
 fun GameOverDialog(
     won: Boolean,
+    timedOut: Boolean,
     word: String,
     meaning: String?,
+    wordOfTheDay: Pair<String, String>?,
     stats: Stats,
     puzzleNumber: Int?,
     onShare: () -> Unit,
@@ -82,7 +84,13 @@ fun GameOverDialog(
                 Text(stringResource(R.string.daily_number, puzzleNumber), color = Palette.secondaryText, fontWeight = FontWeight.SemiBold)
             }
             Text(
-                stringResource(if (won) R.string.brilliant else R.string.so_close),
+                stringResource(
+                    when {
+                        won -> R.string.brilliant
+                        timedOut -> R.string.times_up
+                        else -> R.string.so_close
+                    },
+                ),
                 color = if (won) Palette.neonGreen else Palette.warmYellow,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Black,
@@ -102,6 +110,8 @@ fun GameOverDialog(
                 )
             }
             StatsRow(stats)
+            // Learners: one Armenian word a day, skipped when it's the word just played.
+            wordOfTheDay?.takeIf { it.first != word }?.let { (hyWord, meaning) -> WordOfTheDayCard(hyWord, meaning) }
             if (puzzleNumber != null) NextWordCountdown(onNewDay)
             Box(
                 Modifier
@@ -152,6 +162,23 @@ private fun untilMidnight(): Duration {
 }
 
 @Composable
+private fun WordOfTheDayCard(word: String, meaning: String) {
+    val shape = RoundedCornerShape(16.dp)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(Palette.glassFill, shape)
+            .border(1.dp, Palette.borderIdle, shape)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(stringResource(R.string.word_of_the_day).uppercase(), color = Palette.secondaryText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+        Text(word, color = Palette.neonGreen, fontSize = 22.sp, fontWeight = FontWeight.Black, letterSpacing = 3.sp)
+        Text(meaning, color = Color.White, fontSize = 14.sp, textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
 fun StatsRow(stats: Stats) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
         StatCell(stats.gamesPlayed.toString(), stringResource(R.string.played))
@@ -174,7 +201,11 @@ fun SettingsDialog(
     current: GameLanguage,
     isInProgress: Boolean,
     stats: Stats,
+    hardMode: Boolean,
+    timedMode: Boolean,
     onLanguage: (GameLanguage) -> Unit,
+    onHardMode: (Boolean) -> Unit,
+    onTimedMode: (Boolean) -> Unit,
     onResetStats: () -> Unit,
     hapticsEnabled: Boolean,
     onHaptics: (Boolean) -> Unit,
@@ -217,6 +248,11 @@ fun SettingsDialog(
                         }
                     }
                 }
+
+                SectionTitle(stringResource(R.string.game_modes))
+                ModeSwitch(stringResource(R.string.hard_mode), stringResource(R.string.hard_mode_desc), hardMode, onHardMode)
+                ModeSwitch(stringResource(R.string.timed_mode), stringResource(R.string.timed_mode_desc), timedMode, onTimedMode)
+                Text(stringResource(R.string.modes_next_game), color = Palette.secondaryText, fontSize = 12.sp, modifier = Modifier.fillMaxWidth())
 
                 SectionTitle(stringResource(R.string.statistics))
                 StatsRow(stats)
@@ -273,6 +309,21 @@ fun SettingsDialog(
             dismissButton = {
                 TextButton(onClick = { pending = null }) { Text(stringResource(R.string.cancel)) }
             },
+        )
+    }
+}
+
+@Composable
+private fun ModeSwitch(title: String, description: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(title, color = Color.White, fontWeight = FontWeight.SemiBold)
+            Text(description, color = Palette.secondaryText, fontSize = 12.sp)
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onChange,
+            colors = SwitchDefaults.colors(checkedTrackColor = Palette.neonGreen, checkedThumbColor = Palette.indigoDeep),
         )
     }
 }

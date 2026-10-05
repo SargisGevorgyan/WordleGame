@@ -80,4 +80,42 @@ enum GameStatus: Equatable {
 enum GameConstants {
     static let maxGuesses = 6
     static let wordLength = 5
+    /// Timed mode: 3 minutes per game.
+    static let timeLimitSeconds = 180
+}
+
+/// Why a guess breaks Hard mode. `position` is 0-based.
+enum HardModeViolation: Equatable {
+    case missingCorrect(position: Int, token: String)
+    case missingPresent(token: String)
+}
+
+/// Hard mode: every revealed hint must be used in later guesses. A green letter
+/// stays in its spot; a yellow (or green) letter must appear somewhere, as many
+/// times as it was revealed in a single row. Mirrors Android's `HardMode`.
+enum HardMode {
+    static func violation(board: [[Tile]], row: Int, guess: [String]) -> HardModeViolation? {
+        let revealed = board.prefix(row)
+        for tiles in revealed {
+            for (index, tile) in tiles.enumerated() {
+                guard let letter = tile.letter, tile.evaluation == .correct else { continue }
+                if index >= guess.count || guess[index] != letter {
+                    return .missingCorrect(position: index, token: letter)
+                }
+            }
+        }
+        for tiles in revealed {
+            var required: [String: Int] = [:]
+            var order: [String] = []
+            for tile in tiles where tile.evaluation == .correct || tile.evaluation == .present {
+                guard let letter = tile.letter else { continue }
+                if required[letter] == nil { order.append(letter) }
+                required[letter, default: 0] += 1
+            }
+            for token in order where guess.filter({ $0 == token }).count < required[token]! {
+                return .missingPresent(token: token)
+            }
+        }
+        return nil
+    }
 }

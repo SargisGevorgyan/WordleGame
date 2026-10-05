@@ -2,6 +2,7 @@ package com.sargisgevorgyan.wordlegame
 
 import android.app.Application
 import android.content.Context
+import android.os.SystemClock
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -16,6 +17,7 @@ import com.sargisgevorgyan.wordlegame.game.GameMode
 import com.sargisgevorgyan.wordlegame.game.GameRules
 import com.sargisgevorgyan.wordlegame.game.GameState
 import com.sargisgevorgyan.wordlegame.game.GameStatus
+import com.sargisgevorgyan.wordlegame.game.HardModeViolation
 import com.sargisgevorgyan.wordlegame.game.ShareCard
 import com.sargisgevorgyan.wordlegame.game.Stats
 import com.sargisgevorgyan.wordlegame.game.StatsRecord
@@ -28,6 +30,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
+/** A toast: a string resource plus its format arguments. */
+data class UiMessage(@StringRes val res: Int, val args: List<Any> = emptyList())
+
 /** Drives the board, keyboard and game state; persists language, mode, daily progress, stats and hints. */
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -36,6 +41,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val meaningCache = mutableMapOf<GameLanguage, Map<String, String>>()
 
     var mode by mutableStateOf(GameMode.fromCode(prefs.getString(KEY_MODE, null)) ?: GameMode.DAILY)
+        private set
+    /**
+     * Settings; a change applies now if the game hasn't started, otherwise from the next game.
+     * Hard mode covers daily and free play; Timed mode is free play only.
+     */
+    var hardMode by mutableStateOf(prefs.getBoolean(KEY_HARD_MODE, false))
+        private set
+    var timedMode by mutableStateOf(prefs.getBoolean(KEY_TIMED_MODE, false))
+        private set
+    /** Timed mode: seconds left. The clock starts with the first letter. */
+    var secondsLeft by mutableIntStateOf(GameRules.TIME_LIMIT_SECONDS)
         private set
     /** Day of the daily game on the board (see [DailyPuzzle.dayNumber]). */
     var dailyDay by mutableIntStateOf(DailyPuzzle.dayNumber())
@@ -50,7 +66,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     /** Bumped to make the active row shake. */
     var shakeToken by mutableIntStateOf(0)
         private set
-    var toast by mutableStateOf<Int?>(null)
+    var toast by mutableStateOf<UiMessage?>(null)
         private set
     var showGameOver by mutableStateOf(false)
     /** Stats plus sync timestamps; persisted locally and merged with the cloud copy. */
@@ -70,6 +86,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _feedback = MutableSharedFlow<Feedback>(extraBufferCapacity = 4)
     val feedback: SharedFlow<Feedback> = _feedback
 
+    /** Today's Armenian word for learners and its English meaning (see [DailyPuzzle.learnerWord]). */
+    val armenianWordOfTheDay: Pair<String, String>?
+        get() {
+            val word = DailyPuzzle.learnerWord(bank(GameLanguage.ARMENIAN), DailyPuzzle.dayNumber())
+            return meanings(GameLanguage.ARMENIAN)[word]?.let { word to it }
+        }
+
     /** Short meaning of the current target word (English gloss for Armenian), if known. */
     val meaning: String?
         get() = meanings(state.language)[state.targetWord.uppercase()]
@@ -86,6 +109,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private var toastJob: Job? = null
     private var revealJob: Job? = null
+    private var timerJob: Job? = null
     /** State to apply when the running reveal finishes. */
     private var pendingResolved: GameState? = null
 
@@ -108,6 +132,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val token = GameRules.hintToken(state) ?: return
         setHints(hintsRemaining - 1)
         state = GameRules.insertToken(state, token)
+        startClockIfNeeded()
         flashToast(R.string.hint_revealed)
     }
 
@@ -116,6 +141,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         when (val result = GameRules.submit(state, bank(state.language))) {
             Submission.NotEnoughLetters -> invalid(R.string.not_enough_letters)
             Submission.NotInWordList -> invalid(R.string.not_in_word_list)
+            is Submission.BreaksHardMode -> invalid(hardModeMessage(result.violation))
             is Submission.Scored -> reveal(result)
         }
     }
@@ -142,7 +168,51 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         isRevealing = false
         revealingRow = -1
         if (mode == GameMode.DAILY) saveDaily(resolved)
-        if (resolved.status != GameStatus.PLAYING) recordResult(won = resolved.status == GameStatus.WON)
+        if (resolved.status != GameStatus.PLAYING) {
+            stopClock()
+            recordResult(won = resolved.status == GameStatus.WON)
+        }
+    }
+
+    // Timed mode
+
+    /** Starts (or resumes) the clock with the time left once the game has its first letter. */
+    private fun startClockIfNeeded() {
+        if (!state.timed || timerJob != null || state.status != GameStatus.PLAYING || !state.isInProgress) return
+        val deadline = SystemClock.elapsedRealtime() + secondsLeft * 1000L
+        timerJob = viewModelScope.launch {
+            while (true) {
+                val left = deadline - SystemClock.elapsedRealtime()
+                secondsLeft = ((left + 999) / 1000).toInt().coerceAtLeast(0)
+                if (left <= 0) break
+                delay(minOf(left, 250L))
+            }
+            timerJob = null
+            timeUp()
+        }
+    }
+
+    private fun stopClock() {
+        timerJob?.cancel()
+        timerJob = null
+    }
+
+    private fun timeUp() {
+        val pending = pendingResolved
+        revealJob?.cancel()
+        revealJob = null
+        pendingResolved = null
+        isRevealing = false
+        revealingRow = -1
+        state = GameRules.timeUp(state, pending)
+        if (mode == GameMode.DAILY) saveDaily(state)
+        val won = state.status == GameStatus.WON
+        recordResult(won)
+        haptic(if (won) Feedback.WIN else Feedback.LOSS)
+        revealJob = viewModelScope.launch {
+            delay(450)
+            showGameOver = true
+        }
     }
 
     private fun recordResult(won: Boolean) {
@@ -166,6 +236,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         showGameOver = false
         if (mode == GameMode.DAILY) return
         cancelReveal()
+        stopClock()
+        secondsLeft = GameRules.TIME_LIMIT_SECONDS
         state = startGame(state.language)
     }
 
@@ -182,6 +254,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             GameRules.abandonOutcome(state, pendingResolved)?.let { recordResult(won = it == GameStatus.WON) }
         }
         cancelReveal()
+        stopClock()
+        secondsLeft = GameRules.TIME_LIMIT_SECONDS
         freeGame = null
         prefs.edit { putString(KEY_LANGUAGE, language.code) }
         state = startGame(language)
@@ -191,13 +265,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     /** Switches between the daily word and free play; the free game waits while the daily is shown. */
     fun changeMode(newMode: GameMode) {
         if (newMode == mode || isRevealing) return
+        // A timed free game waits with its clock paused, and resumes on the next letter.
+        stopClock()
         val language = state.language
         if (newMode == GameMode.DAILY) freeGame = state
         mode = newMode
         prefs.edit { putString(KEY_MODE, newMode.code) }
         showGameOver = false
         state = freeGame?.takeIf { newMode == GameMode.FREE && it.status == GameStatus.PLAYING }
-            ?: startGame(language)
+            ?: startGame(language).also { if (newMode == GameMode.FREE) secondsLeft = GameRules.TIME_LIMIT_SECONDS }
         if (newMode == GameMode.FREE) freeGame = null
     }
 
@@ -206,6 +282,21 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         if (mode != GameMode.DAILY || isRevealing || DailyPuzzle.dayNumber() == dailyDay) return
         showGameOver = false
         state = startGame(state.language)
+    }
+
+    fun changeHardMode(enabled: Boolean) {
+        hardMode = enabled
+        prefs.edit { putBoolean(KEY_HARD_MODE, enabled) }
+        if (!state.isInProgress && state.status == GameStatus.PLAYING) state = state.copy(hardMode = enabled)
+    }
+
+    fun changeTimedMode(enabled: Boolean) {
+        timedMode = enabled
+        prefs.edit { putBoolean(KEY_TIMED_MODE, enabled) }
+        if (mode == GameMode.FREE && !state.isInProgress && state.status == GameStatus.PLAYING) {
+            state = state.copy(timed = enabled)
+            secondsLeft = GameRules.TIME_LIMIT_SECONDS
+        }
     }
 
     /** The reset is time-stamped so synced devices drop their older stats too. */
@@ -232,10 +323,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     // Helpers
 
     private inline fun update(transform: (GameState) -> GameState) {
-        if (!isRevealing) state = transform(state)
+        if (isRevealing) return
+        state = transform(state)
+        startClockIfNeeded()
     }
 
-    private fun invalid(@StringRes message: Int) {
+    private fun invalid(@StringRes message: Int) = invalid(UiMessage(message))
+
+    private fun invalid(message: UiMessage) {
         shakeToken++
         haptic(Feedback.INVALID)
         flashToast(message)
@@ -245,7 +340,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         if (hapticsEnabled) _feedback.tryEmit(feedback)
     }
 
-    private fun flashToast(@StringRes message: Int) {
+    private fun hardModeMessage(violation: HardModeViolation) = when (violation) {
+        is HardModeViolation.MissingCorrect -> UiMessage(R.string.hard_mode_position, listOf(violation.position + 1, violation.token))
+        is HardModeViolation.MissingPresent -> UiMessage(R.string.hard_mode_contain, listOf(violation.token))
+    }
+
+    private fun flashToast(@StringRes message: Int) = flashToast(UiMessage(message))
+
+    private fun flashToast(message: UiMessage) {
         toastJob?.cancel()
         toast = message
         toastJob = viewModelScope.launch {
@@ -255,14 +357,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun startGame(language: GameLanguage): GameState {
-        if (mode == GameMode.FREE) return GameRules.newGame(language, bank(language).randomWord())
+        val hard = prefs.getBoolean(KEY_HARD_MODE, false)
+        if (mode == GameMode.FREE) {
+            return GameRules.newGame(language, bank(language).randomWord(), hardMode = hard, timed = prefs.getBoolean(KEY_TIMED_MODE, false))
+        }
         dailyDay = DailyPuzzle.dayNumber()
         val word = DailyPuzzle.word(bank(language), dailyDay)
         // Saved as "<day>|GUESS,GUESS"; another day's progress is ignored.
         val saved = prefs.getString(dailyKey(language), null)?.split('|', limit = 2)
         val guesses = saved?.takeIf { it.size == 2 && it[0] == dailyDay.toString() }
             ?.get(1)?.split(',')?.filter { it.isNotEmpty() }.orEmpty()
-        return GameRules.replay(language, word, guesses, bank(language))
+        return GameRules.replay(language, word, guesses, bank(language)).copy(hardMode = hard)
     }
 
     private fun saveDaily(state: GameState) = prefs.edit {
@@ -321,6 +426,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         private const val FREE_HINT_CEILING = 5
         private const val KEY_LANGUAGE = "gameLanguage"
         private const val KEY_MODE = "gameMode"
+        private const val KEY_HARD_MODE = "hardMode"
+        private const val KEY_TIMED_MODE = "timedMode"
         private const val KEY_HINTS = "hintsRemaining"
         private const val KEY_HAPTICS = "hapticsEnabled"
         private const val KEY_HIGH_CONTRAST = "highContrastColors"

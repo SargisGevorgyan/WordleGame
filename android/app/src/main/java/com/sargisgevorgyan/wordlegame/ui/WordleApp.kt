@@ -72,6 +72,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sargisgevorgyan.wordlegame.GameViewModel
 import com.sargisgevorgyan.wordlegame.R
+import com.sargisgevorgyan.wordlegame.UiMessage
 import com.sargisgevorgyan.wordlegame.game.GameMode
 import com.sargisgevorgyan.wordlegame.game.GameStatus
 import com.sargisgevorgyan.wordlegame.games.PlayGamesService
@@ -136,6 +137,8 @@ fun WordleApp(vm: GameViewModel = viewModel(), playGames: PlayGamesService? = nu
                 ) {
                     Hud(
                         hints = vm.hintsRemaining,
+                        secondsLeft = vm.secondsLeft.takeIf { vm.state.timed },
+                        hardMode = vm.state.hardMode,
                         onHint = vm::useHint,
                         onShare = share.takeIf { vm.state.status != GameStatus.PLAYING },
                         onSettings = { showSettings = true },
@@ -178,8 +181,10 @@ fun WordleApp(vm: GameViewModel = viewModel(), playGames: PlayGamesService? = nu
             if (vm.showGameOver) {
                 GameOverDialog(
                     won = vm.state.status == GameStatus.WON,
+                    timedOut = vm.state.timedOut,
                     word = vm.state.targetWord,
                     meaning = vm.meaning,
+                    wordOfTheDay = vm.armenianWordOfTheDay,
                     stats = vm.stats,
                     puzzleNumber = vm.puzzleNumber,
                     onShare = share,
@@ -194,7 +199,11 @@ fun WordleApp(vm: GameViewModel = viewModel(), playGames: PlayGamesService? = nu
                     current = vm.state.language,
                     isInProgress = vm.languageSwitchLosesGame,
                     stats = vm.stats,
+                    hardMode = vm.hardMode,
+                    timedMode = vm.timedMode,
                     onLanguage = vm::changeLanguage,
+                    onHardMode = vm::changeHardMode,
+                    onTimedMode = vm::changeTimedMode,
                     onResetStats = vm::resetStats,
                     hapticsEnabled = vm.hapticsEnabled,
                     onHaptics = vm::updateHaptics,
@@ -254,7 +263,14 @@ private fun ModePicker(mode: GameMode, puzzleNumber: Int?, enabled: Boolean, onM
 }
 
 @Composable
-private fun Hud(hints: Int, onHint: () -> Unit, onShare: (() -> Unit)?, onSettings: () -> Unit) {
+private fun Hud(
+    hints: Int,
+    secondsLeft: Int?,
+    hardMode: Boolean,
+    onHint: () -> Unit,
+    onShare: (() -> Unit)?,
+    onSettings: () -> Unit,
+) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -274,6 +290,25 @@ private fun Hud(hints: Int, onHint: () -> Unit, onShare: (() -> Unit)?, onSettin
                 .padding(horizontal = 14.dp, vertical = 8.dp),
         )
         Spacer(Modifier.weight(1f))
+        if (hardMode) {
+            Text(
+                stringResource(R.string.hard_mode),
+                color = Palette.auroraMagenta,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 6.dp),
+            )
+        }
+        if (secondsLeft != null) {
+            Text(
+                "⏱ %d:%02d".format(secondsLeft / 60, secondsLeft % 60),
+                color = if (secondsLeft <= 30) Palette.warmYellow else Color.White,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .background(Palette.keyIdle, CircleShape)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+            )
+        }
         if (onShare != null) {
             IconButton(onClick = onShare) {
                 Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.share), tint = Color.White)
@@ -286,12 +321,12 @@ private fun Hud(hints: Int, onHint: () -> Unit, onShare: (() -> Unit)?, onSettin
 }
 
 @Composable
-private fun ToastBanner(message: Int?, modifier: Modifier = Modifier) {
+private fun ToastBanner(message: UiMessage?, modifier: Modifier = Modifier) {
     var last by remember { mutableStateOf(message) }
     if (message != null) last = message
     AnimatedVisibility(message != null, modifier = modifier, enter = fadeIn(), exit = fadeOut()) {
         Text(
-            last?.let { stringResource(it) }.orEmpty(),
+            last?.let { stringResource(it.res, *it.args.toTypedArray()) }.orEmpty(),
             color = Color.White,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier

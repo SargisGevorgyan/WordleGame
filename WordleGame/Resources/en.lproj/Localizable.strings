@@ -77,6 +77,21 @@
 "English" = "English";
 "Armenian" = "Armenian";
 
+/* Game modes */
+"Game Modes" = "Game Modes";
+"Hard mode" = "Hard mode";
+"Revealed hints must be used in later guesses." = "Revealed hints must be used in later guesses.";
+"Timed mode" = "Timed mode";
+"3 minutes per free-play game. The clock starts with your first letter." = "3 minutes per free-play game. The clock starts with your first letter.";
+"Changes made during a game apply from the next one." = "Changes made during a game apply from the next one.";
+"Position %lld must be %@" = "Position %lld must be %@";
+"Guess must contain %@" = "Guess must contain %@";
+"Time left: %lld seconds" = "Time left: %lld seconds";
+"TIME'S UP" = "TIME'S UP";
+
+/* Word of the day */
+"Armenian word of the day" = "Armenian word of the day";
+
 /* Daily word & sharing */
 "Daily" = "Daily";
 "Daily #%lld" = "Daily #%lld";

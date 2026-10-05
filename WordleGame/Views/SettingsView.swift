@@ -18,6 +18,8 @@ struct SettingsView: View {
     @AppStorage(Haptics.enabledKey) private var hapticsEnabled = true
     @AppStorage(LetterEvaluation.highContrastKey) private var highContrast = false
     @AppStorage(GameLanguage.storageKey) private var languageRaw = GameLanguage.systemDefault.rawValue
+    @AppStorage(GameViewModel.hardModeKey) private var hardMode = false
+    @AppStorage(GameViewModel.timedModeKey) private var timedMode = false
 
     @State private var pendingLanguage: GameLanguage?
     @State private var showLeaderboard = false
@@ -45,6 +47,35 @@ struct SettingsView: View {
                 } footer: {
                     Text("Auto-selected from your device (\(GameLanguage.systemDefault.displayName)) on first launch. Switching starts a new game.")
                 }
+
+                Section {
+                    Toggle(isOn: $hardMode) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Hard mode")
+                            Text("Revealed hints must be used in later guesses.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .accessibilityIdentifier("hard-mode-toggle")
+                    Toggle(isOn: $timedMode) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Timed mode")
+                            Text("3 minutes per free-play game. The clock starts with your first letter.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .accessibilityIdentifier("timed-mode-toggle")
+                } header: {
+                    Text("Game Modes")
+                } footer: {
+                    if game.isInProgress {
+                        Text("Changes made during a game apply from the next one.")
+                    }
+                }
+                .onChange(of: hardMode) { _, _ in game.applyModeSettings() }
+                .onChange(of: timedMode) { _, _ in game.applyModeSettings() }
 
                 Section("Statistics") {
                     StatsView()

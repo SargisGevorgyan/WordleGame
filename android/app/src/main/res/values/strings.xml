@@ -27,6 +27,17 @@
     <string name="switch_and_restart">Switch &amp; restart</string>
     <string name="cancel">Cancel</string>
     <string name="current_game_lost">Your current game will be lost.</string>
+    <string name="hard_mode_position">Position %1$d must be %2$s</string>
+    <string name="hard_mode_contain">Guess must contain %s</string>
+    <string name="game_modes">Game Modes</string>
+    <string name="hard_mode">Hard mode</string>
+    <string name="hard_mode_desc">Revealed hints must be used in later guesses.</string>
+    <string name="timed_mode">Timed mode</string>
+    <string name="timed_mode_desc">3 minutes per free-play game. The clock starts with your first letter.</string>
+    <string name="modes_next_game">Changes made during a game apply from the next one.</string>
+    <string name="times_up">TIME\'S UP</string>
+    <string name="word_of_the_day">Armenian word of the day</string>
+
     <string name="accessibility">Accessibility</string>
     <string name="haptics">Haptics</string>
     <string name="high_contrast_colors">High contrast colors</string>
