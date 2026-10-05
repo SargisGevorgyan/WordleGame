@@ -26,6 +26,11 @@
     <string name="switch_and_restart">Փոխել և վերսկսել</string>
     <string name="cancel">Չեղարկել</string>
     <string name="current_game_lost">Ընթացիկ խաղը կկորչի։</string>
+    <string name="sign_in_play_games">Մուտք գործել Play Games</string>
+    <string name="leaderboards">Առաջատարների ցուցակներ</string>
+    <string name="achievements">Նվաճումներ</string>
+    <string name="play_games_unavailable">Play Games-ը դեռ կարգավորված չէ այս տարբերակի համար։</string>
+    <string name="stats_sync_note">Մուտք գործելիս վիճակագրությունն ու շարքերը համաժամեցվում են սարքերի միջև։</string>
     <string name="daily">Օրվա բառ</string>
     <string name="daily_number">Օրվա բառ #%d</string>
     <string name="free_play">Ազատ խաղ</string>

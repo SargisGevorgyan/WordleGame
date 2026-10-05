@@ -49,6 +49,8 @@ targets:
       path: WordleGame/WordleGame.entitlements
       properties:
         com.apple.developer.game-center: true
+        # iCloud key-value store: syncs stats and streaks (CloudStatsSync).
+        com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)$(CFBundleIdentifier)
     settings:
       base:
         INFOPLIST_FILE: WordleGame/Info.plist

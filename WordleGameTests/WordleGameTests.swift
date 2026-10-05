@@ -344,4 +344,37 @@ final class WordleGameTests: XCTestCase {
     private func type(_ text: String, into vm: GameViewModel) {
         for character in text { vm.insert(character) }
     }
+
+    // MARK: - Cloud stats merge
+
+    func testMergeKeepsLargerCountsAndNewerCurrentStreak() {
+        let phone = StatsSnapshot(gamesPlayed: 10, gamesWon: 8, currentStreak: 0, maxStreak: 6, updatedAt: 200)
+        let tablet = StatsSnapshot(gamesPlayed: 12, gamesWon: 7, currentStreak: 4, maxStreak: 5, updatedAt: 100)
+        let merged = phone.merged(with: tablet)
+        XCTAssertEqual(merged.gamesPlayed, 12)
+        XCTAssertEqual(merged.gamesWon, 8)
+        XCTAssertEqual(merged.currentStreak, 0)    // phone changed last: its loss broke the streak
+        XCTAssertEqual(merged.maxStreak, 6)
+        XCTAssertEqual(merged.updatedAt, 200)
+        XCTAssertEqual(merged, tablet.merged(with: phone))
+    }
+
+    func testMergeDropsStatsOlderThanAReset() {
+        let reset = StatsSnapshot(updatedAt: 300, resetAt: 300)
+        let old = StatsSnapshot(gamesPlayed: 50, gamesWon: 40, currentStreak: 9, maxStreak: 12, updatedAt: 250)
+        XCTAssertEqual(old.merged(with: reset), reset)
+        XCTAssertEqual(reset.merged(with: old), reset)
+    }
+
+    func testMergeKeepsGamesPlayedAfterAReset() {
+        let reset = StatsSnapshot(updatedAt: 300, resetAt: 300)
+        let after = StatsSnapshot(gamesPlayed: 1, gamesWon: 1, currentStreak: 1, maxStreak: 1, updatedAt: 400, resetAt: 300)
+        XCTAssertEqual(reset.merged(with: after), after)
+    }
+
+    func testAchievementThresholds() {
+        typealias A = GameCenterManager.Achievement
+        XCTAssertEqual(A.allCases.filter { $0.isEarned(wins: 0, bestStreak: 0) }, [])
+        XCTAssertEqual(A.allCases.filter { $0.isEarned(wins: 12, bestStreak: 3) }, [.firstWin, .wins10, .streak3])
+    }
 }
