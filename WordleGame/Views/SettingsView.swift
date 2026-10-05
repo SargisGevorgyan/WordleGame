@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct SettingsView: View {
     @EnvironmentObject private var store: StoreManager
@@ -13,7 +14,6 @@ struct SettingsView: View {
     @EnvironmentObject private var gameCenter: GameCenterManager
     @Environment(\.dismiss) private var dismiss
 
-    @AppStorage("isAdFree") private var isAdFree = false
     @AppStorage("soundEnabled") private var soundEnabled = true
     @AppStorage(Haptics.enabledKey) private var hapticsEnabled = true
     @AppStorage(LetterEvaluation.highContrastKey) private var highContrast = false
@@ -23,6 +23,8 @@ struct SettingsView: View {
 
     @State private var pendingLanguage: GameLanguage?
     @State private var showLeaderboard = false
+    @State private var showPro = false
+    @State private var showManageSubscriptions = false
 
     private var selectedLanguage: GameLanguage {
         GameLanguage(rawValue: languageRaw) ?? .systemDefault
@@ -101,21 +103,36 @@ struct SettingsView: View {
                     }
                 }
 
-                Section("Remove Ads") {
-                    if isAdFree {
-                        Label("Ads removed. Thank you!", systemImage: "checkmark.seal.fill")
+                Section("Wordy Pro") {
+                    if store.isPro {
+                        Label("You're Pro. Thank you!", systemImage: "checkmark.seal.fill")
                             .foregroundStyle(Color.wordleGreen)
+                        Button("Manage Subscription") { showManageSubscriptions = true }
                     } else {
-                        Button {
-                            Task { await store.purchaseRemoveAds() }
-                        } label: {
+                        Button { showPro = true } label: {
                             HStack {
-                                Text("Remove Ads")
+                                Label("Go Pro: no ads + unlimited hints", systemImage: "crown.fill")
                                 Spacer()
-                                Text(store.removeAdsDisplayPrice).foregroundStyle(.secondary)
+                                Text("from \(store.proDisplayPrice(.monthly))").foregroundStyle(.secondary)
                             }
                         }
-                        .disabled(store.state == .purchasing)
+                        .accessibilityIdentifier("settings-go-pro")
+
+                        if store.ownsRemoveAds {
+                            Label("Ads removed. Thank you!", systemImage: "checkmark.seal.fill")
+                                .foregroundStyle(Color.wordleGreen)
+                        } else {
+                            Button {
+                                Task { await store.purchaseRemoveAds() }
+                            } label: {
+                                HStack {
+                                    Text("Remove Ads")
+                                    Spacer()
+                                    Text(store.removeAdsDisplayPrice).foregroundStyle(.secondary)
+                                }
+                            }
+                            .disabled(store.state == .purchasing)
+                        }
 
                         Button("Restore Purchases") {
                             Task { await store.restorePurchases() }
@@ -172,6 +189,8 @@ struct SettingsView: View {
             } message: {
                 Text("Your current game will be lost.")
             }
+            .sheet(isPresented: $showPro) { ProView() }
+            .manageSubscriptionsSheet(isPresented: $showManageSubscriptions)
             .sheet(isPresented: $showLeaderboard) {
                 GameCenterView(leaderboardID: GameCenterManager.streakLeaderboardID)
                     .ignoresSafeArea()

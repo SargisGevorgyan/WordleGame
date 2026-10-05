@@ -7,10 +7,15 @@
 //  Products:
 //   • "Remove Ads"  — non-consumable  (com.sargisgevorgyan.wordlegame.removeads)      → UserDefaults["isAdFree"]
 //   • Hint packs    — consumables     (com.sargisgevorgyan.wordlegame.hints.five / .twenty) → onHintsGranted(count)
+//   • Wordy Pro     — auto-renewable  (com.sargisgevorgyan.wordlegame.pro.monthly / .yearly,
+//                     subscription group "Wordy Pro") → no ads + unlimited hints
+//                     → UserDefaults["isAdFree"] + UserDefaults["isPro"]
 //
 //  - Loads with `Product.products(for:)`, purchases with `product.purchase()`,
 //    verifies the `VerificationResult`, listens to `Transaction.updates`.
-//  - Restores Remove Ads with `AppStore.sync()` + `Transaction.currentEntitlements`.
+//  - Restores Remove Ads / Pro with `AppStore.sync()` + `Transaction.currentEntitlements`.
+//  - Pro expiry isn't pushed by StoreKit, so the app calls `refreshEntitlements()`
+//    whenever it becomes active.
 //
 //  Testing in the Simulator: select the bundled `Products.storekit` file as the
 //  StoreKit Configuration in your scheme (Edit Scheme > Run > Options).
@@ -39,6 +44,51 @@ final class StoreManager: ObservableObject {
         }
     }
 
+    /// Auto-renewable "Wordy Pro" plans (one subscription group).
+    enum ProPlan: String, CaseIterable, Identifiable {
+        case monthly = "com.sargisgevorgyan.wordlegame.pro.monthly"
+        case yearly  = "com.sargisgevorgyan.wordlegame.pro.yearly"
+
+        var id: String { rawValue }
+        var fallbackPrice: String { self == .monthly ? "$1.99" : "$9.99" }
+    }
+
+    /// What the player owns, resolved from their current entitlements.
+    struct Entitlements: Equatable {
+        var ownsRemoveAds = false
+        var isPro = false
+        var isAdFree: Bool { ownsRemoveAds || isPro }
+
+        struct Item {
+            let productID: String
+            let isRevoked: Bool
+            let expirationDate: Date?
+        }
+
+        /// Pure so it can be unit tested without StoreKit.
+        static func resolve(_ items: [Item], now: Date = .now) -> Entitlements {
+            var result = Entitlements()
+            for item in items where !item.isRevoked {
+                if item.productID == StoreManager.removeAdsProductID {
+                    result.ownsRemoveAds = true
+                } else if ProPlan(rawValue: item.productID) != nil,
+                          (item.expirationDate ?? .distantFuture) > now {
+                    result.isPro = true
+                }
+            }
+            return result
+        }
+    }
+
+    /// Linked from the Pro paywall (required for subscriptions by App Review).
+    /// Apple's standard EULA; swap in your own terms if you publish them.
+    static let termsOfUseURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
+    /// 🔧 Replace with your hosted privacy policy (also enter it in App Store Connect).
+    static let privacyPolicyURL = URL(string: "https://github.com/SargisGevorgyan/WordleGame/blob/main/PRIVACY.md")!
+
+    static let isProKey = "isPro"
+    static let isAdFreeKey = "isAdFree"
+
     enum PurchaseState: Equatable {
         case idle, loading, purchasing, success, restored, failed(String)
     }
@@ -46,7 +96,10 @@ final class StoreManager: ObservableObject {
     @Published private(set) var removeAdsProduct: Product?
     @Published private(set) var hintProducts: [Product] = []
     @Published private(set) var state: PurchaseState = .idle
-    @Published private(set) var isAdFree: Bool = UserDefaults.standard.bool(forKey: "isAdFree")
+    @Published private(set) var proProducts: [Product] = []
+    @Published private(set) var isAdFree: Bool = UserDefaults.standard.bool(forKey: StoreManager.isAdFreeKey)
+    @Published private(set) var isPro: Bool = UserDefaults.standard.bool(forKey: StoreManager.isProKey)
+    @Published private(set) var ownsRemoveAds = false
 
     /// Called with the number of hints to grant after a successful consumable
     /// purchase (wired to `GameViewModel.addHints` by the app). Hints granted
@@ -73,11 +126,16 @@ final class StoreManager: ObservableObject {
     func loadProducts() async {
         state = .loading
         do {
-            let ids = [Self.removeAdsProductID] + HintPack.allCases.map(\.rawValue)
+            let ids = [Self.removeAdsProductID]
+                + HintPack.allCases.map(\.rawValue)
+                + ProPlan.allCases.map(\.rawValue)
             let products = try await Product.products(for: ids)
             removeAdsProduct = products.first { $0.id == Self.removeAdsProductID }
             hintProducts = products
                 .filter { HintPack(rawValue: $0.id) != nil }
+                .sorted { $0.price < $1.price }
+            proProducts = products
+                .filter { ProPlan(rawValue: $0.id) != nil }
                 .sorted { $0.price < $1.price }
             state = .idle
         } catch {
@@ -87,6 +145,14 @@ final class StoreManager: ObservableObject {
 
     var removeAdsDisplayPrice: String {
         removeAdsProduct?.displayPrice ?? "$1.99"
+    }
+
+    func proProduct(_ plan: ProPlan) -> Product? {
+        proProducts.first { $0.id == plan.rawValue }
+    }
+
+    func proDisplayPrice(_ plan: ProPlan) -> String {
+        proProduct(plan)?.displayPrice ?? plan.fallbackPrice
     }
 
     func hintCount(for product: Product) -> Int {
@@ -100,8 +166,20 @@ final class StoreManager: ObservableObject {
             state = .failed(String(localized: "Product unavailable."))
             return
         }
-        await purchase(product) { [weak self] transaction in
-            await self?.setAdFree(transaction.revocationDate == nil)
+        await purchase(product) { [weak self] _ in
+            await self?.refreshEntitlements()
+        }
+    }
+
+    // MARK: - Purchase — Pro (auto-renewable subscription)
+
+    func purchasePro(_ plan: ProPlan) async {
+        guard let product = proProduct(plan) else {
+            state = .failed(String(localized: "Product unavailable."))
+            return
+        }
+        await purchase(product) { [weak self] _ in
+            await self?.refreshEntitlements()
         }
     }
 
@@ -149,7 +227,7 @@ final class StoreManager: ObservableObject {
         do {
             try await AppStore.sync()
             await refreshEntitlements()
-            state = isAdFree ? .restored : .failed(String(localized: "No previous purchases found."))
+            state = isAdFree || isPro ? .restored : .failed(String(localized: "No previous purchases found."))
         } catch {
             state = .failed(String(localized: "Restore failed."))
         }
@@ -158,23 +236,22 @@ final class StoreManager: ObservableObject {
     // MARK: - Entitlements / transactions
 
     func refreshEntitlements() async {
-        var owned = false
+        var items: [Entitlements.Item] = []
         for await entitlement in Transaction.currentEntitlements {
-            if case .verified(let transaction) = entitlement,
-               transaction.productID == Self.removeAdsProductID,
-               transaction.revocationDate == nil {
-                owned = true
-            }
+            guard case .verified(let transaction) = entitlement else { continue }
+            items.append(.init(productID: transaction.productID,
+                               isRevoked: transaction.revocationDate != nil,
+                               expirationDate: transaction.expirationDate))
         }
-        await setAdFree(owned)
+        apply(Entitlements.resolve(items))
     }
 
     private func listenForTransactions() -> Task<Void, Never> {
         Task.detached { [weak self] in
             for await update in Transaction.updates {
                 guard let self, case .verified(let transaction) = update else { continue }
-                if transaction.productID == Self.removeAdsProductID {
-                    await self.setAdFree(transaction.revocationDate == nil)
+                if HintPack(rawValue: transaction.productID) == nil {
+                    await self.refreshEntitlements()   // Remove Ads / Pro bought, renewed, refunded…
                 } else {
                     _ = await self.grantHints(for: transaction)   // interrupted / external buys
                 }
@@ -201,9 +278,12 @@ final class StoreManager: ObservableObject {
         onHintsGranted(count)
     }
 
-    private func setAdFree(_ value: Bool) async {
-        UserDefaults.standard.set(value, forKey: "isAdFree")
-        if isAdFree != value { isAdFree = value }
+    private func apply(_ entitlements: Entitlements) {
+        UserDefaults.standard.set(entitlements.isAdFree, forKey: Self.isAdFreeKey)
+        UserDefaults.standard.set(entitlements.isPro, forKey: Self.isProKey)
+        if isAdFree != entitlements.isAdFree { isAdFree = entitlements.isAdFree }
+        if isPro != entitlements.isPro { isPro = entitlements.isPro }
+        if ownsRemoveAds != entitlements.ownsRemoveAds { ownsRemoveAds = entitlements.ownsRemoveAds }
     }
 
     // MARK: - Verification

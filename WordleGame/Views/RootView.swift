@@ -14,12 +14,12 @@ struct RootView: View {
     @EnvironmentObject private var ads: AdManager
     @EnvironmentObject private var gameCenter: GameCenterManager
 
-    @AppStorage("isAdFree") private var isAdFree = false
     @AppStorage("soundEnabled") private var soundEnabled = true
     @AppStorage(GameLanguage.storageKey) private var languageRaw = GameLanguage.systemDefault.rawValue
 
     @State private var showSettings = false
     @State private var showHintStore = false
+    @State private var showPro = false
     @State private var showLeaderboard = false
     @FocusState private var keyboardFocused: Bool
     @Environment(\.scenePhase) private var scenePhase
@@ -67,8 +67,8 @@ struct RootView: View {
                 )
                 .padding(.bottom, 4)
 
-                if !isAdFree {
-                    BannerAdContainer(isAdFree: isAdFree)
+                if !store.isAdFree {
+                    BannerAdContainer(isAdFree: store.isAdFree)
                         .padding(.top, 2)
                 }
             }
@@ -87,6 +87,7 @@ struct RootView: View {
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
         .sheet(isPresented: $showHintStore) { HintStoreView() }
+        .sheet(isPresented: $showPro) { ProView() }
         .sheet(isPresented: $showLeaderboard) {
             GameCenterView(leaderboardID: GameCenterManager.streakLeaderboardID)
                 .ignoresSafeArea()
@@ -101,11 +102,18 @@ struct RootView: View {
                 gameCenter.submitStats()
             }
             store.onHintsGranted = { count in game.addHints(count) }
+            game.hasUnlimitedHints = store.isPro
+        }
+        .onChange(of: store.isPro) { _, isPro in
+            game.hasUnlimitedHints = isPro
         }
         .onChange(of: showSettings) { _, showing in
             if !showing { keyboardFocused = true }
         }
         .onChange(of: showHintStore) { _, showing in
+            if !showing { keyboardFocused = true }
+        }
+        .onChange(of: showPro) { _, showing in
             if !showing { keyboardFocused = true }
         }
         .onChange(of: showLeaderboard) { _, showing in
@@ -160,7 +168,7 @@ struct RootView: View {
 
     private var hintPill: some View {
         Button {
-            if game.hintsRemaining > 0 {
+            if game.mode == .daily || game.hasUnlimitedHints || game.hintsRemaining > 0 {
                 game.useHint()
                 keyboardFocused = true
             } else {
@@ -171,7 +179,7 @@ struct RootView: View {
                 Image(systemName: "lightbulb.fill")
                     .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(Color.warmYellow)
-                Text("\(game.hintsRemaining)")
+                Text(verbatim: game.hasUnlimitedHints ? "∞" : "\(game.hintsRemaining)")
                     .font(.system(size: 14, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                     .contentTransition(.numericText())
@@ -182,7 +190,7 @@ struct RootView: View {
                        in: Capsule())
             .overlay(Capsule().strokeBorder(Color.warmYellow.opacity(0.5), lineWidth: 1))
             .overlay(alignment: .topTrailing) {
-                if game.hintsRemaining == 0 {
+                if game.hintsRemaining == 0 && !game.hasUnlimitedHints {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 12))
                         .foregroundStyle(Color.neonGreen)
@@ -195,7 +203,7 @@ struct RootView: View {
         .buttonStyle(.plain)
         .disabled(game.status != .playing)
         .accessibilityIdentifier("hint-pill")
-        .accessibilityLabel("Hints: \(game.hintsRemaining)")
+        .accessibilityLabel(game.hasUnlimitedHints ? Text("Unlimited hints") : Text("Hints: \(game.hintsRemaining)"))
     }
 
     private var timerPill: some View {
@@ -218,29 +226,31 @@ struct RootView: View {
         .accessibilityLabel(Text("Time left: \(seconds) seconds"))
     }
 
+    /// "PRO" badge for subscribers; otherwise opens the Pro paywall (which also
+    /// offers the one-time Remove Ads).
     @ViewBuilder
     private var removeAdsControl: some View {
-        if isAdFree {
-            HStack(spacing: 4) {
-                Image(systemName: "checkmark.seal.fill")
-                Text("PRO").font(.system(size: 12, weight: .black, design: .rounded))
+        if store.isPro {
+            Button { showPro = true } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.seal.fill")
+                    Text("PRO").font(.system(size: 12, weight: .black, design: .rounded))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(Palette.proGradient, in: Capsule())
+                .shadow(color: .auroraMagenta.opacity(0.5), radius: 8)
             }
-            .foregroundStyle(.white)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 7)
-            .background(Palette.proGradient, in: Capsule())
-            .shadow(color: .auroraMagenta.opacity(0.5), radius: 8)
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("pro-badge")
         } else {
             Button {
-                Task { await store.purchaseRemoveAds() }
+                showPro = true
             } label: {
                 HStack(spacing: 5) {
-                    if store.state == .purchasing {
-                        ProgressView().controlSize(.mini).tint(.white)
-                    } else {
-                        Image(systemName: "nosign").font(.system(size: 12, weight: .bold))
-                    }
-                    Text("Remove Ads")
+                    Image(systemName: "crown.fill").font(.system(size: 12, weight: .bold))
+                    Text("Go Pro")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                 }
                 .foregroundStyle(.white)
@@ -251,7 +261,7 @@ struct RootView: View {
                 .shadow(color: .auroraPurple.opacity(0.4), radius: 8)
             }
             .buttonStyle(.plain)
-            .disabled(store.state == .purchasing)
+            .accessibilityIdentifier("go-pro-button")
         }
     }
 

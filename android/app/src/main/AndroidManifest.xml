@@ -8,6 +8,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.WordleGame">
+        <!-- AdMob app ID: Google's test ID in debug; set wordle.admob.appId for release. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
         <!-- Play Games project ID, from res/values/games-ids.xml. -->
         <meta-data
             android:name="com.google.android.gms.games.APP_ID"

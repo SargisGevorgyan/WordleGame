@@ -262,6 +262,54 @@ final class WordleGameTests: XCTestCase {
         }
     }
 
+    // MARK: - Entitlements (Remove Ads / Pro)
+
+    func testNoEntitlementsMeansAdsAndCountedHints() {
+        let result = StoreManager.Entitlements.resolve([])
+        XCTAssertFalse(result.isAdFree)
+        XCTAssertFalse(result.isPro)
+    }
+
+    func testRemoveAdsIsAdFreeButNotPro() {
+        let result = StoreManager.Entitlements.resolve([
+            .init(productID: StoreManager.removeAdsProductID, isRevoked: false, expirationDate: nil),
+        ])
+        XCTAssertTrue(result.isAdFree)
+        XCTAssertFalse(result.isPro)
+    }
+
+    func testActiveProSubscriptionIsProAndAdFree() {
+        let now = Date()
+        let result = StoreManager.Entitlements.resolve([
+            .init(productID: StoreManager.ProPlan.yearly.rawValue, isRevoked: false,
+                  expirationDate: now.addingTimeInterval(3600)),
+        ], now: now)
+        XCTAssertTrue(result.isPro)
+        XCTAssertTrue(result.isAdFree)
+        XCTAssertFalse(result.ownsRemoveAds)
+    }
+
+    func testExpiredOrRevokedProIsNotPro() {
+        let now = Date()
+        let result = StoreManager.Entitlements.resolve([
+            .init(productID: StoreManager.ProPlan.monthly.rawValue, isRevoked: false,
+                  expirationDate: now.addingTimeInterval(-1)),
+            .init(productID: StoreManager.ProPlan.yearly.rawValue, isRevoked: true,
+                  expirationDate: now.addingTimeInterval(3600)),
+        ], now: now)
+        XCTAssertFalse(result.isPro)
+        XCTAssertFalse(result.isAdFree)
+    }
+
+    @MainActor
+    func testUnlimitedHintsDoNotSpendHints() {
+        let vm = GameViewModel(targetWord: "FOCUS")
+        vm.hasUnlimitedHints = true
+        let before = vm.hintsRemaining
+        XCTAssertTrue(vm.useHint())
+        XCTAssertEqual(vm.hintsRemaining, before)
+    }
+
     // MARK: - Daily word
 
     // The Android tests assert these same vectors, so both apps pick the same word.

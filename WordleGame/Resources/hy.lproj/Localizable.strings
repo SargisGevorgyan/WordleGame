@@ -77,6 +77,28 @@
 "English" = "Անգլերեն";
 "Armenian" = "Հայերեն";
 
+/* Wordy Pro */
+"Go Pro" = "Դառնալ Pro";
+"Wordy Pro" = "Wordy Pro";
+"No ads" = "Առանց գովազդի";
+"Unlimited hints" = "Անսահմանափակ հուշումներ";
+"Monthly" = "Ամսական";
+"Yearly" = "Տարեկան";
+"Save %lld%%" = "Խնայեք %lld%%";
+"/ month" = "/ ամիս";
+"/ year" = "/ տարի";
+"Continue" = "Շարունակել";
+"Just remove ads · %@ once" = "Միայն հեռացնել գովազդը · %@ մեկ անգամ";
+"You're Pro. Thank you!" = "Դուք Pro եք։ Շնորհակալություն։";
+"Manage Subscription" = "Կառավարել բաժանորդագրությունը";
+"Payment is charged to your Apple ID. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel it in your App Store account settings." = "Վճարումը գանձվում է ձեր Apple ID-ից։ Բաժանորդագրությունը ավտոմատ երկարաձգվում է, եթե այն չեղարկված չէ ընթացիկ ժամանակահատվածի ավարտից առնվազն 24 ժամ առաջ։ Կառավարեք կամ չեղարկեք այն App Store-ի հաշվի կարգավորումներում։";
+"Terms of Use" = "Օգտագործման պայմաններ";
+"Privacy Policy" = "Գաղտնիության քաղաքականություն";
+"Unlimited hints with Pro" = "Անսահմանափակ հուշումներ Pro-ով";
+"No ads too · from %@ / month" = "Նաև առանց գովազդի · %@-ից / ամիս";
+"Go Pro: no ads + unlimited hints" = "Դառնալ Pro՝ առանց գովազդի + անսահմանափակ հուշումներ";
+"from %@" = "%@-ից";
+
 /* Game modes */
 "Game Modes" = "Խաղի ռեժիմներ";
 "Hard mode" = "Բարդ ռեժիմ";

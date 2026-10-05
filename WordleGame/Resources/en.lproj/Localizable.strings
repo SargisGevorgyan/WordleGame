@@ -77,6 +77,28 @@
 "English" = "English";
 "Armenian" = "Armenian";
 
+/* Wordy Pro */
+"Go Pro" = "Go Pro";
+"Wordy Pro" = "Wordy Pro";
+"No ads" = "No ads";
+"Unlimited hints" = "Unlimited hints";
+"Monthly" = "Monthly";
+"Yearly" = "Yearly";
+"Save %lld%%" = "Save %lld%%";
+"/ month" = "/ month";
+"/ year" = "/ year";
+"Continue" = "Continue";
+"Just remove ads · %@ once" = "Just remove ads · %@ once";
+"You're Pro. Thank you!" = "You're Pro. Thank you!";
+"Manage Subscription" = "Manage Subscription";
+"Payment is charged to your Apple ID. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel it in your App Store account settings." = "Payment is charged to your Apple ID. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel it in your App Store account settings.";
+"Terms of Use" = "Terms of Use";
+"Privacy Policy" = "Privacy Policy";
+"Unlimited hints with Pro" = "Unlimited hints with Pro";
+"No ads too · from %@ / month" = "No ads too · from %@ / month";
+"Go Pro: no ads + unlimited hints" = "Go Pro: no ads + unlimited hints";
+"from %@" = "from %@";
+
 /* Game modes */
 "Game Modes" = "Game Modes";
 "Hard mode" = "Hard mode";

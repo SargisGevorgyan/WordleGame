@@ -25,6 +25,9 @@ final class GameViewModel: ObservableObject {
     static let maxHints = 99          // upper bound (purchases can stack)
     static let freeHintCeiling = 5    // the win reward won't push above this
 
+    /// Wordy Pro: hints are free and never run out (set from `StoreManager.isPro`).
+    @Published var hasUnlimitedHints = UserDefaults.standard.bool(forKey: StoreManager.isProKey)
+
     /// Bumping this value makes the current row play its shake animation.
     @Published var shakeToken = 0
     /// Transient banner shown for invalid input ("Not in word list", …).
@@ -203,12 +206,12 @@ final class GameViewModel: ObservableObject {
             flashToast("Hints are off in the daily game")
             return true
         }
-        guard hintsRemaining > 0 else { return false }
+        guard hasUnlimitedHints || hintsRemaining > 0 else { return false }
         guard currentColumn < GameConstants.wordLength else { return true }
         let targetTokens = language.tokenize(targetWord)
         guard currentColumn < targetTokens.count else { return true }
 
-        setHints(hintsRemaining - 1)
+        if !hasUnlimitedHints { setHints(hintsRemaining - 1) }
         Haptics.shared.notify(.success)
         flashToast("Hint revealed")
         insertToken(targetTokens[currentColumn])

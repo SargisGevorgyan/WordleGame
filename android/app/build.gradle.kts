@@ -8,6 +8,17 @@ plugins {
 // iOS app. It is packaged as assets/words/*.txt — never copy it into android/.
 val sharedDir = rootProject.file("../shared")
 
+// AdMob IDs. Debug builds always use Google's test IDs. Release builds read the
+// real ones from Gradle properties (~/.gradle/gradle.properties or -P…) and fall
+// back to the test IDs, which show test ads and earn nothing.
+object TestAdIds {
+    const val APP = "ca-app-pub-3940256099942544~3347511713"
+    const val BANNER = "ca-app-pub-3940256099942544/9214589741"
+    const val INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712"
+    const val REWARDED = "ca-app-pub-3940256099942544/5224354917"
+}
+fun adProp(name: String, fallback: String) = (findProperty("wordle.admob.$name") as String?) ?: fallback
+
 android {
     namespace = "com.sargisgevorgyan.wordlegame"
     compileSdk = 35
@@ -18,11 +29,22 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        manifestPlaceholders["admobAppId"] = adProp("appId", TestAdIds.APP)
+        buildConfigField("String", "ADMOB_BANNER_ID", "\"${adProp("bannerId", TestAdIds.BANNER)}\"")
+        buildConfigField("String", "ADMOB_INTERSTITIAL_ID", "\"${adProp("interstitialId", TestAdIds.INTERSTITIAL)}\"")
+        buildConfigField("String", "ADMOB_REWARDED_ID", "\"${adProp("rewardedId", TestAdIds.REWARDED)}\"")
     }
 
     sourceSets["main"].assets.srcDir(sharedDir)
 
     buildTypes {
+        debug {
+            manifestPlaceholders["admobAppId"] = TestAdIds.APP
+            buildConfigField("String", "ADMOB_BANNER_ID", "\"${TestAdIds.BANNER}\"")
+            buildConfigField("String", "ADMOB_INTERSTITIAL_ID", "\"${TestAdIds.INTERSTITIAL}\"")
+            buildConfigField("String", "ADMOB_REWARDED_ID", "\"${TestAdIds.REWARDED}\"")
+        }
         release {
             isMinifyEnabled = false
         }
@@ -37,6 +59,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     testOptions {
         unitTests.all {
@@ -62,6 +85,11 @@ dependencies {
     implementation("com.google.android.gms:play-services-games-v2:20.1.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Monetization: Play Billing (Remove Ads, hint packs, Pro), AdMob, UMP consent.
+    implementation("com.android.billingclient:billing-ktx:7.1.1")
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
+    implementation("com.google.android.ump:user-messaging-platform:3.1.0")
 
     testImplementation("junit:junit:4.13.2")
 }

@@ -23,6 +23,7 @@ import com.sargisgevorgyan.wordlegame.game.Stats
 import com.sargisgevorgyan.wordlegame.game.StatsRecord
 import com.sargisgevorgyan.wordlegame.game.Submission
 import com.sargisgevorgyan.wordlegame.game.WordBank
+import com.sargisgevorgyan.wordlegame.monetization.Economy
 import com.sargisgevorgyan.wordlegame.game.WordMeanings
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -37,6 +38,8 @@ data class UiMessage(@StringRes val res: Int, val args: List<Any> = emptyList())
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private val prefs = application.getSharedPreferences("wordle", Context.MODE_PRIVATE)
+    private val wallet = (application as WordleApplication).hints
+    private val billing = (application as WordleApplication).billing
     private val banks = mutableMapOf<GameLanguage, WordBank>()
     private val meaningCache = mutableMapOf<GameLanguage, Map<String, String>>()
 
@@ -73,8 +76,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     var statsRecord by mutableStateOf(loadStats())
         private set
     val stats: Stats get() = statsRecord.stats
-    var hintsRemaining by mutableIntStateOf(prefs.getInt(KEY_HINTS, 3))
+    var hintsRemaining by mutableIntStateOf(wallet.hints.value)
         private set
+    /** Wordy Pro: hints are free and never run out. */
+    var hasUnlimitedHints by mutableStateOf(billing.entitlements.value.isPro)
+        private set
+    /** Whether tapping the hint pill reveals a letter (otherwise it opens the hint store). */
+    val canUseHint get() = hasUnlimitedHints || hintsRemaining > 0
     var hapticsEnabled by mutableStateOf(prefs.getBoolean(KEY_HAPTICS, true))
         private set
     var highContrast by mutableStateOf(prefs.getBoolean(KEY_HIGH_CONTRAST, false))
@@ -113,6 +121,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     /** State to apply when the running reveal finishes. */
     private var pendingResolved: GameState? = null
 
+    init {
+        // Hints also arrive from Play Billing (packs) and rewarded ads, outside this screen.
+        viewModelScope.launch { wallet.hints.collect { hintsRemaining = it } }
+        viewModelScope.launch { billing.entitlements.collect { hasUnlimitedHints = it.isPro } }
+        viewModelScope.launch { billing.hintGrants.collect { flashToast(R.string.hints_added) } }
+        viewModelScope.launch { billing.messages.collect { flashToast(it) } }
+    }
+
     // Input
 
     fun onKey(token: String) = when (token) {
@@ -128,9 +144,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun useHint() {
         if (isRevealing || state.status != GameStatus.PLAYING) return
         if (mode == GameMode.DAILY) return flashToast(R.string.hints_off_daily)
-        if (hintsRemaining <= 0) return flashToast(R.string.no_hints_left)
+        if (!canUseHint) return flashToast(R.string.no_hints_left)
         val token = GameRules.hintToken(state) ?: return
-        setHints(hintsRemaining - 1)
+        if (!hasUnlimitedHints) setHints(hintsRemaining - 1)
         state = GameRules.insertToken(state, token)
         startClockIfNeeded()
         flashToast(R.string.hint_revealed)
@@ -171,6 +187,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         if (resolved.status != GameStatus.PLAYING) {
             stopClock()
             recordResult(won = resolved.status == GameStatus.WON)
+            getApplication<WordleApplication>().ads.roundFinished()
         }
     }
 
@@ -208,6 +225,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         if (mode == GameMode.DAILY) saveDaily(state)
         val won = state.status == GameStatus.WON
         recordResult(won)
+        getApplication<WordleApplication>().ads.roundFinished()
         haptic(if (won) Feedback.WIN else Feedback.LOSS)
         revealJob = viewModelScope.launch {
             delay(450)
@@ -217,7 +235,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun recordResult(won: Boolean) {
         statsRecord = statsRecord.record(won, System.currentTimeMillis()).also(::saveStats)
-        if (won && hintsRemaining < FREE_HINT_CEILING) setHints(hintsRemaining + 1)
+        if (won && hintsRemaining < Economy.FREE_HINT_CEILING) setHints(hintsRemaining + 1)
     }
 
     /** Stops any running reveal / game-over timer so it can't touch the next game. */
@@ -336,6 +354,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         flashToast(message)
     }
 
+    /** Hints earned from a rewarded ad. */
+    fun addHints(count: Int) {
+        if (count <= 0) return
+        wallet.add(count)
+        flashToast(R.string.hints_added)
+    }
+
     private fun haptic(feedback: Feedback) {
         if (hapticsEnabled) _feedback.tryEmit(feedback)
     }
@@ -345,7 +370,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         is HardModeViolation.MissingPresent -> UiMessage(R.string.hard_mode_contain, listOf(violation.token))
     }
 
-    private fun flashToast(@StringRes message: Int) = flashToast(UiMessage(message))
+    fun flashToast(@StringRes message: Int) = flashToast(UiMessage(message))
 
     private fun flashToast(message: UiMessage) {
         toastJob?.cancel()
@@ -395,8 +420,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         GameLanguage.fromCode(prefs.getString(KEY_LANGUAGE, null)) ?: GameLanguage.systemDefault()
 
     private fun setHints(value: Int) {
-        hintsRemaining = value.coerceIn(0, MAX_HINTS)
-        prefs.edit { putInt(KEY_HINTS, hintsRemaining) }
+        wallet.set(value)
+        hintsRemaining = wallet.hints.value
     }
 
     private fun loadStats() = StatsRecord(
@@ -422,13 +447,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         const val REVEAL_MILLIS = 1700L
         const val FLIP_STAGGER_MILLIS = 300
-        private const val MAX_HINTS = 99
-        private const val FREE_HINT_CEILING = 5
         private const val KEY_LANGUAGE = "gameLanguage"
         private const val KEY_MODE = "gameMode"
         private const val KEY_HARD_MODE = "hardMode"
         private const val KEY_TIMED_MODE = "timedMode"
-        private const val KEY_HINTS = "hintsRemaining"
         private const val KEY_HAPTICS = "hapticsEnabled"
         private const val KEY_HIGH_CONTRAST = "highContrastColors"
         private const val KEY_PLAYED = "gamesPlayed"
